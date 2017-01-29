@@ -1,0 +1,22 @@
+{
+  "name": "toris-format",
+  "version": "1.3.2",
+  "description": "Formatting tool for HTML",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JorisCoppieters/toris-format.git"
+  },
+  "author": "Joris Coppieters",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JorisCoppieters/toris-format/issues"
+  },
+  "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
+  "devDependencies": {
+    "bluebird": "^3.4.7"
+  }
+}
