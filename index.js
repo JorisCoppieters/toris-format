@@ -98,6 +98,11 @@ let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', '
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
 let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
 
+let g_NG1_ATTRIBUTES_ORDER = [];
+let g_NG2_ATTRIBUTES_ORDER = [];
+let g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+let g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+
 let g_REMOVE_CSS = true;
 
 let g_ANGULAR_VERSION = 1;
@@ -138,6 +143,18 @@ function setup (in_config) {
 
   let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
   g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
+
+  let ng1_attributes_order = get_setup_property(in_config, "ng1_attributes_order", []);
+  g_NG1_ATTRIBUTES_ORDER = g_NG1_ATTRIBUTES_ORDER.concat(ng1_attributes_order);
+
+  let ng2_attributes_order = get_setup_property(in_config, "ng2_attributes_order", []);
+  g_NG2_ATTRIBUTES_ORDER = g_NG2_ATTRIBUTES_ORDER.concat(ng2_attributes_order);
+
+  let ng1_attributes_order_pre_native = get_setup_property(in_config, "ng1_attributes_order_pre_native", []);
+  g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng1_attributes_order_pre_native);
+
+  let ng2_attributes_order_pre_native = get_setup_property(in_config, "ng2_attributes_order_pre_native", []);
+  g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng2_attributes_order_pre_native);
 }
 
 // ******************************
@@ -911,27 +928,26 @@ function tabbed_attributes (in_attributes) {
     let attributes_order_pre_native = [];
 
     if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
-      attributes_order_pre_native = attributes_order_pre_native.concat([
-        '^\\*.*$',
-        '^\\#.*$',
-        '^\\[\\(.*\\)\\]$',
-        '^\\(.*\\)$',
-        '^\\[.*\\]$'
-      ]);
+      g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
+        attributes_order_pre_native.push('^' + attribute + '$');
+      })
+    } else if (g_ANGULAR_VERSION < 2.0) {
+      g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
+        attributes_order_pre_native.push('^' + attribute + '$');
+      })
     }
 
-    let attributes_order_post_native = [
-      '^ng-.*$',
-      '^tg-sm.*$',
-      '^tg-sd.*$',
-      '^tg-md.*$',
-      '^tg-mg.*$',
-      '^tg-lg.*$',
-      '^tg-ll.*$',
-      '^tg-xl.*$',
-      '^tg-.*$',
-      '^tm-.*$'
-    ];
+    let attributes_order_post_native = [];
+
+    if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
+      g_NG2_ATTRIBUTES_ORDER.forEach((attribute) => {
+        attributes_order_post_native.push('^' + attribute + '$');
+      })
+    } else if (g_ANGULAR_VERSION < 2.0) {
+      g_NG1_ATTRIBUTES_ORDER.forEach((attribute) => {
+        attributes_order_post_native.push('^' + attribute + '$');
+      })
+    }
 
     let sorted_attribute_keys = [];
 
