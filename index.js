@@ -3,25 +3,38 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.3.2
-// + adjustment for tg-row, tg-col, tg-mini-grid-pattern-item and tg-mini-grid-item
+// TORIS FORMAT v1.4.0
 //
 //
 // ******************************
-
-// ******************************
-// Exports:
-// ******************************
-
-module.exports['format_html_file'] = format_html_file;
-module.exports['setup'] = setup;
 
 // ******************************
 // Constants:
 // ******************************
 
+const k_VERSION = '1.4.0';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
+const k_NO_VALUE_TOKEN = '[NOVALUE]';
+
+const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
+const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
+const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
+const k_ATTRIBUTE_TYPE_NO_VALUE = '[ATTRIBUTE_TYPE_NO_VALUE]';
+
+const k_NG2_ATTRIBUTE_TYPE_REFERENCE = '[NG2_ATTRIBUTE_TYPE_REFERENCE]';
+const k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY = '[NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY]';
+const k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY = '[NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY]';
+const k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT = '[NG2_ATTRIBUTE_TYPE_BINDING_EVENT]';
+const k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE = '[NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE]';
+
+// ******************************
+// Exports:
+// ******************************
+
+module.exports['k_VERSION'] = k_VERSION;
+module.exports['format_html_file'] = format_html_file;
+module.exports['setup'] = setup;
 
 // ******************************
 // RegEx Shorthand:
@@ -82,7 +95,12 @@ let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed',
 let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
 let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
 
+let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
+let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
+
 let g_REMOVE_CSS = true;
+
+let g_ANGULAR_VERSION = 1;
 
 let t_NL = '\n';
 let g_NL = '\r\n';
@@ -107,12 +125,19 @@ function setup (in_config) {
   g_INDENT                 = get_setup_property(in_config, "indent", g_INDENT);
   g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
   g_REMOVE_CSS             = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+  g_ANGULAR_VERSION        = get_setup_property(in_config, "angular_version", g_ANGULAR_VERSION);
 
   let inline_elements = get_setup_property(in_config, "inline_elements", []);
   g_INLINE_ELEMENTS = g_INLINE_ELEMENTS.concat(inline_elements);
 
   let block_elements = get_setup_property(in_config, "block_elements", []);
   g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS.concat(block_elements);
+
+  let one_time_bound_element_prefixes = get_setup_property(in_config, "one_time_bound_element_prefixes", []);
+  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES.concat(one_time_bound_element_prefixes);
+
+  let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
+  g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
 }
 
 // ******************************
@@ -154,7 +179,7 @@ function format_html_file (in_file_contents, in_indent_count) {
 
     while(g_ELEMENT_STACK.length) {
       let top_element = g_ELEMENT_STACK.pop();
-      if (top_element == k_COMMENT_TOKEN) {
+      if (top_element === k_COMMENT_TOKEN) {
         continue;
       }
 
@@ -243,6 +268,7 @@ function parse_html_open_element (in_html_content) {
     let html_content = in_html_content;
     let remaining = parse_html_open_element_start(html_content);
     if (remaining === false) {
+      g_HTML_INVALID = html_content;
       result = false;
       break;
     }
@@ -266,6 +292,7 @@ function parse_html_open_element (in_html_content) {
     remaining = parse_html_open_element_end(html_content);
 
     if (remaining === false) {
+      g_HTML_INVALID = html_content;
       result = false;
     } else {
       result = remaining;
@@ -312,11 +339,40 @@ function parse_html_open_element_attributes (in_html_content) {
   let html_content = in_html_content || '';
 
   let functions = [
-    parse_attribute_with_single_quoted_value,
-    parse_attribute_with_double_quoted_value,
-    parse_attribute_with_empty_value,
-    parse_attribute_with_no_value,
+    function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
+    function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
+    function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY); },
+    function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE); },
   ];
+
+  if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
+    functions = functions.concat([
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+      function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+    ]);
+  }
 
   let parsed = true;
   while(parsed) {
@@ -347,119 +403,81 @@ function parse_html_open_element_attributes (in_html_content) {
 
 // ******************************
 
-function parse_attribute_with_single_quoted_value (in_html_content) {
+function parse_attribute (in_html_content, in_attribute_type) {
   let result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY) + r_W + '=' + r_sq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE)) + r_v(r_AG) + '$', 'i'));
+
+    let regExpString = '^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY);
+
+    switch (in_attribute_type)
+    {
+      case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+        regExpString += r_W + '=' + r_dq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+        regExpString += r_W + '=' + r_sq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+        regExpString += r_W + '=' + r_dq('');
+        break;
+
+      case k_ATTRIBUTE_TYPE_NO_VALUE:
+        break;
+    }
+
+    regExpString += r_v(r_AG) + '$';
+
+    let matches = in_html_content.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
-    let key = matches[1] || '';
-    let val = matches[3] || '';
+    matches.shift(); // First idx in match is the complete match string
 
-    let already_one_time_bound = matches[2] === '::';
-    let should_be_one_time_bound = key.match(/(tg|ng|tm)-.*?/);
-    let should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(/(tg-row|tg-col|tg-mini-grid-pattern-item|tg-mini-grid-item)/);
-    let binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
+    let key = matches.shift() || '';
+    let val;
+    let already_one_time_bound;
 
-    let remaining = '';
-    if (matches.length === 5) {
-      remaining += matches[4];
+    switch (in_attribute_type)
+    {
+      case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+      case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+        already_one_time_bound = matches.shift() === '::';
+        val = matches.shift() || '';
+
+        let should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
+        let should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
+        let binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
+
+        if (val === '"true"' || val === '\'true\'' || val === 'true') {
+          val = binding + 'true';
+        } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
+          val = binding + 'false';
+        } else if (is_numeric(val)) {
+          val = binding + val;
+        } else if (already_one_time_bound) {
+          val = binding + val;
+        } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
+          val = binding + val;
+        }
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+        val = '';
+        break;
+
+      case k_ATTRIBUTE_TYPE_NO_VALUE:
+        val = k_NO_VALUE_TOKEN;
+        break;
     }
-
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+binding+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
-
-    if (val === '"true"' || val === '\'true\'' || val === 'true') {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + 'true';
-    } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + 'false';
-    } else if (is_numeric(val)) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else if (already_one_time_bound) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
-    }
-
-    result = remaining;
-  } while (false);
-
-  return result;
-}
-
-// ******************************
-
-function parse_attribute_with_double_quoted_value (in_html_content) {
-  let result = false;
-
-  do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY) + r_W + '=' + r_dq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE)) + r_v(r_AG) + '$', 'i'));
-    if (!matches) {
-      break;
-    }
-
-    let key = matches[1] || '';
-    let val = matches[3] || '';
-
-    let already_one_time_bound = matches[2] === '::';
-    let should_be_one_time_bound = key.match(/(tg|ng|tm)-.*?/);
-    let should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(/(tg-row|tg-col|tg-mini-grid-pattern-item|tg-mini-grid-item)/);
-    let binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
-
-    let remaining = '';
-    if (matches.length === 5) {
-      remaining += matches[4];
-    }
-
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+binding+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
-
-    if (val === '"true"' || val === '\'true\'' || val === 'true') {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + 'true';
-    } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + 'false';
-    } else if (is_numeric(val)) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else if (already_one_time_bound) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = binding + val;
-    } else {
-      g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
-    }
-
-    result = remaining;
-
-  } while (false);
-
-  return result;
-}
-
-// ******************************
-
-function parse_attribute_with_empty_value (in_html_content) {
-  let result = false;
-
-  do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY) + r_W + '=' + r_dq('') + r_v(r_AG) + '$', 'i'));
-    if (!matches) {
-      break;
-    }
-
-    let key = matches[1] || '';
-    let val = '';
-
-    let remaining = '';
-    if (matches.length === 3) {
-      remaining += matches[2];
-    }
-
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
 
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
+    let remaining = matches.shift() || '';
+
+    // console.log('"'+in_html_content.substr(0,100)+'" => |'+regExpString+'|'+key+'|'+already_one_time_bound+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
 
     result = remaining;
 
@@ -470,26 +488,92 @@ function parse_attribute_with_empty_value (in_html_content) {
 
 // ******************************
 
-function parse_attribute_with_no_value (in_html_content) {
+function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding_type) {
   let result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY) + r_v(r_AG) + '$', 'i'));
+    let regExpString = '^' + r_W;
+
+    switch (in_ng2_binding_type)
+    {
+      case k_NG2_ATTRIBUTE_TYPE_REFERENCE:
+        regExpString += r_v('#[@:a-z]+');
+        break;
+
+      case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
+        regExpString += r_v('\[' + '[@:a-zA-Z._]+' + '\]');
+        break;
+
+      case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
+        regExpString += r_v('\[\\(' + '[@:a-zA-Z._]+' + '\\)\]');
+        break;
+
+      case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
+        regExpString += r_v('\\(' + '[@:a-zA-Z._]+' + '\\)');
+        break;
+
+      case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
+        regExpString += r_v('\\*' + '[@:a-zA-Z._]+');
+        break;
+    }
+
+    switch (in_attribute_type)
+    {
+      case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+        regExpString += r_W + '=' + r_dq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+        regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+        regExpString += r_W + '=' + r_dq('');
+        break;
+
+      case k_ATTRIBUTE_TYPE_NO_VALUE:
+        regExpString += ''; // Add nothing
+        break;
+    }
+
+    regExpString += r_v(r_AG) + '$';
+
+    let matches = in_html_content.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
-    let key = matches[1] || '';
-    let val = '[NOVALUE]';
+    matches.shift(); // First idx in match is the complete match string
 
-    let remaining = '';
-    if (matches.length === 3) {
-      remaining += matches[2];
+    let key = matches.shift() || '';
+    let val;
+
+    switch (in_attribute_type)
+    {
+      case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+      case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+        val = matches.shift() || '';
+
+        if (val === '"true"' || val === '\'true\'' || val === 'true') {
+          val = 'true';
+        } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
+          val = 'false';
+        }
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+        val = '';
+        break;
+
+      case k_ATTRIBUTE_TYPE_NO_VALUE:
+        val = k_NO_VALUE_TOKEN;
+        break;
     }
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
-
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
+    let remaining = matches.shift() || '';
+
+    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
 
     result = remaining;
 
@@ -824,7 +908,19 @@ function tabbed_attributes (in_attributes) {
     let attribute_keys = Object.keys(in_attributes);
     attribute_keys.sort();
 
-    let special_orders = [
+    let attributes_order_pre_native = [];
+
+    if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
+      attributes_order_pre_native = attributes_order_pre_native.concat([
+        '^\\*.*$',
+        '^\\#.*$',
+        '^\\[\\(.*\\)\\]$',
+        '^\\(.*\\)$',
+        '^\\[.*\\]$'
+      ]);
+    }
+
+    let attributes_order_post_native = [
       '^ng-.*$',
       '^tg-sm.*$',
       '^tg-sd.*$',
@@ -839,8 +935,22 @@ function tabbed_attributes (in_attributes) {
 
     let sorted_attribute_keys = [];
 
+    attributes_order_pre_native.forEach((special_order) => {
+      attribute_keys.forEach((key) => {
+        if (!key.match(new RegExp(special_order))) {
+          return;
+        }
+
+        if (sorted_attribute_keys.indexOf(key) >= 0) {
+          return;
+        }
+
+        sorted_attribute_keys.push(key);
+      });
+    });
+
     attribute_keys.forEach((key) => {
-      let special_order_match = special_orders.filter((special_order) => {
+      let special_order_match = attributes_order_post_native.filter((special_order) => {
         let matches = key.match(new RegExp(special_order));
         return matches && matches.length;
       });
@@ -856,7 +966,7 @@ function tabbed_attributes (in_attributes) {
       sorted_attribute_keys.push(key);
     });
 
-    special_orders.forEach((special_order) => {
+    attributes_order_post_native.forEach((special_order) => {
       attribute_keys.forEach((key) => {
         if (!key.match(new RegExp(special_order))) {
           return;
@@ -877,7 +987,7 @@ function tabbed_attributes (in_attributes) {
       let val = in_attributes[key];
       val = val.replace(/[\s]+/, ' ');
 
-      if (val === '[NOVALUE]') {
+      if (val === k_NO_VALUE_TOKEN) {
         result += t_NL + indent + key;
         return;
       }
@@ -916,7 +1026,7 @@ function parse_attribute_object (in_val) {
     let binding = matches[1] || '';
     let structure = matches[2] || '';
 
-    let re_val = '[!$A-Z0-9.;\(\)\'"_-]+';
+    let re_val = '[!$A-Z0-9.;\(\)\'" +_-]+';
     let re_key = '\'?[$A-Z0-9 _-]+\'?';
 
     let re_num_val = '[0-9]+';

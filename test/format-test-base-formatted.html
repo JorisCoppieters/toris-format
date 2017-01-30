@@ -1,0 +1,367 @@
+<html>
+    <use
+        xlink:href="stuff"
+        xmlns:xlink="http://www.w3.org/1999/xlink"></use>
+    <!-- REMOVED CSS FROM TEMPLATE -->
+    <!-- REMOVED CSS FROM TEMPLATE -->
+    <label>
+        Location
+    </label>
+    <tg-col
+        tg-sm="12"
+        tg-md="::12"
+        tg-lg="::12"
+        tg-xl="12"></tg-col>
+    <tg-row
+        tg-sm="12"
+        tg-md="::12"
+        tg-lg="::12"
+        tg-xl="12"></tg-row>
+    <tg-mini-grid-pattern-item
+        tg-sm="12"
+        tg-md="::12"
+        tg-lg="::12"
+        tg-xl="12"></tg-mini-grid-pattern-item>
+    <tg-mini-grid-item
+        tg-sm="12"
+        tg-md="::12"
+        tg-lg="::12"
+        tg-xl="12"></tg-mini-grid-item>
+    <tg-text-input
+        ng-class2="{
+            'is-selected': $ctrl.isSelected()
+        }"
+        ng-class3="{
+            'o-some-class--peeking': $ctrl.index !== $index,
+            'o-some-class--visible': $ctrl.index === $index
+        }"
+        ng-init="$ctrl.init()"
+        ng-style="{
+            'background-image': 'url(' + $ctrl.img + ')'
+        }"
+        tg-clearable="::true"
+        tg-hide-label="::true"
+        tg-keydown="$ctrl.onKeyDown($event)"
+        tg-label="::'Title'"
+        tg-model="$ctrl.title"
+        tg-model-options="{
+            allowInvalid: true
+        }"
+        tg-nothing
+        tg-placeholder="::'Placeholder'"
+        tg-test="{
+            aaa: 'test'
+        }"
+        tg-trim="::false"
+        tg-validation="{
+            easy: 'test',
+            easy2: $ctrl.test,
+            easy3: 'test'+'test',
+            maxCharacters: {
+                message: 'Your title is too long. It must be ' + $ctrl.maxTitleLength + ' characters or less',
+                value: $ctrl.maxTitleLength.length.word
+            },
+            required: {
+                message: 'Please enter a title',
+                value: 'required'
+            }
+        }"
+        tg-validation2="{
+            maxCharacters: {
+                message: 'Your title is too long. It must be ' + $ctrl.maxTitleLength + ' characters or less',
+                value: $ctrl.maxTitleLength
+            },
+            required: {
+                message: 'Please enter a title',
+                value: 'required'
+            }
+        }">
+        <tg-button
+            tg-href="::'some.other.url.to.go.to' | toHref">
+            A URL
+        </tg-button>
+        <span>A</span><!-- prevent whitespace --><span>B</span>
+        <force-block>
+        </force-block>
+        <force-inline></force-inline>
+        <whitespace></whitespace>
+        <whitespace>
+            whitespace
+        </whitespace>
+        <whitespace>
+            whitespace</whitespace>
+        <whitespace>whitespace
+        </whitespace>
+        <no-whitespace>no-whitespace</no-whitespace>
+        <no-whitespace></no-whitespace>
+        <tg-card-details-body-title1>
+            {{ $ctrl.some.field }}
+        </tg-card-details-body-title1>
+        <tg-card-details-body-title2>{{$ctrl.some.field}}</tg-card-details-body-title2>
+        <!-- TODO -->
+        <!--
+            Multi line comment
+
+            comment2
+
+            comment3
+            comment4
+        -->
+        <!-- * inline comment [bla] -->
+    </tg-text-input>
+    <div
+        ng-class="{
+            'some-class-1': !$ctrl.disabled,
+            'some-other-class': ctrl.clickable
+        }"
+        ng-init="iconName = 'icon-name'"
+        ng-style="{
+            'height': $ctrl.someField
+        }">
+    </div>
+    <div
+        href
+        ng-class="{
+            'class': !ctrl.bool1 && ctrl.bool2,
+            'class-mod': !ctrl.bool1 && !ctrl.bool2,
+            'other__class class-mod2': ctrl.bool1
+        }"
+        ng-style="{
+            order: $index
+        }">
+    </div>
+    <div>
+        <small>
+            (<div>
+                Test
+            </div>)
+            (<div>
+                Test
+            </div>)
+            (
+            <div>
+                Test
+            </div>
+            )
+            (
+            <div>
+                Test
+            </div>
+            )
+            (<a>Test</a>)
+            (<a>
+                Test
+            </a>)
+            (
+            <a>Test</a>
+            )
+            (
+            <a>
+                Test
+            </a>
+            )
+            Please ensure
+            <a
+                href="some_link&435#sefsdfs"
+                target="_blank">this</a>
+            and
+            <a
+                href="another_link&fd#345345"
+                target="_blank">that</a>
+            are disabled.
+            <br>
+            Check out our
+            <a
+                href="#blaaa"
+                target="_blank">other page</a>.
+        </small>
+        <div>
+            Content with spaces     and
+
+            new lines
+        </div>
+        <span
+            ng-class="{
+                'class-awesome': $ctrl.value === 'Awesome!',
+                'class-good': $ctrl.value === 'Good',
+                'class-wicked': $ctrl.value === 'Wicked'
+            }"></span>
+        <div>
+            <div>
+                <div>
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <div>
+                                                    <div>
+                                                        <div>
+                                                            <div>
+                                                                <div>
+                                                                    <div>
+                                                                        <div>
+                                                                            <div>
+                                                                                <div>
+                                                                                    <div>
+                                                                                        <div>
+                                                                                            <div>
+                                                                                                <div>
+                                                                                                    <div>
+                                                                                                        <div>
+                                                                                                            <div>
+                                                                                                                <div>
+                                                                                                                    <div>
+                                                                                                                        <div>
+                                                                                                                            <div>
+                                                                                                                                <div>
+                                                                                                                                    <div>
+                                                                                                                                        <div>
+                                                                                                                                            <div>
+                                                                                                                                                <div>
+                                                                                                                                                    <div>
+                                                                                                                                                        <div>
+                                                                                                                                                            <div>
+                                                                                                                                                                <div>
+                                                                                                                                                                    <div>
+                                                                                                                                                                        <div>
+                                                                                                                                                                            <div>
+                                                                                                                                                                                <div>
+                                                                                                                                                                                    <div>
+                                                                                                                                                                                        <div>
+                                                                                                                                                                                            <div>
+                                                                                                                                                                                                <div>
+                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                            <div>
+                                                                                                                                                                                                                <div>
+                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                            <div>
+                                                                                                                                                                                                                                <div>
+                                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                                        <div>
+                                                                                                                                                                                                                                            <div>
+                                                                                                                                                                                                                                                <div>
+                                                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                                                        <tg-text-input
+                                                                                                                                                                                                                                                            tg-label="::'Length'"
+                                                                                                                                                                                                                                                            tg-model="$ctrl.length"
+                                                                                                                                                                                                                                                            tg-placeholder="::'cm'"
+                                                                                                                                                                                                                                                            tg-validation="{
+                                                                                                                                                                                                                                                                number: {
+                                                                                                                                                                                                                                                                    message: 'Please enter a number.'
+                                                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                                                numberMax: {
+                                                                                                                                                                                                                                                                    message: 'Enter a number between 1 - 1000.',
+                                                                                                                                                                                                                                                                    value: 1000
+                                                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                                                numberMin: {
+                                                                                                                                                                                                                                                                    message: 'Enter a number between 1 - 1000.',
+                                                                                                                                                                                                                                                                    value: 1
+                                                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                                                required: {
+                                                                                                                                                                                                                                                                    message: 'Please enter length.',
+                                                                                                                                                                                                                                                                    value: 'required'
+                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                            }">
+                                                                                                                                                                                                                                                        </tg-text-input>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            </div>
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                    </div>
+                                                                                                                                                                                </div>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </div>
+                                                                                                                                                                </div>
+                                                                                                                                                            </div>
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a
+        tg-simple="::''"></a>
+    <div
+        tg-simple="::''">
+    </div>
+    <div
+        tg-simple="">
+    </div>
+    <div
+        tg-simple="::'string'">
+    </div>
+    <div
+        tg-simple="::false">
+    </div>
+    <div
+        tg-simple="::123">
+    </div>
+    <div>
+    </div>
+    <div
+        tg-nothing>
+    </div>
+    <div
+        ng-init="testVar = 'hello world'; controller.showModal55 = false;">
+        <tg-modal
+            tg-show="controller.showModal55"
+            tg-size="::'wider'">
+        </tg-modal>
+    </div>
+    <div>
+        <!--
+            Internal
+            comment
+        -->
+    </div>
+</html>

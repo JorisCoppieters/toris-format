@@ -1,0 +1,69 @@
+<!-- reference view child -->
+<div
+    #divContainer>
+</div>
+<!-- property binding -->
+<p
+    [a]="'orange'"
+    my-directive>
+    Highlighted in orange
+</p>
+<p
+    [b]="true"
+    my-directive>
+    Highlighted in orange
+</p>
+<p
+    [c]="{
+        hello: 'world'
+    }"
+    my-directive>
+    Highlighted in orange
+</p>
+<p
+    [d]
+    my-directive>
+    Highlighted in orange
+</p>
+<p
+    [style.background]="'lime'">
+    I am green with envy!
+</p>
+<!-- event binding -->
+<button
+    (click)="playSong()">Play</button>
+<!-- two-way-binding -->
+<my-cool-component
+    [(ngModel)]="someStuff"></my-cool-component>
+<my-cool-component
+    [(ngModel)]></my-cool-component>
+<!-- asterisk directives: custom ones can be built -->
+<div
+    *ngIf="true">
+    True
+</div>
+<div
+    *ngFor="let a of [1, 2]">
+    {{ a }}
+</div>
+<div
+    *ngBla>
+    True
+</div>
+<div
+    *ngIf
+    #test
+    [(Test)]
+    (Test)
+    [Test]
+    a-custom
+    class
+    ng-class
+    tg-class>
+    Ordering test
+</div>
+<div
+    (window:resize)="lol()"
+    [@yolo]="swag.rofl">
+    Crazy stuff
+</div>
