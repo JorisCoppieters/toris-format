@@ -28,24 +28,24 @@
          <label>
              Location
          </label>
-         <tg-col tg-xl='12' tg-lg='::12' tg-sm="12" tg-md="::12"></tg-col>
-         <tg-row tg-xl='12' tg-lg='::12' tg-sm="12" tg-md="::12"></tg-row>
-         <tg-mini-grid-pattern-item tg-xl='12' tg-lg='::12' tg-sm="12" tg-md="::12"></tg-mini-grid-pattern-item>
-         <tg-mini-grid-item tg-xl='12' tg-lg='::12' tg-sm="12" tg-md="::12"></tg-mini-grid-item>
-        <tg-text-input
+         <div
+         my-aaaaa="last" my-a-b="second" my-z-b="first"></div>
+         <do-add-one-time-bindings my-a='12' my-b='::12' my-c="12" my-d="::12"></do-add-one-time-bindings>
+         <do-not-add-one-time-bindings my-a='12' my-b='::12' my-c="12" my-d="::12"></do-not-add-one-time-bindings>
+        <my-text-input
             ng-init="$ctrl.init()"
-            tg-clearable="::true"
-            tg-hide-label="::true"
-            tg-keydown="$ctrl.onKeyDown($event)"
-         tg-nothing
-            tg-label     =      "::'Title'"
-            tg-model="$ctrl.title"
-            tg-model-options="{
+            my-clearable="::true"
+            my-hide-label="::true"
+            my-keydown="$ctrl.onKeyDown($event)"
+         my-nothing
+            my-label     =      "::'Title'"
+            my-model="$ctrl.title"
+            my-model-options="{
                 allowInvalid: true
             }"
-            tg-placeholder="::'Placeholder'"
-            tg-trim="::false"
-              tg-test="{ aaa: 'test' }"
+            my-placeholder="::'Placeholder'"
+            my-trim="::false"
+              my-test="{ aaa: 'test' }"
             ng-class2="{
                 'is-selected': $ctrl.isSelected()
             }"
@@ -54,7 +54,7 @@
                 'o-some-class--peeking': $ctrl.index !== $index
             }"
             ng-style="{ 'background-image': 'url(' + $ctrl.img + ')' }"
-            tg-validation="{
+            my-validation="{
                 easy3:  'test'+'test',
                 easy2  : $ctrl.test,
                 maxCharacters: {
@@ -67,7 +67,7 @@
                 },
                 easy     : 'test'
             }"
-       tg-validation2="{
+       my-validation2="{
            maxCharacters: {
                message: 'Your title is too long. It must be ' + $ctrl.maxTitleLength + ' characters or less',
                value: $ctrl.maxTitleLength
@@ -78,10 +78,10 @@
            }
        }"
        >
-            <tg-button
-                tg-href="::'some.other.url.to.go.to' | toHref">
+            <my-button
+                my-href="::'some.other.url.to.go.to' | toHref">
                 A URL
-            </tg-button>
+            </my-button>
             <span>A</span><!-- prevent whitespace
             --><span>B</span>
             <force-block></force-block>
@@ -92,8 +92,8 @@
             <whitespace>whitespace </whitespace>
             <no-whitespace>no-whitespace</no-whitespace>
             <no-whitespace></no-whitespace>
-            <tg-card-details-body-title1> {{ $ctrl.some.field }} </tg-card-details-body-title1>
-            <tg-card-details-body-title2>{{$ctrl.some.field}}</tg-card-details-body-title2>
+            <my-card-details-body-title1> {{ $ctrl.some.field }} </my-card-details-body-title1>
+            <my-card-details-body-title2>{{$ctrl.some.field}}</my-card-details-body-title2>
 <!-- TODO -->
 <!-- Multi line comment
     
@@ -102,7 +102,7 @@
 comment3
   comment4 -->
 <!-- * inline comment [bla] -->
-        </tg-text-input>
+        </my-text-input>
 <div
     ng-init="iconName = 'icon-name'"
     ng-class="{
@@ -154,11 +154,11 @@ comment3
         <div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
         <div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
 
-                                                                                                                        <tg-text-input
-                                                                                                                            tg-label="::'Length'"
-                                                                                                                            tg-model="$ctrl.length"
-                                                                                                                            tg-placeholder="::'cm'"
-                                                                                                                            tg-validation="{
+                                                                                                                        <my-text-input
+                                                                                                                            my-label="::'Length'"
+                                                                                                                            my-model="$ctrl.length"
+                                                                                                                            my-placeholder="::'cm'"
+                                                                                                                            my-validation="{
                                                                                                                                 number: {
                                                                                                                                     message: 'Please enter a number.'
                                                                                                                                 },
@@ -176,41 +176,41 @@ comment3
                                                                                                                                 }
                                                                                                                             }">
 
-                                                                                                                        </tg-text-input>
+                                                                                                                        </my-text-input>
 
         </div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
         </div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
 
 </div>
 <a
-    tg-simple="''">
+    my-simple="''">
 </a>
 <div
-    tg-simple="''">
+    my-simple="''">
 </div>
 <div
-    tg-simple="">
+    my-simple="">
 </div>
 <div
-    tg-simple="'string'">
+    my-simple="'string'">
 </div>
 <div
-    tg-simple="false">
+    my-simple="false">
 </div>
 <div
-    tg-simple="123">
+    my-simple="123">
 </div>
 <div>
 </div>
 <div
-    tg-nothing>
+    my-nothing>
 </div>
 <div
     ng-init="testVar = 'hello world'; controller.showModal55 = false;">
-    <tg-modal
-        tg-show="controller.showModal55"
-        tg-size="::'wider'">
-    </tg-modal>
+    <my-modal
+        my-show="controller.showModal55"
+        my-size="::'wider'">
+    </my-modal>
 </div>
 <div>
   <!-- Internal

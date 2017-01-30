@@ -11,52 +11,7 @@ formatTest();
 
 // ******************************
 
-function setupTorisFormat () {
-    torisFormat.setup({
-        line_ending: '\r\n',
-        inline_elements: [],
-        block_elements: ['tg-icon'],
-        one_time_bound_element_prefixes: ['tg-', 'tm-'],
-        none_one_time_bound_elements: ['tg-row', 'tg-col', 'tg-mini-grid-pattern-item', 'tg-mini-grid-item'],
-        ng1_attributes_order: [
-            'ng-.*',
-            'tg-sm.*',
-            'tg-sd.*',
-            'tg-md.*',
-            'tg-mg.*',
-            'tg-lg.*',
-            'tg-ll.*',
-            'tg-xl.*',
-            'tg-.*',
-            'tm-.*'
-        ],
-        ng2_attributes_order: [
-            'ng-.*',
-            'tg-sm.*',
-            'tg-sd.*',
-            'tg-md.*',
-            'tg-mg.*',
-            'tg-lg.*',
-            'tg-ll.*',
-            'tg-xl.*',
-            'tg-.*',
-            'tm-.*'
-        ],
-        ng2_attributes_order_pre_native: [
-            '\\*.*',
-            '\\#.*',
-            '\\[\\(.*\\)\\]',
-            '\\(.*\\)',
-            '\\[.*\\]'
-        ],
-        remove_css: true
-    });
-}
-
-// ******************************
-
 function formatTest () {
-    setupTorisFormat();
     formatTestBase(function () {
         formatTestNG1();
         formatTestNG2();
@@ -70,6 +25,25 @@ function formatTestBase (cbSuccess) {
         line_ending: '\r\n',
         inline_elements: ['whitespace', 'force-inline'],
         block_elements: ['force-block'],
+        one_time_bound_element_prefixes: ['my-'],
+        none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
+        ng1_attributes_order: [
+            'my-z-.*',
+            'my-a-.*',
+            'my-.*'
+        ],
+        ng2_attributes_order: [
+            'my-z-.*',
+            'my-a-.*',
+            'my-.*'
+        ],
+        ng2_attributes_order_pre_native: [
+            '\\*.*',
+            '\\#.*',
+            '\\[\\(.*\\)\\]',
+            '\\(.*\\)',
+            '\\[.*\\]'
+        ],
         remove_css: true
     });
 
