@@ -4,7 +4,7 @@ Toris-Format is a tool for formatting HTML to the Angular 1 and Angular 2 standa
 
 ### Installation
 
-Warden requires [Node.js](https://nodejs.org/) v4+ to run.
+Toris-Format requires [Node.js](https://nodejs.org/) v4+ to run.
 
 Download and extract the [latest pre-built release](https://github.com/joemccann/dillinger/releases).
 
