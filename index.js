@@ -3,8 +3,20 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.0
+// TORIS FORMAT v1.4.1
 //
+// Version History:
+//
+// 1.4.1
+// - Fixed key regex for binding property
+// - Fixed key regex for binding two way property
+// - Fixed key regex for binding event
+// - Fixed key regex for binding custom directive
+// - Added <div> wrapping as fallback to HTML content with multiple parent nodes
+// - Added option to allow empty files
+//
+// 1.4.0
+// - Stable release
 //
 // ******************************
 
@@ -12,7 +24,7 @@
 // Constants:
 // ******************************
 
-const k_VERSION = '1.4.0';
+const k_VERSION = '1.4.1';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -79,6 +91,7 @@ function r_sq (in_re) { // RegEx: Single Quote
 // Globals:
 // ******************************
 
+// State:
 let g_ELEMENT_STACK = [];
 let g_CURRENT_ELEMENT = '';
 let g_CURRENT_ELEMENT_ATTRIBUTES = [];
@@ -88,25 +101,25 @@ let g_HTML_CONTENT = '';
 let g_HTML_INVALID = '';
 let g_HTML_LINE_NUMBER = 1;
 
+// Options:
+let g_ALLOW_EMPTY_FILES = false;
+let g_ANGULAR_VERSION = 1;
+let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+let g_NG1_ATTRIBUTES_ORDER = [];
+let g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+let g_NG2_ATTRIBUTES_ORDER = [];
+let g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
+let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
+let g_REMOVE_CSS = true;
+let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+// Options - Indenting:
 let g_INDENT_COUNT = 0;
 let g_INDENT = '    ';
 
-let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
-let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
-
-let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
-let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
-
-let g_NG1_ATTRIBUTES_ORDER = [];
-let g_NG2_ATTRIBUTES_ORDER = [];
-let g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-let g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-
-let g_REMOVE_CSS = true;
-
-let g_ANGULAR_VERSION = 1;
-
+// RegEx:
 let t_NL = '\n';
 let g_NL = '\r\n';
 let g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
@@ -126,35 +139,36 @@ function setup (in_config) {
     return;
   }
 
-  g_NL                     = get_setup_property(in_config, "line_ending", g_NL);
-  g_INDENT                 = get_setup_property(in_config, "indent", g_INDENT);
-  g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
-  g_REMOVE_CSS             = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+  g_ALLOW_EMPTY_FILES      = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
   g_ANGULAR_VERSION        = get_setup_property(in_config, "angular_version", g_ANGULAR_VERSION);
-
-  let inline_elements = get_setup_property(in_config, "inline_elements", []);
-  g_INLINE_ELEMENTS = g_INLINE_ELEMENTS.concat(inline_elements);
+  g_INDENT                 = get_setup_property(in_config, "indent", g_INDENT);
+  g_NL                     = get_setup_property(in_config, "line_ending", g_NL);
+  g_REMOVE_CSS             = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+  g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
 
   let block_elements = get_setup_property(in_config, "block_elements", []);
   g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS.concat(block_elements);
 
-  let one_time_bound_element_prefixes = get_setup_property(in_config, "one_time_bound_element_prefixes", []);
-  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES.concat(one_time_bound_element_prefixes);
-
-  let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
-  g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
+  let inline_elements = get_setup_property(in_config, "inline_elements", []);
+  g_INLINE_ELEMENTS = g_INLINE_ELEMENTS.concat(inline_elements);
 
   let ng1_attributes_order = get_setup_property(in_config, "ng1_attributes_order", []);
   g_NG1_ATTRIBUTES_ORDER = g_NG1_ATTRIBUTES_ORDER.concat(ng1_attributes_order);
 
-  let ng2_attributes_order = get_setup_property(in_config, "ng2_attributes_order", []);
-  g_NG2_ATTRIBUTES_ORDER = g_NG2_ATTRIBUTES_ORDER.concat(ng2_attributes_order);
-
   let ng1_attributes_order_pre_native = get_setup_property(in_config, "ng1_attributes_order_pre_native", []);
   g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng1_attributes_order_pre_native);
 
+  let ng2_attributes_order = get_setup_property(in_config, "ng2_attributes_order", []);
+  g_NG2_ATTRIBUTES_ORDER = g_NG2_ATTRIBUTES_ORDER.concat(ng2_attributes_order);
+
   let ng2_attributes_order_pre_native = get_setup_property(in_config, "ng2_attributes_order_pre_native", []);
   g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng2_attributes_order_pre_native);
+
+  let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
+  g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
+
+  let one_time_bound_element_prefixes = get_setup_property(in_config, "one_time_bound_element_prefixes", []);
+  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES.concat(one_time_bound_element_prefixes);
 }
 
 // ******************************
@@ -173,12 +187,15 @@ function get_setup_property (in_config, in_field, in_default_value) {
 // Functions:
 // ******************************
 
-function format_html_file (in_file_contents, in_indent_count) {
+function format_html_file (in_file_contents, in_indent_count, in_wrap_with_divs) {
   let result = false;
 
   do {
     let html_content = in_file_contents || '';
     if (html_content.trim().length === 0) {
+      if (g_ALLOW_EMPTY_FILES) {
+        return '';
+      }
       throw 'Empty file!';
     }
 
@@ -191,6 +208,10 @@ function format_html_file (in_file_contents, in_indent_count) {
     html_content = html_content.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
 
     if (!parse_html(html_content)) {
+      if (!in_wrap_with_divs) {
+        return format_html_file('<div>'+in_file_contents+'</div>', in_indent_count, true);
+      }
+
       throw 'Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ';
     }
 
@@ -198,6 +219,10 @@ function format_html_file (in_file_contents, in_indent_count) {
       let top_element = g_ELEMENT_STACK.pop();
       if (top_element === k_COMMENT_TOKEN) {
         continue;
+      }
+
+      if (!in_wrap_with_divs) {
+        return format_html_file('<div>'+in_file_contents+'</div>', in_indent_count, true);
       }
 
       throw 'HTML stack still contained element: ' + top_element;
@@ -518,19 +543,19 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
         break;
 
       case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
-        regExpString += r_v('\[' + '[@:a-zA-Z._]+' + '\]');
+        regExpString += r_v('\[' + '[@:a-zA-Z._-]+' + '\]');
         break;
 
       case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
-        regExpString += r_v('\[\\(' + '[@:a-zA-Z._]+' + '\\)\]');
+        regExpString += r_v('\[\\(' + '[@:a-zA-Z._-]+' + '\\)\]');
         break;
 
       case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
-        regExpString += r_v('\\(' + '[@:a-zA-Z._]+' + '\\)');
+        regExpString += r_v('\\(' + '[@:a-zA-Z._-]+' + '\\)');
         break;
 
       case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
-        regExpString += r_v('\\*' + '[@:a-zA-Z._]+');
+        regExpString += r_v('\\*' + '[@:a-zA-Z._-]+');
         break;
     }
 
