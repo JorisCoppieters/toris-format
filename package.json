@@ -13,7 +13,8 @@
     "url": "https://github.com/JorisCoppieters/toris-format/issues"
   },
   "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
-  "devDependencies": {
-    "bluebird": "^3.4.7"
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "color-print": "^1.0.0"
   }
 }

@@ -2,7 +2,7 @@
 
 var torisFormat = require('./index.js');
 var path = require('path');
-var print = require('./utilities/print');
+var cprint = require('color-print');
 var fileUtil = require('./utilities/file');
 
 // ******************************
@@ -98,44 +98,44 @@ function formatTestNG2 (cbSuccess) {
 
 function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTemplate) {
     try {
-        print.magenta('Testing ' + testName + ' formatting preformatted html outputs to formatted html');
+        cprint.magenta('Testing ' + testName + ' formatting preformatted html outputs to formatted html');
 
         var inputHtml = preformattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
-            print.green('Success!');
+            cprint.green('Success!');
         } else if (outputHtml) {
-            print.red('Unexpected HTML');
+            cprint.red('Unexpected HTML');
             fileUtil.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
             fileUtil.write('_formatTest_' + testName + '_output.txt', outputHtml);
             return;
         }
     } catch (err) {
-        print.red('Couldn\'t parse preformatted HTML template');
-        print.red(err);
+        cprint.red('Couldn\'t parse preformatted HTML template');
+        cprint.red(err);
     }
 
     try {
-        print.magenta('Testing ' + testName + ' formatting already formatted html still outputs to formatted html');
+        cprint.magenta('Testing ' + testName + ' formatting already formatted html still outputs to formatted html');
 
         var inputHtml = formattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
-            print.green('Success!');
+            cprint.green('Success!');
         } else if (outputHtml) {
-            print.red('Unexpected HTML');
+            cprint.red('Unexpected HTML');
             fileUtil.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
             fileUtil.write('_formatTest_' + testName + '_output.txt', outputHtml);
             return;
         }
 
     } catch (err) {
-        print.red('Couldn\'t parse preformatted HTML template');
-        print.red(err);
+        cprint.red('Couldn\'t parse preformatted HTML template');
+        cprint.red(err);
     }
 
     return true;

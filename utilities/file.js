@@ -13,7 +13,7 @@
 // ******************************
 
 var fs = require('fs');
-var print = require('./print');
+var cprint = require('color-print');
 var path = require('path');
 var Promise = require('bluebird');
 
@@ -36,8 +36,8 @@ function readFile (filePath, cbSuccess, cbError) {
     var file = path.resolve(process.cwd(), filePath);
     fs.readFile(file, 'utf8', function (error, data) {
         if (error) {
-            print.red('File does not exist: ' + file);
-            print.red('  ' + error);
+            cprint.red('File does not exist: ' + file);
+            cprint.red('  ' + error);
             if (cbError) {
                 cbError(error);
             }
@@ -55,8 +55,8 @@ function writeFile (filePath, fileContents, cbSuccess, cbError) {
     var file = path.resolve(process.cwd(), filePath);
     fs.writeFile(file, fileContents, 'utf8', function (error, data) {
         if (error) {
-            print.red('Could not write to file: ' + file);
-            print.red('  ' + error);
+            cprint.red('Could not write to file: ' + file);
+            cprint.red('  ' + error);
             if (cbError) {
                 cbError(error);
             }
