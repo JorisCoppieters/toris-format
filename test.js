@@ -3,7 +3,7 @@
 var torisFormat = require('./index.js');
 var path = require('path');
 var cprint = require('color-print');
-var fileUtil = require('./utilities/file');
+var fsp = require('fs-process');
 
 // ******************************
 
@@ -48,8 +48,8 @@ function formatTestBase (cbSuccess) {
     });
 
     // Test base style formatting
-    fileUtil.read(path.resolve(__dirname, './test/format-test-base-preformatted.html'), function (preformattedHtmlTemplate) {
-        fileUtil.read(path.resolve(__dirname, './test/format-test-base-formatted.html'), function (formattedHtmlTemplate) {
+    fsp.read(path.resolve(__dirname, './test/format-test-base-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-base-formatted.html'), function (formattedHtmlTemplate) {
             var testsPassed = formatTestFiles("base", preformattedHtmlTemplate, formattedHtmlTemplate);
             if (testsPassed && cbSuccess) {
                 cbSuccess();
@@ -66,8 +66,8 @@ function formatTestNG1 (cbSuccess) {
     });
 
     // Test NG1 style formatting
-    fileUtil.read(path.resolve(__dirname, './test/format-test-ng1-preformatted.html'), function (preformattedHtmlTemplate) {
-        fileUtil.read(path.resolve(__dirname, './test/format-test-ng1-formatted.html'), function (formattedHtmlTemplate) {
+    fsp.read(path.resolve(__dirname, './test/format-test-ng1-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-ng1-formatted.html'), function (formattedHtmlTemplate) {
             var testsPassed = formatTestFiles("NG1", preformattedHtmlTemplate, formattedHtmlTemplate);
             if (testsPassed && cbSuccess) {
                 cbSuccess();
@@ -84,8 +84,8 @@ function formatTestNG2 (cbSuccess) {
     });
 
     // Test NG2 style formatting
-    fileUtil.read(path.resolve(__dirname, './test/format-test-ng2-preformatted.html'), function (preformattedHtmlTemplate) {
-        fileUtil.read(path.resolve(__dirname, './test/format-test-ng2-formatted.html'), function (formattedHtmlTemplate) {
+    fsp.read(path.resolve(__dirname, './test/format-test-ng2-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-ng2-formatted.html'), function (formattedHtmlTemplate) {
             var testsPassed = formatTestFiles("NG2", preformattedHtmlTemplate, formattedHtmlTemplate);
             if (testsPassed && cbSuccess) {
                 cbSuccess();
@@ -108,8 +108,8 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
             cprint.green('Success!');
         } else if (outputHtml) {
             cprint.red('Unexpected HTML');
-            fileUtil.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
-            fileUtil.write('_formatTest_' + testName + '_output.txt', outputHtml);
+            fsp.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
+            fsp.write('_formatTest_' + testName + '_output.txt', outputHtml);
             return;
         }
     } catch (err) {
@@ -128,8 +128,8 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
             cprint.green('Success!');
         } else if (outputHtml) {
             cprint.red('Unexpected HTML');
-            fileUtil.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
-            fileUtil.write('_formatTest_' + testName + '_output.txt', outputHtml);
+            fsp.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
+            fsp.write('_formatTest_' + testName + '_output.txt', outputHtml);
             return;
         }
 
