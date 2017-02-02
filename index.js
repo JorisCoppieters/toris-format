@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.2
+// TORIS FORMAT v1.4.3
 //
 // Version History:
+//
+// 1.4.3
+// - Fixed config issue in get_setup_property
 //
 // 1.4.2
 // - Deprecated Config keys: NG1_ATTRIBUTES_ORDER, NG1_ATTRIBUTES_ORDER_PRE_NATIVE, NG2_ATTRIBUTES_ORDER, NG2_ATTRIBUTES_ORDER_PRE_NATIVE
@@ -33,7 +36,7 @@
 // Constants:
 // ******************************
 
-const k_VERSION = '1.4.1';
+const k_VERSION = '1.4.2';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -252,7 +255,7 @@ function get_setup_property (in_config, in_field, in_default_value) {
 
   if (Array.isArray(in_field)) {
     let valid_fields = in_field.filter((field) => {return typeof(in_config[field]) !== "undefined";});
-    if (!valid_fields) {
+    if (!valid_fields || !valid_fields.length) {
       return in_default_value;
     }
     let field = valid_fields[0];
