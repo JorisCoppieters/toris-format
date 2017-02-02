@@ -39,7 +39,7 @@
 // Constants:
 // ******************************
 
-const k_VERSION = '1.4.2';
+const k_VERSION = '1.4.4';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
