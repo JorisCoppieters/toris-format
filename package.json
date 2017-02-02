@@ -1,6 +1,6 @@
 {
   "name": "toris-format",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Formatting tool for HTML",
   "main": "index.js",
   "scripts": {

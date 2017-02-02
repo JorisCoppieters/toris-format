@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.3
+// TORIS FORMAT v1.4.4
 //
 // Version History:
+//
+// 1.4.4
+// - Added g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key
 //
 // 1.4.3
 // - Fixed config issue in get_setup_property
@@ -119,12 +122,13 @@ let g_HTML_LINE_NUMBER = 1;
 let g_ALLOW_EMPTY_FILES = false;
 let g_ANGULAR_VERSION = 1;
 let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
-let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = 2;
+let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = 3;
 let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
 let g_NG_ATTRIBUTES_ORDER = [];
 let g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
+let g_ORDER_MULTI_CLASSES_ALPHABETICALLY = false;
 let g_REMOVE_CSS = true;
 let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
@@ -163,6 +167,7 @@ function setup (in_config) {
   g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
   g_INDENT = get_setup_property(in_config, "indent", g_INDENT);
   g_NL = get_setup_property(in_config, "line_ending", g_NL);
+  g_ORDER_MULTI_CLASSES_ALPHABETICALLY = get_setup_property(in_config, "order_multi_classes_alphabetically", g_ORDER_MULTI_CLASSES_ALPHABETICALLY);
   g_REMOVE_CSS = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
   g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
 
@@ -1128,6 +1133,10 @@ function tabbed_attributes (in_attributes) {
         let vals = val.replace(new RegExp('[\\s]+', 'g'), ' ').split(' ');
 
         let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
+
+        if (g_ORDER_MULTI_CLASSES_ALPHABETICALLY) {
+          vals = vals.sort();
+        }
 
         if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
           val = t_NL + val_indent + vals.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
