@@ -3,9 +3,18 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.1
+// TORIS FORMAT v1.4.2
 //
 // Version History:
+//
+// 1.4.2
+// - Deprecated Config keys: NG1_ATTRIBUTES_ORDER, NG1_ATTRIBUTES_ORDER_PRE_NATIVE, NG2_ATTRIBUTES_ORDER, NG2_ATTRIBUTES_ORDER_PRE_NATIVE
+// - Added g_NG_ATTRIBUTES_ORDER, g_NG_ATTRIBUTES_ORDER_PRE_NATIVE and require angular_version to be set
+// - Added g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST opttion
+// - Fixed object binding values not being able to have '<' & '>' characters
+// - Split base test into NG1/non-NG1 tests
+// - Improved tests
+// - Some clean up
 //
 // 1.4.1
 // - Fixed key regex for binding property
@@ -28,6 +37,8 @@ const k_VERSION = '1.4.1';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
+
+const k_ATTRIBUTE_NAME_CLASS = "class";
 
 const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
@@ -101,23 +112,28 @@ let g_HTML_CONTENT = '';
 let g_HTML_INVALID = '';
 let g_HTML_LINE_NUMBER = 1;
 
-// Options:
+// Config:
 let g_ALLOW_EMPTY_FILES = false;
 let g_ANGULAR_VERSION = 1;
 let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = 2;
 let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
-let g_NG1_ATTRIBUTES_ORDER = [];
-let g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-let g_NG2_ATTRIBUTES_ORDER = [];
-let g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+let g_NG_ATTRIBUTES_ORDER = [];
+let g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
 let g_REMOVE_CSS = true;
 let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
-// Options - Indenting:
+// Config - Indenting:
 let g_INDENT_COUNT = 0;
 let g_INDENT = '    ';
+
+// Config - Deprecated
+let g__DEPRECATED__NG1_ATTRIBUTES_ORDER = [];
+let g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+let g__DEPRECATED__NG2_ATTRIBUTES_ORDER = [];
+let g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 
 // RegEx:
 let t_NL = '\n';
@@ -139,11 +155,12 @@ function setup (in_config) {
     return;
   }
 
-  g_ALLOW_EMPTY_FILES      = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
-  g_ANGULAR_VERSION        = get_setup_property(in_config, "angular_version", g_ANGULAR_VERSION);
-  g_INDENT                 = get_setup_property(in_config, "indent", g_INDENT);
-  g_NL                     = get_setup_property(in_config, "line_ending", g_NL);
-  g_REMOVE_CSS             = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+  g_ALLOW_EMPTY_FILES = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
+  g_ANGULAR_VERSION = get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
+  g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
+  g_INDENT = get_setup_property(in_config, "indent", g_INDENT);
+  g_NL = get_setup_property(in_config, "line_ending", g_NL);
+  g_REMOVE_CSS = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
   g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
 
   let block_elements = get_setup_property(in_config, "block_elements", []);
@@ -152,31 +169,96 @@ function setup (in_config) {
   let inline_elements = get_setup_property(in_config, "inline_elements", []);
   g_INLINE_ELEMENTS = g_INLINE_ELEMENTS.concat(inline_elements);
 
-  let ng1_attributes_order = get_setup_property(in_config, "ng1_attributes_order", []);
-  g_NG1_ATTRIBUTES_ORDER = g_NG1_ATTRIBUTES_ORDER.concat(ng1_attributes_order);
+  let ng_attributes_order = get_setup_property(in_config, "ng_attributes_order", []);
+  g_NG_ATTRIBUTES_ORDER = g_NG_ATTRIBUTES_ORDER.concat(ng_attributes_order);
 
-  let ng1_attributes_order_pre_native = get_setup_property(in_config, "ng1_attributes_order_pre_native", []);
-  g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng1_attributes_order_pre_native);
-
-  let ng2_attributes_order = get_setup_property(in_config, "ng2_attributes_order", []);
-  g_NG2_ATTRIBUTES_ORDER = g_NG2_ATTRIBUTES_ORDER.concat(ng2_attributes_order);
-
-  let ng2_attributes_order_pre_native = get_setup_property(in_config, "ng2_attributes_order_pre_native", []);
-  g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng2_attributes_order_pre_native);
+  let ng_attributes_order_pre_native = get_setup_property(in_config, "ng_attributes_order_pre_native", []);
+  g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng_attributes_order_pre_native);
 
   let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
   g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
 
   let one_time_bound_element_prefixes = get_setup_property(in_config, "one_time_bound_element_prefixes", []);
   g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES.concat(one_time_bound_element_prefixes);
+
+  // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
+  setup_attribute_ordering(in_config);
 }
 
 // ******************************
+
+// DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
+function setup_attribute_ordering(in_config) {
+  if (!in_config) {
+    return;
+  }
+
+  let has_old_attributes_order_configs = false;
+
+  if (get_setup_property(in_config, "ng1_attributes_order", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng1_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
+  }
+
+  if (get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng1_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
+  }
+
+  if (get_setup_property(in_config, "ng2_attributes_order", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng2_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
+  }
+
+  if (get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng2_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
+  }
+
+  if (g__DEPRECATED__NG1_ATTRIBUTES_ORDER
+      || g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE
+      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER
+      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE) {
+    has_old_attributes_order_configs = true;
+  }
+
+  if (!has_old_attributes_order_configs) {
+    return;
+  }
+
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+
+  let ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  let ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  let ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  let ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+
+  if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
+    g_NG_ATTRIBUTES_ORDER = ng2_attributes_order;
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng2_attributes_order_pre_native;
+  } else if (g_ANGULAR_VERSION < 2.0) {
+    g_NG_ATTRIBUTES_ORDER = ng1_attributes_order;
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng1_attributes_order_pre_native;
+  }
+}
 
 function get_setup_property (in_config, in_field, in_default_value) {
   if (!in_config) {
     return in_default_value;
   }
+
+  if (Array.isArray(in_field)) {
+    let valid_fields = in_field.filter((field) => {return typeof(in_config[field]) !== "undefined";});
+    if (!valid_fields) {
+      return in_default_value;
+    }
+    let field = valid_fields[0];
+    return in_config[field];
+  }
+
   if (typeof(in_config[in_field]) === "undefined") {
     return in_default_value;
   }
@@ -356,9 +438,10 @@ function parse_html_open_element_start (in_html_content) {
       break;
     }
 
-    let whitespace_before = !!(matches[1] || '').length;
-    let element = (matches[2] || '').trim();
-    let remaining = matches[3] || '';
+    matches.shift(); // First idx in match is the complete match string
+    let whitespace_before = !!(matches.shift() || '').length;
+    let element = (matches.shift() || '').trim();
+    let remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => |'+whitespace_before+'|'+element+'|'+remaining.substr(0,100)+'|------\n');
 
@@ -478,7 +561,6 @@ function parse_attribute (in_html_content, in_attribute_type) {
     }
 
     matches.shift(); // First idx in match is the complete match string
-
     let key = matches.shift() || '';
     let val;
     let already_one_time_bound;
@@ -586,7 +668,6 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
     }
 
     matches.shift(); // First idx in match is the complete match string
-
     let key = matches.shift() || '';
     let val;
 
@@ -635,8 +716,9 @@ function parse_html_open_element_end (in_html_content) {
       break;
     }
 
-    let self_closing_tag = matches[1] === '/';
-    let remaining = matches[2] || '';
+    matches.shift(); // First idx in match is the complete match string
+    let self_closing_tag = matches.shift() === '/';
+    let remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => |'+self_closing_tag+'|'+remaining.substr(0,100)+'|------\n');
 
@@ -701,9 +783,10 @@ function parse_html_close_element (in_html_content) {
       break;
     }
 
-    let whitespace_before = !!(matches[1] || '').length;
-    let element = (matches[2] || '').trim();
-    let remaining = matches[3] || '';
+    matches.shift(); // First idx in match is the complete match string
+    let whitespace_before = !!(matches.shift() || '').length;
+    let element = (matches.shift() || '').trim();
+    let remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => |'+whitespace_before+'|'+element+'|'+remaining.substr(0,100)+'|------\n');
 
@@ -790,9 +873,10 @@ function parse_content (in_html_content) {
       break;
     }
 
-    let whitespace_before = matches[1] || '';
-    let content = (matches[2] || '').trim();
-    let remaining = matches[3] || '';
+    matches.shift(); // First idx in match is the complete match string
+    let whitespace_before = matches.shift() || '';
+    let content = (matches.shift() || '').trim();
+    let remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content+'" => |'+whitespace_before+'|'+content+'|'+remaining+'|------\n');
 
@@ -847,9 +931,10 @@ function parse_comment (in_html_content) {
       break;
     }
 
-    let whitespace_before = !!(matches[1] || '').length;
-    let comment = (matches[2] || '').trim();
-    let remaining = matches[3];
+    matches.shift(); // First idx in match is the complete match string
+    let whitespace_before = !!(matches.shift() || '').length;
+    let comment = (matches.shift() || '').trim();
+    let remaining = matches.shift() || '';
 
     // let top_element = g_ELEMENT_STACK.length ? g_ELEMENT_STACK[g_ELEMENT_STACK.length - 1] : '';
     // if (!top_element) {
@@ -891,16 +976,24 @@ function parse_style (in_html_content) {
   let result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + g_REGEX_HTML_STYLE + r_W + r_v(r_AG) + '$', 'i'));
+    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_HTML_STYLE + r_v(r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
-    let css = (matches[1] || '').trim();
-    let remaining = (matches[2] || '').trim();
+    matches.shift(); // First idx in match is the complete match string
+    let whitespace_before = !!(matches.shift() || '').length;
+    let css = (matches.shift() || '').trim();
+    let remaining = matches.shift() || '';
+
+    // console.log('"'+in_html_content+'" => |'+whitespace_before+'|'+css+'|'+remaining+'|------\n');
 
     if (g_REMOVE_CSS) {
-      g_HTML_CONTENT += t_NL + get_indent() + '<!-- REMOVED CSS FROM TEMPLATE -->';
+      if (g_HTML_CONTENT.length > 0 && whitespace_before)
+        g_HTML_CONTENT += t_NL + get_indent();
+
+      g_HTML_CONTENT += '<!-- REMOVED CSS FROM TEMPLATE -->';
+      g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
       result = remaining;
       break;
     }
@@ -951,28 +1044,14 @@ function tabbed_attributes (in_attributes) {
     attribute_keys.sort();
 
     let attributes_order_pre_native = [];
-
-    if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
-      g_NG2_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
-        attributes_order_pre_native.push('^' + attribute + '$');
-      })
-    } else if (g_ANGULAR_VERSION < 2.0) {
-      g_NG1_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
-        attributes_order_pre_native.push('^' + attribute + '$');
-      })
-    }
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
+      attributes_order_pre_native.push('^' + attribute + '$');
+    })
 
     let attributes_order_post_native = [];
-
-    if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
-      g_NG2_ATTRIBUTES_ORDER.forEach((attribute) => {
-        attributes_order_post_native.push('^' + attribute + '$');
-      })
-    } else if (g_ANGULAR_VERSION < 2.0) {
-      g_NG1_ATTRIBUTES_ORDER.forEach((attribute) => {
-        attributes_order_post_native.push('^' + attribute + '$');
-      })
-    }
+    g_NG_ATTRIBUTES_ORDER.forEach((attribute) => {
+      attributes_order_post_native.push('^' + attribute + '$');
+    })
 
     let sorted_attribute_keys = [];
 
@@ -1042,6 +1121,18 @@ function tabbed_attributes (in_attributes) {
         }
       }
 
+      if (key === k_ATTRIBUTE_NAME_CLASS) {
+        let vals = val.replace(new RegExp('[\\s]+', 'g'), ' ').split(' ');
+
+        let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
+
+        if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
+          val = t_NL + val_indent + vals.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
+        } else {
+          val = vals.filter((val) => {return val.trim().length}).join(' ');
+        }
+      }
+
       result += t_NL + indent + key + '="' + val + '"';
     });
   }
@@ -1063,11 +1154,12 @@ function parse_attribute_object (in_val) {
 
     let indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
 
+    matches.shift(); // First idx in match is the complete match string
     let struct_attributes = [];
-    let binding = matches[1] || '';
-    let structure = matches[2] || '';
+    let binding = matches.shift() || '';
+    let structure = matches.shift() || '';
 
-    let re_val = '[!$A-Z0-9.;\(\)\'" +_-]+';
+    let re_val = '[!$A-Z0-9.;\(\)\'" <>+_-]+';
     let re_key = '\'?[$A-Z0-9 _-]+\'?';
 
     let re_num_val = '[0-9]+';
@@ -1100,14 +1192,18 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         // console.log('"'+structure+'" => |==|'+matches.slice(2, 4).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[2] || '').trim();
-        struct_attribute_val = (matches[3] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        let previous = (matches.shift() || '');
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
+        let next = (matches.shift() || '');
+
         inc_indent(1);
         struct_attribute_val = parse_attribute_object(struct_attribute_val);
         inc_indent(-1);
 
         struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (matches[1] + ' ' + matches[matches.length - 1]).trim();
+        structure = (previous + ' ' + next).trim();
         match = true;
         continue;
       }
@@ -1116,8 +1212,10 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         // console.log('"'+structure+'" => |==|'+matches.slice(1,3).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[1] || '').trim();
-        struct_attribute_val = (matches[2] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
+
         inc_indent(1);
         struct_attribute_val = parse_attribute_object(struct_attribute_val);
         inc_indent(-1);
@@ -1132,11 +1230,14 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         // console.log('"'+structure+'" => |==|'+matches.slice(2, 4).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[2] || '').trim();
-        struct_attribute_val = (matches[3] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        let previous = (matches.shift() || '');
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
+        let next = (matches.shift() || '');
 
         struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (matches[1] + ' ' + matches[matches.length - 1]).trim();
+        structure = (previous + ' ' + next).trim();
         match = true;
         continue;
       }
@@ -1145,11 +1246,14 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         //console.log('|==|'+matches.slice(2).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[2] || '').trim();
-        struct_attribute_val = (matches[3] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        let previous = (matches.shift() || '');
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
+        let next = (matches.shift() || '');
 
         struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (matches[1] + ' ' + matches[matches.length - 1]).trim();
+        structure = (previous + ' ' + next).trim();
         match = true;
         continue;
       }
@@ -1158,8 +1262,9 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         //console.log('"'+structure+'" => |==|'+matches.slice(1).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[1] || '').trim();
-        struct_attribute_val = (matches[2] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
 
         struct_attributes[struct_attribute_key] = struct_attribute_val;
         structure = '';
@@ -1171,8 +1276,9 @@ function parse_attribute_object (in_val) {
       if (matches = structure.match(re)) {
         //console.log('"'+structure+'" => |==|'+matches.slice(1).join('|==|')+'|==|------\n');
 
-        struct_attribute_key = (matches[1] || '').trim();
-        struct_attribute_val = (matches[2] || '').trim();
+        matches.shift(); // First idx in match is the complete match string
+        struct_attribute_key = (matches.shift() || '').trim();
+        struct_attribute_val = (matches.shift() || '').trim();
 
         struct_attributes[struct_attribute_key] = struct_attribute_val;
         structure = '';

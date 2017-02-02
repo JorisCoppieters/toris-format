@@ -27,23 +27,6 @@ function formatTestBase (cbSuccess) {
         block_elements: ['force-block'],
         one_time_bound_element_prefixes: ['my-'],
         none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
-        ng1_attributes_order: [
-            'my-z-.*',
-            'my-a-.*',
-            'my-.*'
-        ],
-        ng2_attributes_order: [
-            'my-z-.*',
-            'my-a-.*',
-            'my-.*'
-        ],
-        ng2_attributes_order_pre_native: [
-            '\\*.*',
-            '\\#.*',
-            '\\[\\(.*\\)\\]',
-            '\\(.*\\)',
-            '\\[.*\\]'
-        ],
         remove_css: true
     });
 
@@ -62,7 +45,12 @@ function formatTestBase (cbSuccess) {
 
 function formatTestNG1 (cbSuccess) {
     torisFormat.setup({
-        angular_version: 1.0
+        ng_version: 1.4,
+        ng_attributes_order: [
+            'my-z-.*',
+            'my-a-.*',
+            'my-.*'
+        ]
     });
 
     // Test NG1 style formatting
@@ -80,7 +68,14 @@ function formatTestNG1 (cbSuccess) {
 
 function formatTestNG2 (cbSuccess) {
     torisFormat.setup({
-        angular_version: 2.0
+        ng_version: 2.0,
+        ng_attributes_order_pre_native: [
+            '\\*.*',
+            '\\#.*',
+            '\\[\\(.*\\)\\]',
+            '\\(.*\\)',
+            '\\[.*\\]'
+        ],
     });
 
     // Test NG2 style formatting
