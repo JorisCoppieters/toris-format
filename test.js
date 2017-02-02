@@ -29,6 +29,9 @@ function formatTestBase (cbSuccess) {
         none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
         format_multi_classes_with_at_least: 1,
         order_multi_classes_alphabetically: true,
+        multi_classes_order: [
+            'z-.*'
+        ],
         remove_css: true
     });
 

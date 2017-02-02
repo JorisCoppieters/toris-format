@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.4
+// TORIS FORMAT v1.4.5
 //
 // Version History:
+//
+// 1.4.5
+// - Replaced g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key with g_MULTI_CLASSES_ORDER
 //
 // 1.4.4
 // - Added g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key
@@ -39,7 +42,7 @@
 // Constants:
 // ******************************
 
-const k_VERSION = '1.4.4';
+const k_VERSION = '1.4.5';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -118,19 +121,25 @@ let g_HTML_CONTENT = '';
 let g_HTML_INVALID = '';
 let g_HTML_LINE_NUMBER = 1;
 
+// Config - Base:
+let g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+let g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+let g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
+let g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
 // Config:
 let g_ALLOW_EMPTY_FILES = false;
 let g_ANGULAR_VERSION = 1;
-let g_BLOCK_ELEMENTS = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+let g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
 let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = 3;
-let g_INLINE_ELEMENTS = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+let g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
+let g_MULTI_CLASSES_ORDER = [];
 let g_NG_ATTRIBUTES_ORDER = [];
 let g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
-let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = ['ng-'];
-let g_ORDER_MULTI_CLASSES_ALPHABETICALLY = false;
+let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
 let g_REMOVE_CSS = true;
-let g_SELF_CLOSING_HTML_TAGS = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+let g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
 
 // Config - Indenting:
 let g_INDENT_COUNT = 0;
@@ -164,30 +173,18 @@ function setup (in_config) {
 
   g_ALLOW_EMPTY_FILES = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
   g_ANGULAR_VERSION = get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
+  g_BLOCK_ELEMENTS = get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
   g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
   g_INDENT = get_setup_property(in_config, "indent", g_INDENT);
+  g_INLINE_ELEMENTS = get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
+  g_MULTI_CLASSES_ORDER = get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
+  g_NG_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
+  g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
   g_NL = get_setup_property(in_config, "line_ending", g_NL);
-  g_ORDER_MULTI_CLASSES_ALPHABETICALLY = get_setup_property(in_config, "order_multi_classes_alphabetically", g_ORDER_MULTI_CLASSES_ALPHABETICALLY);
+  g_NONE_ONE_TIME_BOUND_ELEMENTS = get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
+  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
   g_REMOVE_CSS = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
-  g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS);
-
-  let block_elements = get_setup_property(in_config, "block_elements", []);
-  g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS.concat(block_elements);
-
-  let inline_elements = get_setup_property(in_config, "inline_elements", []);
-  g_INLINE_ELEMENTS = g_INLINE_ELEMENTS.concat(inline_elements);
-
-  let ng_attributes_order = get_setup_property(in_config, "ng_attributes_order", []);
-  g_NG_ATTRIBUTES_ORDER = g_NG_ATTRIBUTES_ORDER.concat(ng_attributes_order);
-
-  let ng_attributes_order_pre_native = get_setup_property(in_config, "ng_attributes_order_pre_native", []);
-  g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(ng_attributes_order_pre_native);
-
-  let none_one_time_bound_elements = get_setup_property(in_config, "none_one_time_bound_elements", []);
-  g_NONE_ONE_TIME_BOUND_ELEMENTS = g_NONE_ONE_TIME_BOUND_ELEMENTS.concat(none_one_time_bound_elements);
-
-  let one_time_bound_element_prefixes = get_setup_property(in_config, "one_time_bound_element_prefixes", []);
-  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES.concat(one_time_bound_element_prefixes);
+  g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
 
   // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
   setup_attribute_ordering(in_config);
@@ -253,7 +250,7 @@ function setup_attribute_ordering(in_config) {
   }
 }
 
-function get_setup_property (in_config, in_field, in_default_value) {
+function get_setup_property (in_config, in_field, in_default_value, in_base_value) {
   if (!in_config) {
     return in_default_value;
   }
@@ -270,7 +267,13 @@ function get_setup_property (in_config, in_field, in_default_value) {
   if (typeof(in_config[in_field]) === "undefined") {
     return in_default_value;
   }
-  return in_config[in_field];
+  let val = in_config[in_field];
+
+  if (Array.isArray(in_base_value) && Array.isArray(val)) {
+    val = in_base_value.concat(val);
+  }
+
+  return val;
 }
 
 // ******************************
@@ -1134,8 +1137,8 @@ function tabbed_attributes (in_attributes) {
 
         let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
 
-        if (g_ORDER_MULTI_CLASSES_ALPHABETICALLY) {
-          vals = vals.sort();
+        if (g_MULTI_CLASSES_ORDER) {
+          vals = sort_classes(vals);
         }
 
         if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
@@ -1149,6 +1152,54 @@ function tabbed_attributes (in_attributes) {
     });
   }
   while (false);
+
+  return result;
+}
+
+// ******************************
+
+function sort_classes (in_class_names) {
+  var result = false;
+
+  do {
+
+    let class_names = in_class_names.sort();
+    let sorted_class_names = [];
+
+    g_MULTI_CLASSES_ORDER.forEach((class_order_regexp) => {
+      class_names.forEach((class_name) => {
+        if (!class_name.match(new RegExp(class_order_regexp))) {
+          return;
+        }
+
+        if (sorted_class_names.indexOf(class_name) >= 0) {
+          return;
+        }
+
+        sorted_class_names.push(class_name);
+      });
+    });
+
+    class_names.forEach((class_name) => {
+      let class_order_regexp_match = g_MULTI_CLASSES_ORDER.filter((class_order_regexp) => {
+        let matches = class_name.match(new RegExp(class_order_regexp));
+        return matches && matches.length;
+      });
+
+      if (class_order_regexp_match.length) {
+        return;
+      }
+
+      if (sorted_class_names.indexOf(class_name) >= 0) {
+        return;
+      }
+
+      sorted_class_names.push(class_name);
+    });
+
+    result = sorted_class_names;
+  }
+  while ( false );
 
   return result;
 }
