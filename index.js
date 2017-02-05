@@ -794,7 +794,7 @@ function parse_html_open_element_end (in_html_content) {
             }
           }
         } else {
-          if (whitespace_before.match(/^ +$/)) {
+          if (g_CURRENT_ELEMENT_WHITESPACE_BEFORE.match(/^ +$/)) {
             indent = ' ';
           } else {
             indent = t_NL + get_indent();
