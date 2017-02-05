@@ -3,6 +3,7 @@
 var torisFormat = require('./index.js');
 var path = require('path');
 var cprint = require('color-print');
+var fs = require('fs');
 var fsp = require('fs-process');
 
 // ******************************
@@ -103,13 +104,18 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
         var inputHtml = preformattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
+        var test1_expectedOutputHtmlFile = '_formatTest_' + testName + '_expectedOutput.txt';
+        var test1_outputHtmlFile = '_formatTest_' + testName + '_output.txt';
+
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
             cprint.green('Success!');
+            fs.exists(test1_expectedOutputHtmlFile, (exists) => { if (exists) { fsp.remove(test1_expectedOutputHtmlFile); } } );
+            fs.exists(test1_outputHtmlFile, (exists) => { if (exists) { fsp.remove(test1_outputHtmlFile); } } );
         } else if (outputHtml) {
             cprint.red('Unexpected HTML');
-            fsp.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
-            fsp.write('_formatTest_' + testName + '_output.txt', outputHtml);
+            fsp.write(test1_expectedOutputHtmlFile, expectedOutputHtml);
+            fsp.write(test1_outputHtmlFile, outputHtml);
             return;
         }
     } catch (err) {
@@ -123,13 +129,18 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
         var inputHtml = formattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
+        var test2_expectedOutputHtmlFile = '_alreadyFormattedTest_' + testName + '_expectedOutput.txt';
+        var test2_outputHtmlFile = '_alreadyFormattedTest_' + testName + '_output.txt';
+
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
             cprint.green('Success!');
+            fs.exists(test2_expectedOutputHtmlFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputHtmlFile); } } );
+            fs.exists(test2_outputHtmlFile, (exists) => { if (exists) { fsp.remove(test2_outputHtmlFile); } } );
         } else if (outputHtml) {
             cprint.red('Unexpected HTML');
-            fsp.write('_formatTest_' + testName + '_expectedOutput.txt', expectedOutputHtml);
-            fsp.write('_formatTest_' + testName + '_output.txt', outputHtml);
+            fsp.write(test2_expectedOutputHtmlFile, expectedOutputHtml);
+            fsp.write(test2_outputHtmlFile, outputHtml);
             return;
         }
 

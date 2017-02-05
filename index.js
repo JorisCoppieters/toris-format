@@ -3,9 +3,13 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.4.5
+// TORIS FORMAT v1.5.0
 //
 // Version History:
+//
+// 1.5.0
+// - Refactored attribute value object parsing
+// - Fixed bug with object values not being able to contain commas
 //
 // 1.4.5
 // - Replaced g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key with g_MULTI_CLASSES_ORDER
@@ -42,15 +46,20 @@
 // Constants:
 // ******************************
 
-const k_VERSION = '1.4.5';
+const k_VERSION = '1.4.6';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
 
 const k_ATTRIBUTE_NAME_CLASS = "class";
 
+const k_ATTRIBUTE_TYPE_VALUE_BOOLEAN = '[ATTRIBUTE_TYPE_VALUE_BOOLEAN]';
+const k_ATTRIBUTE_TYPE_VALUE_NUMERIC = '[ATTRIBUTE_TYPE_VALUE_NUMERIC]';
+const k_ATTRIBUTE_TYPE_VALUE_CONDITIONAL = '[ATTRIBUTE_TYPE_VALUE_CONDITIONAL]';
+const k_ATTRIBUTE_TYPE_VALUE_BLOCK = '[ATTRIBUTE_TYPE_VALUE_BLOCK]';
 const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
+const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR]';
 const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
 const k_ATTRIBUTE_TYPE_NO_VALUE = '[ATTRIBUTE_TYPE_NO_VALUE]';
 
@@ -115,6 +124,8 @@ function r_sq (in_re) { // RegEx: Single Quote
 let g_ELEMENT_STACK = [];
 let g_CURRENT_ELEMENT = '';
 let g_CURRENT_ELEMENT_ATTRIBUTES = [];
+let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
+let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
 let g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
 
 let g_HTML_CONTENT = '';
@@ -191,8 +202,8 @@ function setup (in_config) {
 }
 
 // ******************************
-
 // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
+// ******************************
 function setup_attribute_ordering(in_config) {
   if (!in_config) {
     return;
@@ -249,6 +260,8 @@ function setup_attribute_ordering(in_config) {
     g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng1_attributes_order_pre_native;
   }
 }
+
+// ******************************
 
 function get_setup_property (in_config, in_field, in_default_value, in_base_value) {
   if (!in_config) {
@@ -356,10 +369,10 @@ function parse_html (in_html_content) {
   let parse_run = 0;
   let max_parse_runs = 5000;
 
-  try {
+  // try {
 
     let parsed = true;
-    while(parsed) {
+    while (parsed) {
       parsed = false;
       parse_run++;
 
@@ -386,10 +399,10 @@ function parse_html (in_html_content) {
       }
     }
 
-  } catch (err) {
-    g_HTML_INVALID = html_content.substr(0, 200);
-    throw('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
-  }
+  // } catch (err) {
+  //   g_HTML_INVALID = html_content.substr(0, 200);
+  //   throw('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
+  // }
 
   return result;
 }
@@ -454,7 +467,7 @@ function parse_html_open_element_start (in_html_content) {
     let element = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+whitespace_before+'|'+element+'|'+remaining.substr(0,100)+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+element+'~~~'+remaining.substr(0,100)+'|------\n');
 
     g_CURRENT_ELEMENT = element;
     g_CURRENT_ELEMENT_ATTRIBUTES = [];
@@ -511,7 +524,7 @@ function parse_html_open_element_attributes (in_html_content) {
   }
 
   let parsed = true;
-  while(parsed) {
+  while (parsed) {
     parsed = false;
 
     if (html_content.trim().length === 0) {
@@ -612,7 +625,7 @@ function parse_attribute (in_html_content, in_attribute_type) {
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+regExpString+'|'+key+'|'+already_one_time_bound+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+regExpString+'~~~'+key+'~~~'+already_one_time_bound+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
     result = remaining;
 
@@ -693,6 +706,7 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
         } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
           val = 'false';
         }
+
         break;
 
       case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
@@ -707,7 +721,7 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+key+'|'+val+'|'+remaining.substr(0,100)+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+key+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
     result = remaining;
 
@@ -731,7 +745,7 @@ function parse_html_open_element_end (in_html_content) {
     let self_closing_tag = matches.shift() === '/';
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+self_closing_tag+'|'+remaining.substr(0,100)+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+self_closing_tag+'~~~'+remaining.substr(0,100)+'|------\n');
 
     let space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE;
     let had_content = false;
@@ -743,14 +757,14 @@ function parse_html_open_element_end (in_html_content) {
 
     if (self_closing_tag) {
       if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
-        output = '<' + g_CURRENT_ELEMENT + tabbed_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
+        output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
         indent = t_NL + get_indent();
       } else {
         throw('Not a self closing HTML tag: ' + g_CURRENT_ELEMENT);
       }
 
     } else if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
-      output = '<' + g_CURRENT_ELEMENT + tabbed_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
+      output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
       indent = t_NL + get_indent();
 
     } else {
@@ -758,7 +772,7 @@ function parse_html_open_element_end (in_html_content) {
       had_content = (previous_element === k_CONTENT_TOKEN);
       had_comment = (previous_element === k_COMMENT_TOKEN);
 
-      output = '<' + g_CURRENT_ELEMENT + tabbed_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
+      output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
 
       if (!had_content && !had_comment) {
         indent = t_NL + get_indent();
@@ -785,6 +799,447 @@ function parse_html_open_element_end (in_html_content) {
 
 // ******************************
 
+function sort_attributes (in_attributes) {
+  let result = '';
+
+  do {
+    if (!in_attributes) {
+      break;
+    }
+
+    let attribute_keys = Object.keys(in_attributes);
+    attribute_keys.sort();
+
+    let attributes_order_pre_native = [];
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
+      attributes_order_pre_native.push('^' + attribute + '$');
+    })
+
+    let attributes_order_post_native = [];
+    g_NG_ATTRIBUTES_ORDER.forEach((attribute) => {
+      attributes_order_post_native.push('^' + attribute + '$');
+    })
+
+    let sorted_attribute_keys = [];
+
+    attributes_order_pre_native.forEach((special_order) => {
+      attribute_keys.forEach((key) => {
+        if (!key.match(new RegExp(special_order))) {
+          return;
+        }
+
+        if (sorted_attribute_keys.indexOf(key) >= 0) {
+          return;
+        }
+
+        sorted_attribute_keys.push(key);
+      });
+    });
+
+    attribute_keys.forEach((key) => {
+      let special_order_match = attributes_order_post_native.filter((special_order) => {
+        let matches = key.match(new RegExp(special_order));
+        return matches && matches.length;
+      });
+
+      if (special_order_match.length) {
+        return;
+      }
+
+      if (sorted_attribute_keys.indexOf(key) >= 0) {
+        return;
+      }
+
+      sorted_attribute_keys.push(key);
+    });
+
+    attributes_order_post_native.forEach((special_order) => {
+      attribute_keys.forEach((key) => {
+        if (!key.match(new RegExp(special_order))) {
+          return;
+        }
+
+        if (sorted_attribute_keys.indexOf(key) >= 0) {
+          return;
+        }
+
+        sorted_attribute_keys.push(key);
+      });
+    });
+
+    let indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
+
+    sorted_attribute_keys.forEach((key) => {
+
+      let val = in_attributes[key];
+      val = val.replace(/[\s]+/, ' ');
+
+      if (val === k_NO_VALUE_TOKEN) {
+        result += t_NL + indent + key;
+        return;
+      }
+
+      let inline_variable = val.match(new RegExp('^(\:\:)?\{\{' + r_v(r_A) + '\}\}$', 'i'));
+      if (!inline_variable) {
+
+        let inline_block = val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i'));
+        if (inline_block) {
+          let attribute_block_object_parse_result = parse_attribute_block_content(val);
+          let binding = attribute_block_object_parse_result.binding;
+          let attribute_block_object = attribute_block_object_parse_result.object;
+          val = attribute_block_object_to_string(binding, attribute_block_object);
+        }
+      }
+
+      if (key === k_ATTRIBUTE_NAME_CLASS) {
+        let vals = val.replace(new RegExp('[\\s]+', 'g'), ' ').split(' ');
+
+        let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
+
+        if (g_MULTI_CLASSES_ORDER) {
+          vals = sort_classes(vals);
+        }
+
+        if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
+          val = t_NL + val_indent + vals.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
+        } else {
+          val = vals.filter((val) => {return val.trim().length}).join(' ');
+        }
+      }
+
+      result += t_NL + indent + key + '="' + val + '"';
+    });
+  }
+  while (false);
+
+  return result;
+}
+
+// ******************************
+
+function sort_classes (in_class_names) {
+  var result = false;
+
+  do {
+
+    let class_names = in_class_names.sort();
+    let sorted_class_names = [];
+
+    g_MULTI_CLASSES_ORDER.forEach((class_order_regexp) => {
+      class_names.forEach((class_name) => {
+        if (!class_name.match(new RegExp(class_order_regexp))) {
+          return;
+        }
+
+        if (sorted_class_names.indexOf(class_name) >= 0) {
+          return;
+        }
+
+        sorted_class_names.push(class_name);
+      });
+    });
+
+    class_names.forEach((class_name) => {
+      let class_order_regexp_match = g_MULTI_CLASSES_ORDER.filter((class_order_regexp) => {
+        let matches = class_name.match(new RegExp(class_order_regexp));
+        return matches && matches.length;
+      });
+
+      if (class_order_regexp_match.length) {
+        return;
+      }
+
+      if (sorted_class_names.indexOf(class_name) >= 0) {
+        return;
+      }
+
+      sorted_class_names.push(class_name);
+    });
+
+    result = sorted_class_names;
+  }
+  while ( false );
+
+  return result;
+}
+
+// ******************************
+
+function parse_attribute_block_content (in_attribute_block_content) {
+  let result = false;
+
+  do {
+    let matches;
+    if (!(matches = in_attribute_block_content.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i')))) {
+      break;
+    }
+
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
+
+    matches.shift(); // First idx in match is the complete match string
+    let binding = matches.shift() || '';
+    let attribute_block_content = matches.shift() || '';
+    let attribute_block_content_remaining = attribute_block_content;
+
+    while (true) {
+      let remaining = parse_attribute_block_content_entry(attribute_block_content_remaining);
+      if (remaining === false) {
+        break;
+      }
+      attribute_block_content_remaining = remaining;
+
+      remaining = parse_attribute_block_content_comma(attribute_block_content_remaining)
+      if (remaining === false) {
+        break;
+      }
+      attribute_block_content_remaining = remaining;
+    }
+
+    if (attribute_block_content_remaining) {
+      throw 'Cannot parse attribute object: ' + attribute_block_content.substr(0, 100).trim() + '...\nat ' + attribute_block_content_remaining.substr(0, 100).trim() + '...';
+    }
+
+    result = {
+      binding,
+      object: g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT
+    };
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
+
+  }
+  while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_attribute_block_content_comma (in_attribute_block_content) {
+  let result = false;
+
+  do {
+    let attribute_block_content = in_attribute_block_content || '';
+
+    let matches;
+    if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + ',' + r_W + r_v(r_AG) + '$', 'i')))) {
+      break;
+    }
+
+    matches.shift(); // First idx in match is the complete match string
+    let remaining = matches.shift() || '';
+
+    // console.log('[COMMA]"'+attribute_block_content.substr(0,100)+'" => ~~~'+','+'~~~'+remaining.substr(0,100)+'|------\n');
+
+    result = remaining;
+
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_attribute_block_content_entry (in_attribute_block_content) {
+  let result = false;
+
+  do {
+    let attribute_block_content = in_attribute_block_content || '';
+
+    let matches;
+    if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + r_v('\'?[$A-Za-z0-9 _-]+\'?') + r_W + ':' + r_W + r_v(r_AG) + '$', 'i')))) {
+      break;
+    }
+
+    matches.shift(); // First idx in match is the complete match string
+    let key = matches.shift() || '';
+    let val = matches.shift() || '';
+
+    key = key.trim();
+
+    // console.log('[KEY]"'+attribute_block_content.substr(0,100)+'" => ~~~'+key+'|------\n');
+
+    result = parse_attribute_block_content_entry_key_value_pair(key, val);
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_aggregate) {
+  let result = false;
+
+  do {
+    let key = in_attribute_block_content_entry_key || '';
+    let val = in_attribute_block_content_entry_value || '';
+
+    let functions = [
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN); },
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_NUMERIC); },
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR); },
+      function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK); },
+    ];
+
+    let matched_value = false;
+    functions.forEach(function(fn) {
+      if (matched_value) {
+        return;
+      }
+      let remaining = fn(key, val);
+      if (remaining !== false) {
+        val = remaining;
+        matched_value = true;
+      }
+    });
+
+    if (!matched_value) {
+      break;
+    }
+
+    result = val;
+
+    if (in_aggregate) {
+      g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT[key] += ' ' + g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE;
+    } else {
+      g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT[key] = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE;
+    }
+
+    if (!result) {
+      break;
+    }
+
+    let matches;
+    if (!(matches = result.match(new RegExp('^' + r_W + r_v('[+=!&|<>-]+') + r_W + r_v(r_AG) + '$', 'i')))) {
+      break;
+    }
+
+    matches.shift(); // First idx in match is the complete match string
+    let condition = matches.shift() || '';
+    let remaining = matches.shift() || '';
+
+    // console.log('[CONDITION]"'+result.substr(0,100)+'" => ~~~'+condition+'~~~'+remaining.substr(0,100)+'|------\n');
+
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT[key] += ' ' + condition;
+
+    remaining = parse_attribute_block_content_entry_key_value_pair(in_attribute_block_content_entry_key, remaining, true);
+
+    result = remaining;
+
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_attribute_type) {
+  let result = false;
+
+  do {
+    let regExpString = '^';
+
+    switch (in_attribute_type)
+    {
+      case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+        regExpString += r_W + r_v('(?:true|false)');
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
+        regExpString += r_W + r_v('[0-9]+');
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+        regExpString += r_W + r_v(r_sq(r_A));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+        regExpString += r_W + r_v(r_dq(r_A));
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_BLOCK:
+        regExpString += r_W + r_v('\\{' + r_A + '\\}');
+        break;
+
+      case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
+        regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z]+\\(?[a-zA-Z0-9]*\\)?)*');
+        break;
+    }
+
+    regExpString += r_W + r_v(r_AG) + '$';
+
+    let matches = in_attribute_block_content_entry_value.match(new RegExp(regExpString, 'i'));
+    if (!matches) {
+      break;
+    }
+
+    let key = in_attribute_block_content_entry_key;
+
+    matches.shift(); // First idx in match is the complete match string
+    let val = matches.shift() || '';
+    let remaining = matches.shift() || '';
+
+    if (in_attribute_type === k_ATTRIBUTE_TYPE_VALUE_BLOCK) {
+      let tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT;
+      let attribute_block_object_parse_result = parse_attribute_block_content(val);
+      let binding = attribute_block_object_parse_result.binding;
+      let attribute_block_object = attribute_block_object_parse_result.object;
+      g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT;
+
+      val = attribute_block_object;
+    }
+
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = val;
+
+    // console.log(in_attribute_type+'['+key+']"'+in_attribute_block_content_entry_value.substr(0,100)+'" => ~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
+
+    result = remaining;
+
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function attribute_block_object_to_string (in_binding, in_attribute_block_object) {
+  let result = false;
+
+  do {
+    inc_indent(1);
+    let indent = get_indent();
+
+    let attribute_block_object_formatted = '{';
+
+    let attribute_block_object_entry_keys = Object.keys(in_attribute_block_object);
+    attribute_block_object_entry_keys.sort();
+
+    attribute_block_object_entry_keys.forEach((attribute_block_object_entry_key) => {
+      let attribute_block_object_entry_value = in_attribute_block_object[attribute_block_object_entry_key];
+      if (typeof(attribute_block_object_entry_value) === "object") {
+        attribute_block_object_entry_value = attribute_block_object_to_string( '', attribute_block_object_entry_value );
+      }
+      attribute_block_object_formatted += t_NL + indent + g_INDENT + attribute_block_object_entry_key + ': ' + attribute_block_object_entry_value + ',';
+    });
+
+    if (attribute_block_object_entry_keys.length > 0) {
+      attribute_block_object_formatted = attribute_block_object_formatted.substr(0, attribute_block_object_formatted.length - 1) + t_NL + indent;
+    }
+
+    attribute_block_object_formatted += '}';
+    inc_indent(-1);
+
+    result = in_binding + attribute_block_object_formatted;
+  }
+  while (false);
+
+  return result;
+}
+
+// ******************************
+
 function parse_html_close_element (in_html_content) {
   let result = false;
 
@@ -799,7 +1254,7 @@ function parse_html_close_element (in_html_content) {
     let element = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content.substr(0,100)+'" => |'+whitespace_before+'|'+element+'|'+remaining.substr(0,100)+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+element+'~~~'+remaining.substr(0,100)+'|------\n');
 
     let had_content = false;
     let had_comment = false;
@@ -889,7 +1344,7 @@ function parse_content (in_html_content) {
     let content = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content+'" => |'+whitespace_before+'|'+content+'|'+remaining+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+content+'~~~'+remaining+'|------\n');
 
     let had_comment = false;
     let space_content = !!whitespace_before.length;
@@ -997,7 +1452,7 @@ function parse_style (in_html_content) {
     let css = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
-    // console.log('"'+in_html_content+'" => |'+whitespace_before+'|'+css+'|'+remaining+'|------\n');
+    // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+css+'~~~'+remaining+'|------\n');
 
     if (g_REMOVE_CSS) {
       if (g_HTML_CONTENT.length > 0 && whitespace_before)
@@ -1036,341 +1491,11 @@ function reset_html_variables () {
     g_ELEMENT_STACK = [];
     g_CURRENT_ELEMENT = '';
     g_CURRENT_ELEMENT_ATTRIBUTES = [];
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
+    g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
     g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
   }
   while (false);
-}
-
-// ******************************
-
-function tabbed_attributes (in_attributes) {
-  let result = '';
-
-  do {
-    if (!in_attributes) {
-      break;
-    }
-
-    let attribute_keys = Object.keys(in_attributes);
-    attribute_keys.sort();
-
-    let attributes_order_pre_native = [];
-    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
-      attributes_order_pre_native.push('^' + attribute + '$');
-    })
-
-    let attributes_order_post_native = [];
-    g_NG_ATTRIBUTES_ORDER.forEach((attribute) => {
-      attributes_order_post_native.push('^' + attribute + '$');
-    })
-
-    let sorted_attribute_keys = [];
-
-    attributes_order_pre_native.forEach((special_order) => {
-      attribute_keys.forEach((key) => {
-        if (!key.match(new RegExp(special_order))) {
-          return;
-        }
-
-        if (sorted_attribute_keys.indexOf(key) >= 0) {
-          return;
-        }
-
-        sorted_attribute_keys.push(key);
-      });
-    });
-
-    attribute_keys.forEach((key) => {
-      let special_order_match = attributes_order_post_native.filter((special_order) => {
-        let matches = key.match(new RegExp(special_order));
-        return matches && matches.length;
-      });
-
-      if (special_order_match.length) {
-        return;
-      }
-
-      if (sorted_attribute_keys.indexOf(key) >= 0) {
-        return;
-      }
-
-      sorted_attribute_keys.push(key);
-    });
-
-    attributes_order_post_native.forEach((special_order) => {
-      attribute_keys.forEach((key) => {
-        if (!key.match(new RegExp(special_order))) {
-          return;
-        }
-
-        if (sorted_attribute_keys.indexOf(key) >= 0) {
-          return;
-        }
-
-        sorted_attribute_keys.push(key);
-      });
-    });
-
-    let indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
-
-    sorted_attribute_keys.forEach((key) => {
-
-      let val = in_attributes[key];
-      val = val.replace(/[\s]+/, ' ');
-
-      if (val === k_NO_VALUE_TOKEN) {
-        result += t_NL + indent + key;
-        return;
-      }
-
-      let inline_variable = val.match(new RegExp('^(\:\:)?\{\{' + r_v(r_A) + '\}\}$', 'i'));
-      if (!inline_variable) {
-
-        let inline_object = val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i'));
-        if (inline_object) {
-          val = parse_attribute_object(val);
-        }
-      }
-
-      if (key === k_ATTRIBUTE_NAME_CLASS) {
-        let vals = val.replace(new RegExp('[\\s]+', 'g'), ' ').split(' ');
-
-        let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
-
-        if (g_MULTI_CLASSES_ORDER) {
-          vals = sort_classes(vals);
-        }
-
-        if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
-          val = t_NL + val_indent + vals.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
-        } else {
-          val = vals.filter((val) => {return val.trim().length}).join(' ');
-        }
-      }
-
-      result += t_NL + indent + key + '="' + val + '"';
-    });
-  }
-  while (false);
-
-  return result;
-}
-
-// ******************************
-
-function sort_classes (in_class_names) {
-  var result = false;
-
-  do {
-
-    let class_names = in_class_names.sort();
-    let sorted_class_names = [];
-
-    g_MULTI_CLASSES_ORDER.forEach((class_order_regexp) => {
-      class_names.forEach((class_name) => {
-        if (!class_name.match(new RegExp(class_order_regexp))) {
-          return;
-        }
-
-        if (sorted_class_names.indexOf(class_name) >= 0) {
-          return;
-        }
-
-        sorted_class_names.push(class_name);
-      });
-    });
-
-    class_names.forEach((class_name) => {
-      let class_order_regexp_match = g_MULTI_CLASSES_ORDER.filter((class_order_regexp) => {
-        let matches = class_name.match(new RegExp(class_order_regexp));
-        return matches && matches.length;
-      });
-
-      if (class_order_regexp_match.length) {
-        return;
-      }
-
-      if (sorted_class_names.indexOf(class_name) >= 0) {
-        return;
-      }
-
-      sorted_class_names.push(class_name);
-    });
-
-    result = sorted_class_names;
-  }
-  while ( false );
-
-  return result;
-}
-
-// ******************************
-
-function parse_attribute_object (in_val) {
-  let result = false;
-
-  do {
-    let matches;
-    if (!(matches = in_val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i')))) {
-      return;
-    }
-
-    let indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
-
-    matches.shift(); // First idx in match is the complete match string
-    let struct_attributes = [];
-    let binding = matches.shift() || '';
-    let structure = matches.shift() || '';
-
-    let re_val = '[!$A-Z0-9.;\(\)\'" <>+_-]+';
-    let re_key = '\'?[$A-Z0-9 _-]+\'?';
-
-    let re_num_val = '[0-9]+';
-    let re_quoted_val = '\'' + r_A + '\'';
-    let re_conditional_val = re_val + r_g(r_W + '[=!&|]+' + r_W + re_val) + '+';
-    let re_block_val = '{' + r_A + '}';
-
-    let re_vals = false;
-    ['true', 'false', re_num_val, re_conditional_val, re_quoted_val, re_val].forEach((re_segment) => {
-      if (re_vals) {
-        re_vals = re_segment + '|' + r_g(re_vals);
-      } else {
-        re_vals = re_segment;
-      }
-    });
-
-    re_vals = r_w(r_g(re_vals));
-
-    let re;
-    let struct_attribute_key;
-    let struct_attribute_val;
-    let match = true;
-
-    structure = structure.replace(/  +/g, ' ');
-
-    while (match) {
-      match = false;
-
-      re = new RegExp(r_v(r_A) + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_block_val) + r_W + ',' + r_W + r_v(r_AG), 'i');
-      if (matches = structure.match(re)) {
-        // console.log('"'+structure+'" => |==|'+matches.slice(2, 4).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        let previous = (matches.shift() || '');
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-        let next = (matches.shift() || '');
-
-        inc_indent(1);
-        struct_attribute_val = parse_attribute_object(struct_attribute_val);
-        inc_indent(-1);
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (previous + ' ' + next).trim();
-        match = true;
-        continue;
-      }
-
-      re = new RegExp('^' + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_block_val) + r_W + '$', 'i');
-      if (matches = structure.match(re)) {
-        // console.log('"'+structure+'" => |==|'+matches.slice(1,3).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-
-        inc_indent(1);
-        struct_attribute_val = parse_attribute_object(struct_attribute_val);
-        inc_indent(-1);
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = '';
-        match = true;
-        continue;
-      }
-
-      re = new RegExp(r_v(r_A) + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_vals) + r_W + ',' + r_W + r_v(r_AG), 'i');
-      if (matches = structure.match(re)) {
-        // console.log('"'+structure+'" => |==|'+matches.slice(2, 4).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        let previous = (matches.shift() || '');
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-        let next = (matches.shift() || '');
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (previous + ' ' + next).trim();
-        match = true;
-        continue;
-      }
-
-      re = new RegExp(r_v(r_A) + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_vals) + r_W + ',' + r_W + r_v(r_AG), 'i');
-      if (matches = structure.match(re)) {
-        //console.log('|==|'+matches.slice(2).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        let previous = (matches.shift() || '');
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-        let next = (matches.shift() || '');
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = (previous + ' ' + next).trim();
-        match = true;
-        continue;
-      }
-
-      re = new RegExp('^' + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_vals) + r_W + '$', 'i');
-      if (matches = structure.match(re)) {
-        //console.log('"'+structure+'" => |==|'+matches.slice(1).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = '';
-        match = true;
-        continue;
-      }
-
-      re = new RegExp('^' + r_W + r_v(re_key) + r_W + ':' + r_W + r_v(re_vals) + r_W + '$', 'i');
-      if (matches = structure.match(re)) {
-        //console.log('"'+structure+'" => |==|'+matches.slice(1).join('|==|')+'|==|------\n');
-
-        matches.shift(); // First idx in match is the complete match string
-        struct_attribute_key = (matches.shift() || '').trim();
-        struct_attribute_val = (matches.shift() || '').trim();
-
-        struct_attributes[struct_attribute_key] = struct_attribute_val;
-        structure = '';
-        match = true;
-        continue;
-      }
-    }
-
-    let struct_val = '{';
-
-    let struct_attributes_keys = Object.keys(struct_attributes);
-    struct_attributes_keys.sort();
-
-    struct_attributes_keys.forEach((struct_attribute_key) => {
-      let struct_attribute_val = struct_attributes[struct_attribute_key];
-      struct_val += t_NL + indent + g_INDENT + struct_attribute_key + ': ' + struct_attribute_val + ',';
-    });
-
-    if (struct_attributes_keys.length > 0) {
-      struct_val = struct_val.substr(0, struct_val.length - 1) + t_NL + indent;
-    }
-
-    struct_val += '}';
-
-    result = binding + struct_val;
-  }
-  while (false);
-
-  return result;
 }
 
 // ******************************
