@@ -1,12 +1,14 @@
 <html>
+    <div>
+        <!-- comment in a div -->
+    </div>
+    <a> <!-- comment in an a --> </a>
     <use
         xlink:href="stuff"
         xmlns:xlink="http://www.w3.org/1999/xlink"></use>
     <!-- REMOVED CSS FROM TEMPLATE -->
     <!-- REMOVED CSS FROM TEMPLATE -->
-    <label>
-        Location
-    </label>
+    <label> Location </label>
     <div
         my-z-b="first"
         my-a-b="second"
@@ -80,19 +82,16 @@
         </force-block>
         <force-inline></force-inline>
         <whitespace></whitespace>
-        <whitespace>
-            whitespace
-        </whitespace>
-        <whitespace>
-            whitespace</whitespace>
-        <whitespace>whitespace
-        </whitespace>
+        <whitespace> whitespace </whitespace>
+        <whitespace> whitespace</whitespace>
+        <whitespace>whitespace </whitespace>
         <no-whitespace>no-whitespace</no-whitespace>
         <no-whitespace></no-whitespace>
         <my-card-details-body-title1>
             {{ $ctrl.some.field }}
         </my-card-details-body-title1>
         <my-card-details-body-title2>{{$ctrl.some.field}}</my-card-details-body-title2>
+        <my-card-details-body-title3> {{ $ctrl.some.field }} </my-card-details-body-title3>
         <!-- TODO -->
         <!--
             Multi line comment
@@ -126,13 +125,7 @@
         }">
     </div>
     <div>
-        <small>
-            (<div>
-                Test
-            </div>)
-            (<div>
-                Test
-            </div>)
+        <div>
             (
             <div>
                 Test
@@ -143,33 +136,36 @@
                 Test
             </div>
             )
-            (<a>Test</a>)
-            (<a>
-                Test
-            </a>)
             (
-            <a>Test</a>
+            <div>
+                Test
+            </div>
             )
             (
-            <a>
+            <div>
                 Test
-            </a>
+            </div>
             )
-            Please ensure
-            <a
+        </div>
+        <small>(<a>Test</a>)</small>
+        <small>(<a> Test </a>)</small>
+        <small>( <a>Test</a> )</small>
+        <small>( <a> Test </a> )</small>
+        <small> Please ensure <a
                 href="some_link&435#sefsdfs"
-                target="_blank">this</a>
-            and
-            <a
+                target="_blank"> this</a> and <a
                 href="another_link&fd#345345"
-                target="_blank">that</a>
-            are disabled.
-            <br>
-            Check out our
-            <a
+                target="_blank">that </a> are disabled.
+            <br> Check out our <a
                 href="#blaaa"
-                target="_blank">other page</a>.
-        </small>
+                target="_blank">other page</a>. </small>
+        <block>
+            some content
+            (<a>Test</a>)
+            (<div>
+                Test
+            </div>)
+            some content</block>
         <div>
             Content with spaces     and
 
@@ -190,6 +186,19 @@
                 'k': $a === 2,
                 'l': $a !== 2
             }"></span>
+        <div
+            class="
+                binding--{{ a }}--midde
+                binding-right--{{ a }}
+                normal
+                {{ a }}--binding--left">
+        </div>
+        <ul>
+            <li>Some stuff <code>()</code></li>
+            <li>Some other stuff
+                <code>[]</code> - More stuff
+            </li>
+        </ul>
         <span
             ng-class="{
                 'class-awesome': $ctrl.value === 'Awesome!',
@@ -276,8 +285,7 @@
                                                                                                                                                                                                                                                                     message: 'Please enter length.',
                                                                                                                                                                                                                                                                     value: 'required'
                                                                                                                                                                                                                                                                 }
-                                                                                                                                                                                                                                                            }">
-                                                                                                                                                                                                                                                        </my-text-input>
+                                                                                                                                                                                                                                                            }"></my-text-input>
                                                                                                                                                                                                                                                     </div>
                                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                                             </div>
@@ -365,8 +373,7 @@
         ng-init="testVar = 'hello world'; controller.showModal55 = false;">
         <my-modal
             my-show="controller.showModal55"
-            my-size="::'wider'">
-        </my-modal>
+            my-size="::'wider'"></my-modal>
     </div>
     <div>
         <!--

@@ -9,6 +9,7 @@
 //
 // 1.5.0
 // - Refactored attribute value object parsing
+// - Added proper class name parsing
 // - Fixed bug with object values not being able to contain commas
 //
 // 1.4.5
@@ -62,6 +63,9 @@ const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTE
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR]';
 const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
 const k_ATTRIBUTE_TYPE_NO_VALUE = '[ATTRIBUTE_TYPE_NO_VALUE]';
+
+const k_CLASS_TYPE_BINDING = '[CLASS_TYPE_BINDING]';
+const k_CLASS_TYPE_NORMAL = '[CLASS_TYPE_NORMAL]';
 
 const k_NG2_ATTRIBUTE_TYPE_REFERENCE = '[NG2_ATTRIBUTE_TYPE_REFERENCE]';
 const k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY = '[NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY]';
@@ -126,6 +130,8 @@ let g_CURRENT_ELEMENT = '';
 let g_CURRENT_ELEMENT_ATTRIBUTES = [];
 let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
 let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
+let g_CURRENT_ELEMENT_CLASSES = [];
+let g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
 let g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
 
 let g_HTML_CONTENT = '';
@@ -369,7 +375,7 @@ function parse_html (in_html_content) {
   let parse_run = 0;
   let max_parse_runs = 5000;
 
-  // try {
+  try {
 
     let parsed = true;
     while (parsed) {
@@ -399,10 +405,10 @@ function parse_html (in_html_content) {
       }
     }
 
-  // } catch (err) {
-  //   g_HTML_INVALID = html_content.substr(0, 200);
-  //   throw('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
-  // }
+  } catch (err) {
+    g_HTML_INVALID = html_content.substr(0, 200);
+    throw('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
+  }
 
   return result;
 }
@@ -463,7 +469,7 @@ function parse_html_open_element_start (in_html_content) {
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = !!(matches.shift() || '').length;
+    let whitespace_before = matches.shift() || '';
     let element = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
@@ -747,13 +753,10 @@ function parse_html_open_element_end (in_html_content) {
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+self_closing_tag+'~~~'+remaining.substr(0,100)+'|------\n');
 
-    let space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE;
-    let had_content = false;
-    let had_comment = false;
     let error = false;
-
     let output = '';
     let indent = '';
+    let space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE.length;
 
     if (self_closing_tag) {
       if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
@@ -768,16 +771,27 @@ function parse_html_open_element_end (in_html_content) {
       indent = t_NL + get_indent();
 
     } else {
-      let previous_element = g_ELEMENT_STACK.length ? g_ELEMENT_STACK[g_ELEMENT_STACK.length - 1] : '';
-      had_content = (previous_element === k_CONTENT_TOKEN);
-      had_comment = (previous_element === k_COMMENT_TOKEN);
+      let top_element_info = get_top_element_info();
 
       output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
 
-      if (!had_content && !had_comment) {
+      if (top_element_info.top_element_is_block_element) {
         indent = t_NL + get_indent();
-      } else if ((had_content || had_comment) && space_content) {
-        indent = t_NL + get_indent();
+
+      } else if (space_content) {
+        if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+          if (top_element_info.top_element_is_inline_element) {
+            indent = ' ';
+          } else {
+            if (g_CURRENT_ELEMENT_WHITESPACE_BEFORE.match(/^ +$/)) {
+              indent = ' ';
+            } else {
+              indent = t_NL + get_indent();
+            }
+          }
+        } else {
+          indent = ' ';
+        }
       }
 
       inc_indent(1);
@@ -892,18 +906,17 @@ function sort_attributes (in_attributes) {
       }
 
       if (key === k_ATTRIBUTE_NAME_CLASS) {
-        let vals = val.replace(new RegExp('[\\s]+', 'g'), ' ').split(' ');
-
         let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
 
         if (g_MULTI_CLASSES_ORDER) {
-          vals = sort_classes(vals);
-        }
+          let classes = parse_classes_content(val);
+          classes = sort_classes(classes);
 
-        if (vals.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
-          val = t_NL + val_indent + vals.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
-        } else {
-          val = vals.filter((val) => {return val.trim().length}).join(' ');
+          if (classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
+            val = t_NL + val_indent + classes.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
+          } else {
+            val = classes.filter((val) => {return val.trim().length}).join(' ');
+          }
         }
       }
 
@@ -911,6 +924,148 @@ function sort_attributes (in_attributes) {
     });
   }
   while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_classes_content (in_classes_content) {
+  var result = false;
+
+  do {
+    let classes_content = in_classes_content || '';
+    let classes_content_remaining = classes_content;
+
+    g_CURRENT_ELEMENT_CLASSES = [];
+    g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
+
+    while (true) {
+      let remaining = parse_classes_content_class_name(classes_content_remaining);
+      if (remaining === false) {
+        break;
+      }
+      classes_content_remaining = remaining;
+
+      remaining = parse_classes_content_space(classes_content_remaining)
+      if (remaining === false) {
+        break;
+      }
+      classes_content_remaining = remaining;
+    }
+
+    if (classes_content_remaining) {
+      throw 'Cannot parse classes: ' + classes_content.substr(0, 100).trim() + '...\n@' + classes_content_remaining.substr(0, 100).trim() + '...';
+    }
+
+    result = g_CURRENT_ELEMENT_CLASSES;
+    g_CURRENT_ELEMENT_CLASSES = [];
+    g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
+  }
+  while ( false );
+
+  return result;
+}
+
+// ******************************
+
+function parse_classes_content_space (in_classes_content) {
+  let result = false;
+
+  do {
+    let classes_content = in_classes_content || '';
+
+    let matches;
+    if (!(matches = classes_content.match(new RegExp('^' + r_S + r_v(r_AG) + '$', 'i')))) {
+      break;
+    }
+
+    matches.shift(); // First idx in match is the complete match string
+    let remaining = matches.shift() || '';
+
+    // console.log('[SPACE]"'+classes_content.substr(0,100)+'" => ~~~'+' '+'~~~'+remaining.substr(0,100)+'|------\n');
+
+    result = remaining;
+
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_classes_content_class_name (in_classes_content) {
+  let result = false;
+
+  do {
+    let classes_content = in_classes_content || '';
+
+    let functions = [
+      function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_BINDING); },
+      function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_NORMAL); },
+    ];
+
+    let matched_value = false;
+    functions.forEach(function(fn) {
+      if (matched_value) {
+        return;
+      }
+      let remaining = fn(classes_content);
+      if (remaining !== false) {
+        classes_content = remaining;
+        matched_value = true;
+      }
+    });
+
+    if (!matched_value) {
+      break;
+    }
+
+    g_CURRENT_ELEMENT_CLASSES.push(g_CURRENT_ELEMENT_CLASSES_CLASS_NAME);
+
+    result = classes_content;
+  } while (false);
+
+  return result;
+}
+
+// ******************************
+
+function parse_classes_content_class_name_type (in_classes_content, in_class_name_type) {
+  let result = false;
+
+  do {
+    let regExpString = '^';
+
+    switch (in_class_name_type)
+    {
+      case k_CLASS_TYPE_BINDING:
+        regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
+        break;
+
+      case k_CLASS_TYPE_NORMAL:
+        regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
+        break;
+    }
+
+    regExpString += r_v(r_AG) + '$';
+
+    let matches = in_classes_content.match(new RegExp(regExpString, 'i'));
+    if (!matches) {
+      break;
+    }
+
+    matches.shift(); // First idx in match is the complete match string
+    let class_name = matches.shift() || '';
+    let remaining = matches.shift() || '';
+
+    g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = class_name;
+
+    // console.log(in_class_name_type+'"'+in_classes_content.substr(0,100)+'" => ~~~'+class_name+'~~~'+remaining.substr(0,100)+'|------\n');
+
+    result = remaining;
+
+  } while (false);
 
   return result;
 }
@@ -997,7 +1152,7 @@ function parse_attribute_block_content (in_attribute_block_content) {
     }
 
     if (attribute_block_content_remaining) {
-      throw 'Cannot parse attribute object: ' + attribute_block_content.substr(0, 100).trim() + '...\nat ' + attribute_block_content_remaining.substr(0, 100).trim() + '...';
+      throw 'Cannot parse attribute object: ' + attribute_block_content.substr(0, 1000).trim() + '...\n@' + attribute_block_content_remaining.substr(0, 1000).trim() + '...';
     }
 
     result = {
@@ -1099,14 +1254,13 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
       break;
     }
 
-    result = val;
-
     if (in_aggregate) {
       g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT[key] += ' ' + g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE;
     } else {
       g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT[key] = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE;
     }
 
+    result = val;
     if (!result) {
       break;
     }
@@ -1148,7 +1302,7 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
         break;
 
       case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
-        regExpString += r_W + r_v('[0-9]+');
+        regExpString += r_W + r_v('[0-9.-]+');
         break;
 
       case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
@@ -1164,7 +1318,7 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
         break;
 
       case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-        regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z]+\\(?[a-zA-Z0-9]*\\)?)*');
+        regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z_]+\\(?[a-zA-Z0-9_"\'-]*\\)?)*');
         break;
     }
 
@@ -1250,70 +1404,54 @@ function parse_html_close_element (in_html_content) {
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = !!(matches.shift() || '').length;
+    let whitespace_before = matches.shift() || '';
     let element = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+element+'~~~'+remaining.substr(0,100)+'|------\n');
 
-    let had_content = false;
-    let had_comment = false;
-    let space_content = whitespace_before;
+    let space_content = whitespace_before.length;
 
     let output = '';
     let indent = '';
 
     inc_indent(-1);
 
-    let top_element = g_ELEMENT_STACK.pop();
-
-    let found_signal_element = true;
-    while (found_signal_element) {
-      found_signal_element = false;
-
-      if (top_element === k_CONTENT_TOKEN) {
-        top_element = g_ELEMENT_STACK.pop();
-        had_content = true;
-        found_signal_element = true;
-        continue;
-      }
-
-      if (top_element === k_COMMENT_TOKEN) {
-        top_element = g_ELEMENT_STACK.pop();
-        had_comment = true;
-        found_signal_element = true;
-        continue;
-      }
-    }
-
-    if (!top_element) {
+    let top_element_info = get_top_element_info(true);
+    if (!top_element_info.top_element) {
       throw('Closing "' + element + '" but there is no matching open element');
     }
 
-    if (top_element !== element) {
-      g_ELEMENT_STACK.push(top_element);
-      g_CURRENT_ELEMENT = element;
-
-      if (had_content) {
-        g_ELEMENT_STACK.push(k_CONTENT_TOKEN);
-      }
-      if (had_comment) {
-        g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
-      }
-
-      throw('expected "' + top_element + '" but got "' + element + '"');
+    if (top_element_info.top_element !== element) {
+      throw('expected "' + top_element_info.top_element + '" but got "' + element + '"');
     }
 
-    let child_element = (top_element === g_CURRENT_ELEMENT);
-    let inline_element = (g_INLINE_ELEMENTS.indexOf(top_element) >= 0);
-    let block_element = (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0);
+    let top_element_is_empty = (
+      !top_element_info.had_content &&
+      !top_element_info.had_comment &&
+      top_element_info.top_element === g_CURRENT_ELEMENT);
 
     output = '</' + element + '>';
 
-    if ((had_content || had_comment || !child_element || !inline_element) && space_content)
+    if (top_element_info.top_element_is_block_element) {
       indent = t_NL + get_indent();
-    else if (block_element)
-      indent = t_NL + get_indent();
+    } else if (space_content) {
+      if (top_element_is_empty) {
+        indent = '';
+      } else if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+        if (top_element_info.top_element_is_inline_element) {
+          indent = ' ';
+        } else {
+          if (whitespace_before.match(/^ +$/)) {
+            indent = ' ';
+          } else {
+            indent = t_NL + get_indent();
+          }
+        }
+      } else {
+        indent = ' ';
+      }
+    }
 
     if (g_HTML_CONTENT.length) {
       g_HTML_CONTENT += indent;
@@ -1346,8 +1484,7 @@ function parse_content (in_html_content) {
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+content+'~~~'+remaining+'|------\n');
 
-    let had_comment = false;
-    let space_content = !!whitespace_before.length;
+    let space_content = whitespace_before.length;
 
     if (!content.trim().length) {
       result = remaining;
@@ -1358,26 +1495,34 @@ function parse_content (in_html_content) {
     content = content.replace(new RegExp('^[\\s]*$', 'gm'), '');
     content = content.replace(new RegExp('^ *'), '');
 
-    let top_element = g_ELEMENT_STACK.length ? g_ELEMENT_STACK[g_ELEMENT_STACK.length - 1] : '';
-    let top_element_is_block_element = (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0);
-
-    if (top_element === k_COMMENT_TOKEN) {
-      had_comment = true;
-    }
-
-    if (top_element_is_block_element) {
-      space_content = true;
-    }
-
     g_ELEMENT_STACK.push(k_CONTENT_TOKEN);
 
-    if (had_comment) {
-      g_HTML_CONTENT += ' ' + content;
+    let indent = '';
+
+    let top_element_info = get_top_element_info();
+    if (top_element_info.top_element_is_block_element) {
+      indent = t_NL + get_indent();
     } else if (space_content) {
-      g_HTML_CONTENT += t_NL + get_indent() + content;
-    } else {
-      g_HTML_CONTENT += content;
+      if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+        if (top_element_info.top_element_is_inline_element) {
+          indent = ' ';
+        } else {
+          if (whitespace_before.match(/^ +$/)) {
+            indent = ' ';
+          } else {
+            indent = t_NL + get_indent();
+          }
+        }
+      } else {
+        indent = ' ';
+      }
     }
+
+    if (g_HTML_CONTENT.length) {
+      g_HTML_CONTENT += indent;
+    }
+
+    g_HTML_CONTENT += content;
 
     result = remaining;
   }
@@ -1402,17 +1547,28 @@ function parse_comment (in_html_content) {
     let comment = (matches.shift() || '').trim();
     let remaining = matches.shift() || '';
 
-    // let top_element = g_ELEMENT_STACK.length ? g_ELEMENT_STACK[g_ELEMENT_STACK.length - 1] : '';
-    // if (!top_element) {
-    //   throw('Comment doesn\'t have parent element');
-    // }
+    let multi_line_comment = comment.match(new RegExp('\\n'));
 
     g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
 
-    if (g_HTML_CONTENT.length > 0 && whitespace_before)
-      g_HTML_CONTENT += t_NL + get_indent();
+    let indent = '';
 
-    if (comment.match(new RegExp('\\n'))) {
+    let top_element_info = get_top_element_info();
+    if (top_element_info.top_element_is_block_element) {
+      indent = t_NL + get_indent();
+    } else if (whitespace_before) {
+      if (top_element_info.top_element_is_inline_element) {
+        indent = ' ';
+      } else {
+        indent = t_NL + get_indent();
+      }
+    }
+
+    if (g_HTML_CONTENT.length > 0) {
+      g_HTML_CONTENT += indent;
+    }
+
+    if (multi_line_comment) {
       inc_indent(1);
       g_HTML_CONTENT += '<!--';
       g_HTML_CONTENT += t_NL;
@@ -1454,23 +1610,39 @@ function parse_style (in_html_content) {
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+css+'~~~'+remaining+'|------\n');
 
-    if (g_REMOVE_CSS) {
-      if (g_HTML_CONTENT.length > 0 && whitespace_before)
-        g_HTML_CONTENT += t_NL + get_indent();
+    let output = '';
+    let indent = '';
 
-      g_HTML_CONTENT += '<!-- REMOVED CSS FROM TEMPLATE -->';
-      g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
-      result = remaining;
-      break;
+    let top_element_info = get_top_element_info();
+    if (top_element_info.top_element_is_block_element) {
+      indent = t_NL + get_indent();
+    } else if (whitespace_before) {
+      if (top_element_info.top_element_is_inline_element) {
+        indent = '';
+      } else {
+        indent = t_NL + get_indent();
+      }
     }
 
-    if (css.trim().length) {
-      g_HTML_CONTENT += t_NL + get_indent() + '<style type="text/css">';
+    if (g_REMOVE_CSS) {
+      output += '<!-- REMOVED CSS FROM TEMPLATE -->';
+      g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
+      result = remaining;
+    } else if (css.trim().length) {
+      output += '<style type="text/css">';
       inc_indent(1);
       css = css.replace(/([\r][\n]|[\r]|[\n])/g, t_NL);
-      g_HTML_CONTENT += t_NL + get_indent() + css;
+      output += t_NL + get_indent() + css;
       inc_indent(-1);
-      g_HTML_CONTENT += t_NL + get_indent() + '</style>';
+      output += t_NL + get_indent() + '</style>';
+    }
+
+    if (output) {
+      if (g_HTML_CONTENT.length > 0 && whitespace_before) {
+        g_HTML_CONTENT += indent;
+      }
+
+      g_HTML_CONTENT += output;
     }
 
     result = remaining;
@@ -1493,9 +1665,61 @@ function reset_html_variables () {
     g_CURRENT_ELEMENT_ATTRIBUTES = [];
     g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
     g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
+    g_CURRENT_ELEMENT_CLASSES = [];
+    g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
     g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
   }
   while (false);
+}
+
+// ******************************
+
+function get_top_element_info (in_pop) {
+  var result = false;
+
+  do
+  {
+    let had_content = false;
+    let had_comment = false;
+    let top_element_idx = g_ELEMENT_STACK.length - 1;
+    let top_element = '';
+
+    let found_signal_element = true;
+    while (found_signal_element && top_element_idx >= 0) {
+      found_signal_element = false;
+
+      if (in_pop) {
+        top_element = g_ELEMENT_STACK.pop();
+      } else {
+        top_element = g_ELEMENT_STACK[top_element_idx];
+      }
+
+      if (top_element === k_CONTENT_TOKEN) {
+        top_element_idx--;
+        had_content = true;
+        found_signal_element = true;
+        continue;
+      }
+
+      if (top_element === k_COMMENT_TOKEN) {
+        top_element_idx--;
+        had_comment = true;
+        found_signal_element = true;
+        continue;
+      }
+    }
+
+    result = {
+      had_comment,
+      had_content,
+      top_element,
+      top_element_is_inline_element: (g_INLINE_ELEMENTS.indexOf(top_element) >= 0),
+      top_element_is_block_element: (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0)
+    };
+  }
+  while ( false );
+
+  return result;
 }
 
 // ******************************
