@@ -23,12 +23,12 @@ function formatTest () {
 
 function formatTestBase (cbSuccess) {
     torisFormat.setup({
-        line_ending: '\r\n',
-        inline_elements: ['whitespace', 'force-inline'],
         block_elements: ['force-block'],
-        one_time_bound_element_prefixes: ['my-'],
-        none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
         format_multi_classes_with_at_least: 1,
+        inline_elements: ['whitespace', 'force-inline'],
+        line_ending: '\r\n',
+        none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
+        one_time_bound_element_prefixes: ['my-'],
         order_multi_classes_alphabetically: true,
         multi_classes_order: [
             'z-.*'
@@ -51,7 +51,7 @@ function formatTestBase (cbSuccess) {
 
 function formatTestNG1 (cbSuccess) {
     torisFormat.setup({
-        ng_version: 1.4,
+        ng_version: 1.5,
         ng_attributes_order: [
             'my-z-.*',
             'my-a-.*',
@@ -81,7 +81,7 @@ function formatTestNG2 (cbSuccess) {
             '\\[\\(.*\\)\\]',
             '\\(.*\\)',
             '\\[.*\\]'
-        ],
+        ]
     });
 
     // Test NG2 style formatting

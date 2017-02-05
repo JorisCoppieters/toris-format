@@ -1436,7 +1436,7 @@ function parse_html_close_element (in_html_content) {
     if (top_element_info.top_element_is_block_element) {
       indent = t_NL + get_indent();
     } else if (space_content) {
-      if (top_element_is_empty) {
+      if (top_element_is_empty && top_element_info.top_element_is_inline_element) {
         indent = '';
       } else if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
         if (top_element_info.top_element_is_inline_element) {
