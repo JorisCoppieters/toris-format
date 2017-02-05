@@ -2,28 +2,43 @@
     <div>
         <!-- comment in a div -->
     </div>
-    <a> <!-- comment in an a --> </a>
+    <a>
+        <!-- comment in an a -->
+    </a>
     <use
         xlink:href="stuff"
         xmlns:xlink="http://www.w3.org/1999/xlink"></use>
-    <!-- REMOVED CSS FROM TEMPLATE -->
-    <!-- REMOVED CSS FROM TEMPLATE -->
-    <label> Location </label>
+    <style type="text/css">
+        .error-page {
+                 position: relative;
+                 min-height: 300px;
+                 width: 100%;
+                 text-align: center;
+             }
+             .status-code {
+                 position: relative;
+                 left: 0;
+                 top: 6rem;
+                 width: 100%;
+                 font-size: 8rem;
+                 font-weight: bold;
+                 color: rgba(235, 235, 235, 0.25);
+                 z-index: -1;
+             }
+             .icon {
+                 max-width: 300px;
+             }
+             .large-icon {
+                 margin-left: 25%;
+             }
+    </style>
+    <label>
+        Location
+    </label>
     <div
         my-z-b="first"
         my-a-b="second"
-        my-aaaaa="last">
-    </div>
-    <do-add-one-time-bindings
-        my-a="::12"
-        my-b="::12"
-        my-c="::12"
-        my-d="::12"></do-add-one-time-bindings>
-    <do-not-add-one-time-bindings
-        my-a="12"
-        my-b="::12"
-        my-c="12"
-        my-d="::12"></do-not-add-one-time-bindings>
+        my-aaaaa="last"></div>
     <my-text-input
         ng-class2="{
             'is-selected': $ctrl.isSelected()
@@ -78,10 +93,7 @@
             A URL
         </my-button>
         <span>A</span><!-- prevent whitespace --><span>B</span>
-        <force-block>
-        </force-block>
-        <force-inline></force-inline>
-        <whitespace></whitespace>
+        <whitespace> </whitespace>
         <whitespace> whitespace </whitespace>
         <whitespace> whitespace</whitespace>
         <whitespace>whitespace </whitespace>
@@ -126,62 +138,43 @@
     </div>
     <div>
         <div>
-            (
-            <div>
-                Test
-            </div>
-            )
-            (
-            <div>
-                Test
-            </div>
-            )
-            (
-            <div>
-                Test
-            </div>
-            )
-            (
-            <div>
-                Test
-            </div>
-            )
+            (<div>Test</div>)
+            (<div> Test </div>)
+            ( <div>Test</div> )
+            ( <div> Test </div> )
         </div>
         <small>(<a>Test</a>)</small>
         <small>(<a> Test </a>)</small>
         <small>( <a>Test</a> )</small>
         <small>( <a> Test </a> )</small>
-        <small> Please ensure <a
+        <small>
+            Please ensure <a
                 href="some_link&435#sefsdfs"
-                target="_blank"> this</a> and <a
-                href="another_link&fd#345345"
-                target="_blank">that </a> are disabled.
-            <br> Check out our <a
-                href="#blaaa"
-                target="_blank">other page</a>. </small>
-        <div>
-            Please ensure
-            <a
-                href="some_link&435#sefsdfs"
-                target="_blank"> this</a>
-            and
+                target="_blank"> this</a> and
             <a
                 href="another_link&fd#345345"
                 target="_blank">that </a>
             are disabled.
-            <br>
-            Check out our
-            <a
+            <br> Check out our <a
                 href="#blaaa"
-                target="_blank">other page</a>
-            .
+                target="_blank">other page</a>.
+        </small>
+        <div>
+            Please ensure <a
+                href="some_link&435#sefsdfs"
+                target="_blank"> this</a> and
+            <a
+                href="another_link&fd#345345"
+                target="_blank">that </a>
+            are disabled.
+            <br> Check out our <a
+                href="#blaaa"
+                target="_blank">other page</a>.
         </div>
         <block>
             some content
             (<a>Test</a>)
-            (<div>
-                Test
-            </div>)
+            (<div>Test</div>)
             some content</block>
         <div>
             Content with spaces     and
@@ -204,10 +197,7 @@
                 'l': $a !== 2
             }"></span>
         <div
-            class="
-                binding--{{ a }}--midde
-                binding-right--{{ a }}
-                normal
+            class="normal binding-right--{{ a }} binding--{{ a }}--midde
                 {{ a }}--binding--left">
         </div>
         <ul>
@@ -221,67 +211,10 @@
                 'class-awesome': $ctrl.value === 'Awesome!',
                 'class-good': $ctrl.value === 'Good',
                 'class-wicked': $ctrl.value === 'Wicked'
-            }"></span>
-        <div>
-            <div>
-                <div>
-                    <div>
-                        <div>
-                            <div>
-                                <div>
-                                    <div>
-                                        <div>
-                                            <div>
-                                                <div>
-                                                    <div>
-                                                        <div>
-                                                            <div>
-                                                                <div>
-                                                                    <div>
-                                                                        <div>
-                                                                            <div>
-                                                                                <div>
-                                                                                    <div>
-                                                                                        <div>
-                                                                                            <div>
-                                                                                                <div>
-                                                                                                    <div>
-                                                                                                        <div>
-                                                                                                            <div>
-                                                                                                                <div>
-                                                                                                                    <div>
-                                                                                                                        <div>
-                                                                                                                            <div>
-                                                                                                                                <div>
-                                                                                                                                    <div>
-                                                                                                                                        <div>
-                                                                                                                                            <div>
-                                                                                                                                                <div>
-                                                                                                                                                    <div>
-                                                                                                                                                        <div>
-                                                                                                                                                            <div>
-                                                                                                                                                                <div>
-                                                                                                                                                                    <div>
-                                                                                                                                                                        <div>
-                                                                                                                                                                            <div>
-                                                                                                                                                                                <div>
-                                                                                                                                                                                    <div>
-                                                                                                                                                                                        <div>
-                                                                                                                                                                                            <div>
-                                                                                                                                                                                                <div>
-                                                                                                                                                                                                    <div>
-                                                                                                                                                                                                        <div>
-                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                <div>
-                                                                                                                                                                                                                    <div>
-                                                                                                                                                                                                                        <div>
-                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                <div>
-                                                                                                                                                                                                                                    <div>
-                                                                                                                                                                                                                                        <div>
-                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                <div>
-                                                                                                                                                                                                                                                    <div>
+            }">
+        </span>
+        <div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
+                                                                                                                                <div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>
                                                                                                                                                                                                                                                         <my-text-input
                                                                                                                                                                                                                                                             my-label="::'Length'"
                                                                                                                                                                                                                                                             my-model="$ctrl.length"
@@ -304,83 +237,26 @@
                                                                                                                                                                                                                                                                 }
                                                                                                                                                                                                                                                             }">
                                                                                                                                                                                                                                                         </my-text-input>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                </div>
-                                                                                                                                                                                            </div>
-                                                                                                                                                                                        </div>
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                </div>
-                                                                                                                                                                            </div>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    </div>
-                                                                                                                                                                </div>
-                                                                                                                                                            </div>
-                                                                                                                                                        </div>
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-                                                                                                                                        </div>
-                                                                                                                                    </div>
-                                                                                                                                </div>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                                                                                                                                                                                                                                    </div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
+                                                                                                                            </div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div></div>
     </div>
     <a
-        my-simple="::''"></a>
+        my-simple="''">
+    </a>
     <div
-        my-simple="::''">
+        my-simple="''">
     </div>
     <div
         my-simple="">
     </div>
     <div
-        my-simple="::'string'">
+        my-simple="'string'">
     </div>
     <div
-        my-simple="::false">
+        my-simple="false">
     </div>
     <div
-        my-simple="::123">
+        my-simple="123">
     </div>
     <div>
     </div>

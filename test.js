@@ -14,26 +14,22 @@ formatTest();
 
 function formatTest () {
     formatTestBase(function () {
-        formatTestNG1();
-        formatTestNG2();
-    });
+    formatTestNG1(function () {
+    formatTestNG2(function () {
+    formatTestForceFormatting(function () {
+    formatTestOneTimeBinding(function () {
+    formatTestMacOSXLineEndings(function () {
+    formatTestWindowsLineEndings(function () {
+    formatTestLinuxLineEndings(function () {
+    formatTestRemoveCSS(function () {
+    formatTestMultiClassFormatting(function () {
+    })})})})})})})})})});
 }
 
 // ******************************
 
 function formatTestBase (cbSuccess) {
     torisFormat.setup({
-        block_elements: ['force-block'],
-        format_multi_classes_with_at_least: 1,
-        inline_elements: ['whitespace', 'force-inline'],
-        line_ending: '\r\n',
-        none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
-        one_time_bound_element_prefixes: ['my-'],
-        order_multi_classes_alphabetically: true,
-        multi_classes_order: [
-            'z-.*'
-        ],
-        remove_css: true
     });
 
     // Test base style formatting
@@ -88,6 +84,139 @@ function formatTestNG2 (cbSuccess) {
     fsp.read(path.resolve(__dirname, './test/format-test-ng2-preformatted.html'), function (preformattedHtmlTemplate) {
         fsp.read(path.resolve(__dirname, './test/format-test-ng2-formatted.html'), function (formattedHtmlTemplate) {
             var testsPassed = formatTestFiles("NG2", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestOneTimeBinding (cbSuccess) {
+    torisFormat.setup({
+        none_one_time_bound_elements: ['do-not-add-one-time-bindings'],
+        one_time_bound_element_prefixes: ['my-']
+    });
+
+    // Test one time binding
+    fsp.read(path.resolve(__dirname, './test/format-test-one-time-binding-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-one-time-binding-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("OneTimeBinding", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestForceFormatting (cbSuccess) {
+    torisFormat.setup({
+        block_elements: ['force-block'],
+        force_block_whitespace_formatting: true,
+        force_inline_whitespace_formatting: true,
+        inline_elements: ['whitespace', 'force-inline']
+    });
+
+    // Test forcing block/inline formatting
+    fsp.read(path.resolve(__dirname, './test/format-test-block-inline-formatting-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-block-inline-formatting-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("ForceFormatting", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestMacOSXLineEndings (cbSuccess) {
+    torisFormat.setup({
+        line_ending: '\r'
+    });
+
+    // Test NG2 MacOSX Line Endings
+    fsp.read(path.resolve(__dirname, './test/format-test-macosx-line-endings-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-macosx-line-endings-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("MacOSXLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestWindowsLineEndings (cbSuccess) {
+    torisFormat.setup({
+        line_ending: '\r\n'
+    });
+
+    // Test NG2 Windows Line Endings
+    fsp.read(path.resolve(__dirname, './test/format-test-windows-line-endings-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-windows-line-endings-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("WindowsLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestLinuxLineEndings (cbSuccess) {
+    torisFormat.setup({
+        line_ending: '\n'
+    });
+
+    // Test NG2 Linux Line Endings
+    fsp.read(path.resolve(__dirname, './test/format-test-linux-line-endings-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-linux-line-endings-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("LinuxLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ***********************************
+
+function formatTestRemoveCSS (cbSuccess) {
+    torisFormat.setup({
+        remove_css: true
+    });
+
+    // Test removing CSS
+    fsp.read(path.resolve(__dirname, './test/format-test-remove-css-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-remove-css-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("RemoveCSS", preformattedHtmlTemplate, formattedHtmlTemplate);
+            if (testsPassed && cbSuccess) {
+                cbSuccess();
+            }
+        });
+    });
+}
+
+// ******************************
+
+function formatTestMultiClassFormatting (cbSuccess) {
+    torisFormat.setup({
+        format_multi_classes_with_at_least: 1,
+        multi_classes_order: [
+            'z-.*'
+        ]
+    });
+
+    // Test formatting multi classes
+    fsp.read(path.resolve(__dirname, './test/format-test-multi-class-preformatted.html'), function (preformattedHtmlTemplate) {
+        fsp.read(path.resolve(__dirname, './test/format-test-multi-class-formatted.html'), function (formattedHtmlTemplate) {
+            var testsPassed = formatTestFiles("MultiClassFormatting", preformattedHtmlTemplate, formattedHtmlTemplate);
             if (testsPassed && cbSuccess) {
                 cbSuccess();
             }

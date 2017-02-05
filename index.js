@@ -148,14 +148,16 @@ let g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'em
 let g_ALLOW_EMPTY_FILES = false;
 let g_ANGULAR_VERSION = 1;
 let g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
-let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = 3;
+let g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
+let g_FORCE_INLINE_WHITESPACE_FORMATTING = false;
+let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = -1;
 let g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
 let g_MULTI_CLASSES_ORDER = [];
 let g_NG_ATTRIBUTES_ORDER = [];
 let g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
-let g_REMOVE_CSS = true;
+let g_REMOVE_CSS = false;
 let g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
 
 // Config - Indenting:
@@ -191,6 +193,8 @@ function setup (in_config) {
   g_ALLOW_EMPTY_FILES = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
   g_ANGULAR_VERSION = get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
   g_BLOCK_ELEMENTS = get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
+  g_FORCE_BLOCK_WHITESPACE_FORMATTING = get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
+  g_FORCE_INLINE_WHITESPACE_FORMATTING = get_setup_property(in_config, "force_inline_whitespace_formatting", g_FORCE_INLINE_WHITESPACE_FORMATTING);
   g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
   g_INDENT = get_setup_property(in_config, "indent", g_INDENT);
   g_INLINE_ELEMENTS = get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
@@ -775,12 +779,12 @@ function parse_html_open_element_end (in_html_content) {
 
       output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
 
-      if (top_element_info.top_element_is_block_element) {
+      if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
         indent = t_NL + get_indent();
 
       } else if (space_content) {
         if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
-          if (top_element_info.top_element_is_inline_element) {
+          if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
             indent = ' ';
           } else {
             if (g_CURRENT_ELEMENT_WHITESPACE_BEFORE.match(/^ +$/)) {
@@ -790,7 +794,11 @@ function parse_html_open_element_end (in_html_content) {
             }
           }
         } else {
-          indent = ' ';
+          if (whitespace_before.match(/^ +$/)) {
+            indent = ' ';
+          } else {
+            indent = t_NL + get_indent();
+          }
         }
       }
 
@@ -908,11 +916,11 @@ function sort_attributes (in_attributes) {
       if (key === k_ATTRIBUTE_NAME_CLASS) {
         let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
 
-        if (g_MULTI_CLASSES_ORDER) {
+        if (g_MULTI_CLASSES_ORDER && g_MULTI_CLASSES_ORDER.length) {
           let classes = parse_classes_content(val);
           classes = sort_classes(classes);
 
-          if (classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
+          if (g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST >= 0 && classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
             val = t_NL + val_indent + classes.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
           } else {
             val = classes.filter((val) => {return val.trim().length}).join(' ');
@@ -1433,13 +1441,13 @@ function parse_html_close_element (in_html_content) {
 
     output = '</' + element + '>';
 
-    if (top_element_info.top_element_is_block_element) {
+    if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (space_content) {
-      if (top_element_is_empty && top_element_info.top_element_is_inline_element) {
+      if (top_element_is_empty && top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
         indent = '';
       } else if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
-        if (top_element_info.top_element_is_inline_element) {
+        if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
           indent = ' ';
         } else {
           if (whitespace_before.match(/^ +$/)) {
@@ -1449,7 +1457,11 @@ function parse_html_close_element (in_html_content) {
           }
         }
       } else {
-        indent = ' ';
+        if (whitespace_before.match(/^ +$/)) {
+          indent = ' ';
+        } else {
+          indent = t_NL + get_indent();
+        }
       }
     }
 
@@ -1500,11 +1512,11 @@ function parse_content (in_html_content) {
     let indent = '';
 
     let top_element_info = get_top_element_info();
-    if (top_element_info.top_element_is_block_element) {
+    if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (space_content) {
       if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
-        if (top_element_info.top_element_is_inline_element) {
+        if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
           indent = ' ';
         } else {
           if (whitespace_before.match(/^ +$/)) {
@@ -1514,7 +1526,11 @@ function parse_content (in_html_content) {
           }
         }
       } else {
-        indent = ' ';
+        if (whitespace_before.match(/^ +$/)) {
+          indent = ' ';
+        } else {
+          indent = t_NL + get_indent();
+        }
       }
     }
 
@@ -1554,10 +1570,10 @@ function parse_comment (in_html_content) {
     let indent = '';
 
     let top_element_info = get_top_element_info();
-    if (top_element_info.top_element_is_block_element) {
+    if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (whitespace_before) {
-      if (top_element_info.top_element_is_inline_element) {
+      if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
         indent = ' ';
       } else {
         indent = t_NL + get_indent();
@@ -1614,10 +1630,10 @@ function parse_style (in_html_content) {
     let indent = '';
 
     let top_element_info = get_top_element_info();
-    if (top_element_info.top_element_is_block_element) {
+    if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (whitespace_before) {
-      if (top_element_info.top_element_is_inline_element) {
+      if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
         indent = '';
       } else {
         indent = t_NL + get_indent();
