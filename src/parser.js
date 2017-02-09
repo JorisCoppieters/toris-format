@@ -53,13 +53,14 @@ module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
 module.exports['parse_contents'] = parse_contents;
 module.exports['output_tree'] = output_tree;
 module.exports['output_tree_failed'] = output_tree_failed;
+module.exports['set_indent_count'] = set_indent_count;
 
 // ******************************
 // Globals:
 // ******************************
 
-let g_HTML_INDENT_COUNT = 0;
 let g_INDENT = '    ';
+let g_INDENT_COUNT = 0;
 
 let t_NL = '\n';
 let g_NL = '\r\n';
@@ -432,12 +433,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   let definition_value = (in_tree.VALUE || '').trim();
 
   let append = false;
-  let color_append = false;
+  let color_func = false;
 
   let newline = false;
   let double_newline = false;
-  let pre_html_indent = 0;
-  let post_html_indent = 0;
+  let pre_indent = 0;
+  let post_indent = 0;
 
   switch (definition_key) {
     case 'DOT':
@@ -471,27 +472,32 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
       if (state.TYPE === 'PROPERTY') {
         append = definition_value;
-        color_append = cprint.toGreen(append);
+        color_func = cprint.toGreen;
 
       } else if (state.TYPE === 'INCLUDE') {
         append = definition_value;
-        color_append = cprint.toCyan(append);
+        color_func = cprint.toCyan;
 
       } else if (state.TYPE === 'EXPRESSION') {
-        append = (state.SEEN_DOLLAR ? '' : ' ') + definition_value;
-        state.SEEN_DOLLAR = false;
-        color_append = cprint.toYellow(append);
+        if (!state.SEEN_DOLLAR && !state.SEEN_VALUE) {
+          append = ' ' + definition_value;
+        } else {
+          append = definition_value;
+          state.SEEN_DOLLAR = false;
+          state.SEEN_VALUE = false;
+        }
+        color_func = cprint.toYellow;
 
       } else if (state.TYPE === 'SELECTOR') {
         append = (state.DOT_SELECTOR ? '.' : '') + definition_value;
-        color_append = cprint.toWhite(append);
+        color_func = cprint.toWhite;
         newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && state.ADDITIONAL_SELECTORS) || newline
         double_newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && !state.ADDITIONAL_SELECTORS && state.SEEN_BLOCK_IDENTIFIER);
         state.DOT_SELECTOR = false;
 
       } else {
         append = definition_value;
-        color_append = cprint.toRed(append);
+        color_func = cprint.toRed;
 
       }
       state.SEEN_BLOCK_IDENTIFIER = true;
@@ -499,19 +505,19 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'Unit':
       append = definition_value;
-      color_append = cprint.toYellow(append);
+      color_func = cprint.toYellow;
       break;
 
     case 'LPAREN':
       append = definition_value;
       state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) + 1;
-      color_append = cprint.toYellow(append);
+      color_func = cprint.toYellow;
       break;
 
     case 'RPAREN':
       append = definition_value;
       state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) - 1;
-      color_append = cprint.toYellow(append);
+      color_func = cprint.toYellow;
       break;
 
     case 'DOLLAR':
@@ -522,39 +528,47 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
           append = ' ' + definition_value;
         }
         state.SEEN_DOLLAR = true;
-        color_append = cprint.toYellow(append);
+        color_func = cprint.toYellow;
       } else {
         append = definition_value;
-        color_append = cprint.toYellow(append);
+        color_func = cprint.toYellow;
       }
       break;
 
     case 'Number':
     case 'Color':
     case 'RGB_VAL':
-      append = ' ' + definition_value;
-      color_append = cprint.toYellow(append);
+      if (state.PAREN_OPEN_COUNT > 0 && !state.COMMA_SEEN) {
+        append = definition_value;
+      } else {
+        state.COMMA_SEEN = false;
+        append = ' ' + definition_value;
+      }
+      color_func = cprint.toYellow;
+      state.SEEN_VALUE = true;
       break;
 
     case 'COMMA':
       append = definition_value;
 
       if (state.TYPE === 'PROPERTY') {
-        color_append = cprint.toGreen(append);
+        color_func = cprint.toGreen;
       } else if (state.TYPE === 'EXPRESSION') {
-        color_append = cprint.toYellow(append);
+        color_func = cprint.toYellow;
       } else if (state.TYPE === 'SELECTOR') {
-        color_append = cprint.toWhite(append);
+        color_func = cprint.toWhite;
         state.ADDITIONAL_SELECTORS = true;
       } else {
-        color_append = cprint.toRed(append);
+        color_func = cprint.toRed;
       }
+
+      state.COMMA_SEEN = true;
 
       break;
 
     case 'GT':
       append = ' > ';
-      color_append = cprint.toCyan(append);
+      color_func = cprint.toCyan;
       break;
 
     case 'AND':
@@ -562,29 +576,29 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       newline = true;
       double_newline = (!state.SEEN_AND && state.SEEN_BLOCK_IDENTIFIER);
       state.SEEN_AND = true;
-      color_append = cprint.toCyan(append);
+      color_func = cprint.toCyan;
       break;
 
     case 'COLON':
       append = ':';
-      color_append = cprint.toCyan(append);
+      color_func = cprint.toCyan;
       break;
 
     case 'SEMI':
       state.TYPE = false;
       append = ';';
-      color_append = cprint.toYellow(append);
+      color_func = cprint.toYellow;
       break;
 
     case 'SL_COMMENT':
       append = ' ' + definition_value;
-      color_append = cprint.toMagenta(append);
+      color_func = cprint.toMagenta;
       break;
 
     case 'INCLUDE':
       append = definition_value + ' ';
       double_newline = true;
-      color_append = cprint.toCyan(append);
+      color_func = cprint.toCyan;
       break;
 
     case 'BlockStart':
@@ -592,16 +606,20 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.BLOCK_DEPTH = (state.BLOCK_DEPTH || 0) + 1;
       state.ADDITIONAL_SELECTORS = false;
       state.SEEN_BLOCK_IDENTIFIER = false;
-      color_append = cprint.toWhite(append);
-      post_html_indent = 1;
+      color_func = cprint.toWhite;
+      post_indent = 1;
       break;
 
     case 'BlockEnd':
       append = '}';
       state.BLOCK_DEPTH = state.BLOCK_DEPTH - 1;
-      color_append = cprint.toWhite(append);
+      state.SEEN_VALUE = false;
+      state.SEEN_DOLLAR = false;
+      state.SEEN_SELECTOR_PREFIX = false;
+      state.SEEN_AND = false;
+      color_func = cprint.toWhite;
       newline = true;
-      pre_html_indent = -1;
+      pre_indent = -1;
       break;
 
     default:
@@ -611,26 +629,28 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
   }
 
-  if (pre_html_indent != 0) {
-    inc_html_indent(pre_html_indent);
+  if (pre_indent != 0) {
+    inc_indent(pre_indent);
   }
 
-  let html_indent = get_html_indent();
+  let output_indent = get_indent();
 
-  if (post_html_indent != 0) {
-    inc_html_indent(post_html_indent);
+  if (post_indent != 0) {
+    inc_indent(post_indent);
   }
 
   if (append) {
     let delim = '';
     if (double_newline) {
-      delim = t_NL + t_NL + html_indent;
+      delim = t_NL + t_NL + output_indent;
     } else if (newline) {
-      delim = t_NL + html_indent;
+      delim = t_NL + output_indent;
     }
 
+    color_func = color_func || cprint.toRed;
+
     tree_output.output = utils.str_append(tree_output.output, append, delim);
-    tree_output.color_output = utils.str_append(tree_output.color_output, color_append || append, delim);
+    tree_output.color_output = utils.str_append(tree_output.color_output, color_func(append), delim);
   }
 
   let definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
@@ -697,7 +717,7 @@ function get_tree_value (in_tree, in_print, in_resolve_special_chars) {
     let matches;
     while (matches = print.match(new RegExp('\\[T(?:\:([0-9]))?\\]', 'i'))) {
       let indent_inc = parseInt(matches[1]) || 0;
-      print = print.replace(new RegExp('\\[T(:[0-9])?\\]', 'i'), get_html_indent(indent_inc));
+      print = print.replace(new RegExp('\\[T(:[0-9])?\\]', 'i'), get_indent(indent_inc));
     }
   }
 
@@ -706,22 +726,25 @@ function get_tree_value (in_tree, in_print, in_resolve_special_chars) {
 
 // ******************************
 
-function get_html_indent (in_inc) {
-  let fn = 'get_html_indent';
-  return utils.str_repeat(g_INDENT, g_HTML_INDENT_COUNT + (in_inc || 0));
+function get_indent (in_inc) {
+  return utils.str_repeat(g_INDENT, g_INDENT_COUNT + (in_inc || 0));
 }
 
 // ******************************
 
-function inc_html_indent (in_inc) {
-  let fn = 'inc_html_indent';
-  g_HTML_INDENT_COUNT = Math.max(0, g_HTML_INDENT_COUNT + in_inc);
+function inc_indent (in_inc) {
+  g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + in_inc);
+}
+
+// ******************************
+
+function set_indent_count (in_indent_count) {
+  g_INDENT_COUNT = Math.max(0, in_indent_count);
 }
 
 // ******************************
 
 function throw_error (in_function_name, in_message, in_definition_key) {
-  let fn = 'throw_error';
   if (in_definition_key) {
     throw in_function_name + ': [' + in_definition_key + '] ' + in_message;
   }

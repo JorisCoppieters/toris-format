@@ -319,6 +319,7 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 // ******************************
 
 function format_sass_contents (in_contents) {
+  parser.set_indent_count(g_INDENT_COUNT);
   let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
 
@@ -332,7 +333,8 @@ function format_sass_contents (in_contents) {
 
 // ******************************
 
-function print_sass_contents (in_contents) {
+function print_sass_contents (in_contents, in_indent_count) {
+  parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
   let tree_output_failed = parser.output_tree_failed(tree);
@@ -356,6 +358,7 @@ function print_sass_contents (in_contents) {
     return;
   }
 
+  fsp.write('./structure.txt', tree_output.values);
   console.log(tree_output.color_output);
 }
 
@@ -1707,7 +1710,7 @@ function parse_style (in_html_content) {
     } else if (css.trim().length) {
       output += '<style type="text/css">';
       inc_indent(1);
-      css = css.replace(/([\r][\n]|[\r]|[\n])/g, t_NL);
+      css = format_sass_contents(css);
       output += t_NL + get_indent() + css;
       inc_indent(-1);
       output += t_NL + get_indent() + '</style>';
