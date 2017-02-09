@@ -3,9 +3,13 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.5.0
+// TORIS FORMAT v1.6.0
 //
 // Version History:
+//
+// 1.6.0
+// - Started work on refactoring into proper AST with Grammar files
+// - Added support for scss files
 //
 // 1.5.0
 // - Refactored attribute value object parsing
@@ -44,6 +48,13 @@
 // ******************************
 
 // ******************************
+// Requires:
+// ******************************
+
+let parser = require('./src/parser');
+let cprint = require('color-print');
+
+// ******************************
 // Constants:
 // ******************************
 
@@ -79,6 +90,7 @@ const k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE = '[NG2_ATTRIBUTE_TYPE_BINDI
 
 module.exports['k_VERSION'] = k_VERSION;
 module.exports['format_html_file'] = format_html_file;
+module.exports['format_sass_file'] = format_sass_file;
 module.exports['setup'] = setup;
 
 // ******************************
@@ -300,7 +312,22 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 }
 
 // ******************************
-// Functions:
+// SCSS Format Functions:
+// ******************************
+
+function format_sass_file (in_file_contents) {
+  let tree = parser.parse_contents(in_file_contents, parser.k_DEFINITION_TYPE_SCSS);
+  let tree_output = parser.output_tree(tree);
+
+  if (!tree_output.output) {
+    throw 'Parser failed :(';
+  }
+
+  return tree_output.output;
+}
+
+// ******************************
+// HTML Format Functions:
 // ******************************
 
 function format_html_file (in_file_contents, in_indent_count, in_wrap_with_divs) {
