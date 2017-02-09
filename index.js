@@ -53,6 +53,7 @@
 
 let parser = require('./src/parser');
 let cprint = require('color-print');
+let fsp = require('fs-process');
 
 // ******************************
 // Constants:
@@ -322,6 +323,11 @@ function format_sass_file (in_file_contents) {
   if (!tree_output.output) {
     throw 'Parser failed :(';
   }
+
+  cprint.magenta('--TREE--');
+  console.log(tree_output.color_output);
+
+  fsp.write('./structure.txt', tree_output.values);
 
   return tree_output.output;
 }

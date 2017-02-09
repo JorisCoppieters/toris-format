@@ -303,7 +303,7 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
 // ******************************
 
 function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassTemplate) {
-    try {
+    // try {
         cprint.magenta('Testing ' + testName + ' formatting preformatted sass outputs to formatted sass');
 
         var inputSass = preformattedSassTemplate;
@@ -323,36 +323,36 @@ function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassT
             fsp.write(test1_outputSassFile, outputSass);
             return;
         }
-    } catch (err) {
-        cprint.red('Couldn\'t parse preformatted Sass template');
-        cprint.red(err);
-    }
+    // } catch (err) {
+    //     cprint.red('Couldn\'t parse preformatted Sass template');
+    //     cprint.red(err);
+    // }
 
-    try {
-        cprint.magenta('Testing ' + testName + ' formatting already formatted sass still outputs to formatted sass');
+    // try {
+    //     cprint.magenta('Testing ' + testName + ' formatting already formatted sass still outputs to formatted sass');
 
-        var inputSass = formattedSassTemplate;
-        var expectedOutputSass = formattedSassTemplate;
+    //     var inputSass = formattedSassTemplate;
+    //     var expectedOutputSass = formattedSassTemplate;
 
-        var test2_expectedOutputSassFile = '_alreadyFormattedTest_' + testName + '_expectedOutput.txt';
-        var test2_outputSassFile = '_alreadyFormattedTest_' + testName + '_output.txt';
+    //     var test2_expectedOutputSassFile = '_alreadyFormattedTest_' + testName + '_expectedOutput.txt';
+    //     var test2_outputSassFile = '_alreadyFormattedTest_' + testName + '_output.txt';
 
-        var outputSass = torisFormat.format_sass_file(inputSass);
-        if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
-            cprint.green('Success!');
-            fs.exists(test2_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputSassFile); } } );
-            fs.exists(test2_outputSassFile, (exists) => { if (exists) { fsp.remove(test2_outputSassFile); } } );
-        } else if (outputSass) {
-            cprint.red('Unexpected Sass');
-            fsp.write(test2_expectedOutputSassFile, expectedOutputSass);
-            fsp.write(test2_outputSassFile, outputSass);
-            return;
-        }
+    //     var outputSass = torisFormat.format_sass_file(inputSass);
+    //     if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
+    //         cprint.green('Success!');
+    //         fs.exists(test2_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputSassFile); } } );
+    //         fs.exists(test2_outputSassFile, (exists) => { if (exists) { fsp.remove(test2_outputSassFile); } } );
+    //     } else if (outputSass) {
+    //         cprint.red('Unexpected Sass');
+    //         fsp.write(test2_expectedOutputSassFile, expectedOutputSass);
+    //         fsp.write(test2_outputSassFile, outputSass);
+    //         return;
+    //     }
 
-    } catch (err) {
-        cprint.red('Couldn\'t parse preformatted Sass template');
-        cprint.red(err);
-    }
+    // } catch (err) {
+    //     cprint.red('Couldn\'t parse preformatted Sass template');
+    //     cprint.red(err);
+    // }
 
     return true;
 }

@@ -37,7 +37,7 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['importDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'includeDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'includeDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
   },
   params: {
     OPERATOR: '&&',

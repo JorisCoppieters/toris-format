@@ -90,6 +90,8 @@ function parse_contents (in_contents, in_definition_type) {
         throw_error(fn, 'parse_contents: You must specify a valid definition type');
     }
 
+    // definition[k_DEFINITION_KEY_START].DEBUG = 'ON';
+
     let tree = {}
     parse_definition_key(tree, contents, definition, k_DEFINITION_KEY_START);
     result = tree;
@@ -420,19 +422,25 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   switch (definition_key) {
     case 'DOT':
-      break;
-
-    case 'dotIdentifier':
       append = '.';
       color_append = cprint.toWhite(append);
-      state.TYPE = 'CLASS_NAME';
-      newline = true;
-      double_newline = (state.BLOCK_DEPTH > 0) || (state.CLASS_IDX > 0);
-      state.CLASS_IDX = (state.CLASS_IDX || 0) + 1;
+      newline = !state.SEEN_SELECTOR_PREFIX;
+      double_newline = newline && (!state.ADDITIONAL_SELECTORS);
+      break;
+
+    case 'selector':
+      state.SEEN_SELECTOR_PREFIX = false;
+      state.TYPE = 'SELECTOR';
+      break;
+
+    case 'selectorPrefix':
+      state.SEEN_SELECTOR_PREFIX = true;
       break;
 
     case 'property':
       state.TYPE = 'PROPERTY';
+      state.SEEN_PROPERTY = true;
+      state.SEEN_AND = false;
       break;
 
     case 'expression':
@@ -440,17 +448,26 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'Identifier':
-      append = definition_value.trim();
-      newline = (state.TYPE === 'PROPERTY');
+      newline = (state.TYPE === 'PROPERTY' || !state.SEEN_BLOCK_CONTENT);
+      state.SEEN_BLOCK_CONTENT = true;
 
       if (state.TYPE === 'PROPERTY') {
+        append = definition_value.trim();
         color_append = cprint.toGreen(append);
+
       } else if (state.TYPE === 'EXPRESSION') {
+        append = (state.SEEN_DOLLAR ? '' : ' ') + definition_value.trim();
+        state.SEEN_DOLLAR = false;
         color_append = cprint.toMagenta(append);
-      } else if (state.TYPE === 'CLASS_NAME') {
+
+      } else if (state.TYPE === 'SELECTOR') {
+        append = definition_value.trim();
         color_append = cprint.toWhite(append);
+
       } else {
+        append = definition_value.trim();
         color_append = cprint.toRed(append);
+
       }
       break;
 
@@ -461,20 +478,55 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       color_append = cprint.toMagenta(append);
       break;
 
+    case 'DOLLAR':
+      if (state.TYPE === 'EXPRESSION') {
+        append = ' ' + definition_value.trim();
+        state.SEEN_DOLLAR = true;
+        color_append = cprint.toWhite(append);
+      } else {
+        append = definition_value.trim();
+        color_append = cprint.toWhite(append);
+      }
+      break;
+
     case 'Number':
+    case 'Color':
     case 'RGB_VAL':
       append = definition_value.trim();
-      color_append = cprint.toYellow(append);
+      color_append = ' ' + cprint.toYellow(append);
       break;
 
     case 'COMMA':
-      append = definition_value.trim() + ' ';
-      color_append = cprint.toMagenta(append);
+      append = definition_value.trim();
+
+      if (state.TYPE === 'PROPERTY') {
+        color_append = cprint.toGreen(append);
+      } else if (state.TYPE === 'EXPRESSION') {
+        color_append = cprint.toMagenta(append);
+      } else if (state.TYPE === 'SELECTOR') {
+        color_append = cprint.toWhite(append);
+        state.ADDITIONAL_SELECTORS = true;
+      } else {
+        color_append = cprint.toRed(append);
+      }
+
+      break;
+
+    case 'GT':
+      append = ' > ';
+      color_append = cprint.toCyan(append);
+      break;
+
+    case 'AND':
+      append = '&';
+      newline = true;
+      double_newline = (!state.SEEN_AND && state.SEEN_PROPERTY);
+      state.SEEN_AND = true;
+      color_append = cprint.toCyan(append);
       break;
 
     case 'COLON':
-      state.PROPERTY = false;
-      append = ': ';
+      append = ':';
       color_append = cprint.toCyan(append);
       break;
 
@@ -484,9 +536,22 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       color_append = cprint.toYellow(append);
       break;
 
+    case 'SL_COMMENT':
+      append = ' ' + definition_value.trim();
+      color_append = cprint.toCyan(append);
+      break;
+
+    case 'INCLUDE':
+      append = definition_value.trim() + ' ';
+      newline = true;
+      color_append = cprint.toCyan(append);
+      break;
+
     case 'BlockStart':
       append = ' {';
       state.BLOCK_DEPTH = (state.BLOCK_DEPTH || 0) + 1;
+      state.ADDITIONAL_SELECTORS = false;
+      state.SEEN_BLOCK_CONTENT = false;
       color_append = cprint.toWhite(append);
       post_html_indent = 1;
       break;
@@ -494,6 +559,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'BlockEnd':
       append = '}';
       state.BLOCK_DEPTH = state.BLOCK_DEPTH - 1;
+      state.SEEN_PROPERTY = false;
       color_append = cprint.toWhite(append);
       newline = true;
       pre_html_indent = -1;

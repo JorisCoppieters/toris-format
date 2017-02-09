@@ -131,11 +131,11 @@ var DEFINITION = {
   },
   DIV: {
     OPERATOR: '==',
-    VALUE: '\/'
+    VALUE: '\\/'
   },
   MINUS: {
     OPERATOR: '==',
-    VALUE: '\-'
+    VALUE: '\\-'
   },
   PERC: {
     OPERATOR: '==',
@@ -235,11 +235,11 @@ var DEFINITION = {
   },
   STRING_SINGLE_QUOTED: {
     OPERATOR: '==',
-    VALUE: '\'[^\'\n\r]*\''
+    VALUE: '\'[^\'\\n\\r]*\''
   },
   STRING_DOUBLE_QUOTED: {
     OPERATOR: '==',
-    VALUE: '"[^"\n\r]*"'
+    VALUE: '"[^"\\n\\r]*"'
   },
   StringLiteral: {
     OPERATOR: '&&',
@@ -267,15 +267,15 @@ var DEFINITION = {
   },
   WS: {
     OPERATOR: '==',
-    VALUE: '[ \t\n\r]+'
+    VALUE: '[ \\t\\n\\r]+'
   },
   SL_COMMENT: {
     OPERATOR: '==',
-    VALUE: '\/\/[^\n\r]*(?:[\n]|[\r](?:[\n])?)'
+    VALUE: '\\/\\/[^\\n\\r]*(?:[\\n]|[\\r](?:[\\n])?)'
   },
   COMMENT: {
     OPERATOR: '==',
-    VALUE: '\/\*.*?\*\/'
+    VALUE: '\\/\\*.*?\\*\\/'
   },
   IdentifierAfter: {
     OPERATOR: '&&',
@@ -295,7 +295,7 @@ var DEFINITION = {
   },
   UrlVal: {
     OPERATOR: '==',
-    VALUE: '[^\)\n\r;]+'
+    VALUE: '[^\\)\\n\\r;]+'
   }
 };
 
