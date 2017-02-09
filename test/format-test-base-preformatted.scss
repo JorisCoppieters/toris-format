@@ -1,60 +1,49 @@
 tm-homepage-categories {
     
-    tg-box > .o-box > div > ul > li { // have to target ul and li like this becuase they get stripped out of the dom :/
-        break-inside: avoid;
+    tg-box  >   .o-box > div > ul >  li {    // have to target ul and li like this becuase they get stripped out of the dom :/
+        break-inside:avoid;
     }
 
     @include breakpoint($md-min) {
         ul {
-            columns: 3;
+            columns:      3;
         }
     }
 
-    @include breakpoint($xl-min) {
+        @include breakpoint(  $xl-min )
+    {
         ul {
-            columns: 4;
+            columns:4;
         }
     }
 }
 
 .homepage__categories__button--marketplace > a,
-.homepage__categories__button--jobs > a,
-.homepage__categories__button--motors > button,
-.homepage__categories__button--property > a {
-    border: 0;
+.homepage__categories__button--jobs        > a,
+.homepage__categories__button--motors       >     button,
+          .homepage__categories__button--property >     a {
+    border:0;
 
-    &,
-    &:visited,
-    &:active {
-        color: #fff;
+    &,&:visited,&:active {
+    color:#fff;
     }
 }
 
 .homepage__categories__button--marketplace > a {
-    background-color: $pohutukawa-600;
+    background-color:$pohutukawa-600;
     box-shadow: inset 0 -2px 0 $pohutukawa-800;
 
     &:focus {
-        box-shadow: $box-shadow-focus $pohutukawa-50, $box-shadow-inset-bottom $pohutukawa-800;
+        box-shadow: $box-shadow-focus $pohutukawa-50,$box-shadow-inset-bottom $pohutukawa-800;
     }
 
     &:hover {
-        background-color: $pohutukawa-300;
-        color: $white;
-
+        background-color:$pohutukawa-300;color:$white;
         &:focus { // This colours the focus on hover to match the button colour
-            box-shadow: $box-shadow-focus $pohutukawa-50;
-        }
+            box-shadow: $box-shadow-focus $pohutukawa-50;}
     }
 
-    &:active {
-        background-color: $pohutukawa-700;
-        box-shadow: $box-shadow-inset-top $pohutukawa-900;
-
-        &:focus {
-            box-shadow: $box-shadow-inset-top $pohutukawa-900;
-        }
-    }
+    &:active {background-color: $pohutukawa-700;box-shadow: $box-shadow-inset-top $pohutukawa-900;&:focus{box-shadow: $box-shadow-inset-top $pohutukawa-900;}}
 }
 
 .homepage__categories__button--jobs > a {

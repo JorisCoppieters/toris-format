@@ -52,6 +52,7 @@ module.exports['k_DEFINITION_TYPE_HTML'] = k_DEFINITION_TYPE_HTML;
 module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
 module.exports['parse_contents'] = parse_contents;
 module.exports['output_tree'] = output_tree;
+module.exports['output_tree_failed'] = output_tree_failed;
 
 // ******************************
 // Globals:
@@ -163,7 +164,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
     }
 
     if (is_start && result !== '') {
-      throw_error(fn, 'Unrecognised Content: ' + contents.substr(0, 100) + '... ');
+      throw_error(fn, 'Unrecognised Content: ' + contents.substr(0, 100) + '...');
     }
 
     tree.DEFINITION_KEY = definition_key;
@@ -189,6 +190,7 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
     let matched = false;
     let sub_tree = {};
     let matched_sub_tree = {};
+    let all_matched_sub_trees = [];
 
     segments.forEach((sub_definition_key) => {
       if (matched) {
@@ -197,11 +199,15 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
 
       sub_tree = {};
       remaining = parse_definition_key(sub_tree, in_contents, in_definition, sub_definition_key, in_indent + '  ', in_debug);
+      all_matched_sub_trees.push(sub_tree);
+
       if (remaining !== false) {
         matched = true;
         matched_sub_tree = sub_tree;
       }
     });
+
+    out_tree.ALL_CHILDREN = all_matched_sub_trees;
 
     if (!matched) {
       if (in_debug === k_DEBUG_ON) {
@@ -242,6 +248,7 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
     let matched = true;
     let sub_tree = {};
     let sub_tree_children = [];
+    let all_matched_sub_trees = [];
 
     segments.forEach((sub_definition_key) => {
       if (!matched) {
@@ -250,6 +257,8 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
 
       sub_tree = {};
       remaining = parse_definition_key(sub_tree, contents, in_definition, sub_definition_key, in_indent + '  ', in_debug);
+      all_matched_sub_trees.push(sub_tree);
+
       if (remaining === false) {
         matched = false;
         return;
@@ -258,6 +267,8 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
       sub_tree_children.push(sub_tree);
       contents = remaining;
     });
+
+    out_tree.ALL_CHILDREN = all_matched_sub_trees;
 
     if (!matched) {
       if (in_debug === k_DEBUG_ON) {
@@ -297,6 +308,7 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
     let matched_any = false;
     let sub_tree = {};
     let sub_tree_children = [];
+    let all_matched_sub_trees = [];
 
     while (matched) {
       if (remaining === '') {
@@ -310,6 +322,8 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
 
         sub_tree = {};
         remaining = parse_definition_key(sub_tree, contents, in_definition, sub_definition_key, in_indent + '  ', in_debug);
+        all_matched_sub_trees.push(sub_tree);
+
         if (remaining === false) {
           matched = false;
           return;
@@ -320,6 +334,8 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
         matched_any = true;
       });
     }
+
+    out_tree.ALL_CHILDREN = all_matched_sub_trees;
 
     if (!matched_any) {
       if (!in_optional) {
@@ -379,7 +395,7 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
     let matches = contents.match(regexp);
     if (!matches) {
       if (in_debug === k_DEBUG_ON) {
-        cprint.red(in_indent + original_contents.substr(0, 100) + '... ');
+        cprint.red(in_indent + original_contents.substr(0, 100) + '...');
         cprint.red(in_indent + in_definition_key + ' [FAILED]');
       }
       break;
@@ -391,10 +407,12 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
     out_tree.VALUE = matches[matches.length - 1];
 
     if (in_debug === k_DEBUG_ON) {
-      cprint.yellow(in_indent + original_contents.substr(0, 100) + '... ');
-      cprint.green(in_indent + remaining.substr(0, 100) + '... ');
+      cprint.yellow(in_indent + original_contents.substr(0, 100) + '...');
+      cprint.green(in_indent + remaining.substr(0, 100) + '...');
       cprint.green(in_indent + in_definition_key + ' [MATCHED]');
     }
+
+    out_tree.REMAINING_LENGTH = remaining.length;
 
     result = remaining;
   }
@@ -407,11 +425,12 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 
 function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   let state = in_state || {};
-  let tree_output = in_tree_output || { values: '', structure: '', output: '', color_output: '' };
+  let tree_output = in_tree_output || {};
   let indent = in_indent || '';
 
   let definition_key = in_tree.DEFINITION_KEY;
-  let definition_value = in_tree.VALUE;
+  let definition_value = (in_tree.VALUE || '').trim();
+
   let append = false;
   let color_append = false;
 
@@ -422,10 +441,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   switch (definition_key) {
     case 'DOT':
-      append = '.';
-      color_append = cprint.toWhite(append);
-      newline = !state.SEEN_SELECTOR_PREFIX;
-      double_newline = newline && (!state.ADDITIONAL_SELECTORS);
+      state.DOT_SELECTOR = true;
       break;
 
     case 'selector':
@@ -439,7 +455,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'property':
       state.TYPE = 'PROPERTY';
-      state.SEEN_PROPERTY = true;
       state.SEEN_AND = false;
       break;
 
@@ -447,62 +462,87 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.TYPE = 'EXPRESSION';
       break;
 
+    case 'includeDeclaration':
+      state.TYPE = 'INCLUDE';
+      break;
+
     case 'Identifier':
-      newline = (state.TYPE === 'PROPERTY' || !state.SEEN_BLOCK_CONTENT);
-      state.SEEN_BLOCK_CONTENT = true;
+      newline = (state.TYPE === 'PROPERTY' || !state.SEEN_BLOCK_IDENTIFIER);
 
       if (state.TYPE === 'PROPERTY') {
-        append = definition_value.trim();
+        append = definition_value;
         color_append = cprint.toGreen(append);
 
+      } else if (state.TYPE === 'INCLUDE') {
+        append = definition_value;
+        color_append = cprint.toCyan(append);
+
       } else if (state.TYPE === 'EXPRESSION') {
-        append = (state.SEEN_DOLLAR ? '' : ' ') + definition_value.trim();
+        append = (state.SEEN_DOLLAR ? '' : ' ') + definition_value;
         state.SEEN_DOLLAR = false;
-        color_append = cprint.toMagenta(append);
+        color_append = cprint.toYellow(append);
 
       } else if (state.TYPE === 'SELECTOR') {
-        append = definition_value.trim();
+        append = (state.DOT_SELECTOR ? '.' : '') + definition_value;
         color_append = cprint.toWhite(append);
+        newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && state.ADDITIONAL_SELECTORS) || newline
+        double_newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && !state.ADDITIONAL_SELECTORS && state.SEEN_BLOCK_IDENTIFIER);
+        state.DOT_SELECTOR = false;
 
       } else {
-        append = definition_value.trim();
+        append = definition_value;
         color_append = cprint.toRed(append);
 
       }
+      state.SEEN_BLOCK_IDENTIFIER = true;
       break;
 
     case 'Unit':
+      append = definition_value;
+      color_append = cprint.toYellow(append);
+      break;
+
     case 'LPAREN':
+      append = definition_value;
+      state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) + 1;
+      color_append = cprint.toYellow(append);
+      break;
+
     case 'RPAREN':
-      append = definition_value.trim();
-      color_append = cprint.toMagenta(append);
+      append = definition_value;
+      state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) - 1;
+      color_append = cprint.toYellow(append);
       break;
 
     case 'DOLLAR':
       if (state.TYPE === 'EXPRESSION') {
-        append = ' ' + definition_value.trim();
+        if (state.PAREN_OPEN_COUNT > 0) {
+          append = definition_value;
+        } else {
+          append = ' ' + definition_value;
+        }
         state.SEEN_DOLLAR = true;
-        color_append = cprint.toWhite(append);
+        color_append = cprint.toYellow(append);
       } else {
-        append = definition_value.trim();
-        color_append = cprint.toWhite(append);
+        append = definition_value;
+        color_append = cprint.toYellow(append);
       }
       break;
 
     case 'Number':
     case 'Color':
     case 'RGB_VAL':
-      append = definition_value.trim();
-      color_append = ' ' + cprint.toYellow(append);
+      append = ' ' + definition_value;
+      color_append = cprint.toYellow(append);
       break;
 
     case 'COMMA':
-      append = definition_value.trim();
+      append = definition_value;
 
       if (state.TYPE === 'PROPERTY') {
         color_append = cprint.toGreen(append);
       } else if (state.TYPE === 'EXPRESSION') {
-        color_append = cprint.toMagenta(append);
+        color_append = cprint.toYellow(append);
       } else if (state.TYPE === 'SELECTOR') {
         color_append = cprint.toWhite(append);
         state.ADDITIONAL_SELECTORS = true;
@@ -520,7 +560,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'AND':
       append = '&';
       newline = true;
-      double_newline = (!state.SEEN_AND && state.SEEN_PROPERTY);
+      double_newline = (!state.SEEN_AND && state.SEEN_BLOCK_IDENTIFIER);
       state.SEEN_AND = true;
       color_append = cprint.toCyan(append);
       break;
@@ -537,13 +577,13 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'SL_COMMENT':
-      append = ' ' + definition_value.trim();
-      color_append = cprint.toCyan(append);
+      append = ' ' + definition_value;
+      color_append = cprint.toMagenta(append);
       break;
 
     case 'INCLUDE':
-      append = definition_value.trim() + ' ';
-      newline = true;
+      append = definition_value + ' ';
+      double_newline = true;
       color_append = cprint.toCyan(append);
       break;
 
@@ -551,7 +591,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       append = ' {';
       state.BLOCK_DEPTH = (state.BLOCK_DEPTH || 0) + 1;
       state.ADDITIONAL_SELECTORS = false;
-      state.SEEN_BLOCK_CONTENT = false;
+      state.SEEN_BLOCK_IDENTIFIER = false;
       color_append = cprint.toWhite(append);
       post_html_indent = 1;
       break;
@@ -559,7 +599,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'BlockEnd':
       append = '}';
       state.BLOCK_DEPTH = state.BLOCK_DEPTH - 1;
-      state.SEEN_PROPERTY = false;
       color_append = cprint.toWhite(append);
       newline = true;
       pre_html_indent = -1;
@@ -601,6 +640,33 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   if (in_tree.CHILDREN) {
     in_tree.CHILDREN.forEach((child) => {
       output_tree(child, state, tree_output, indent + '  ');
+    });
+  }
+
+  return tree_output;
+}
+
+// ******************************
+
+function output_tree_failed (in_tree, in_tree_output, in_indent) {
+  let tree_output = in_tree_output || {};
+  let indent = in_indent || '';
+
+  let definition_key = in_tree.DEFINITION_KEY;
+  let definition_value = (in_tree.VALUE || '').trim();
+
+  let definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
+  tree_output.values = utils.str_append(tree_output.values, definition_key_value, t_NL + indent);
+  tree_output.structure = utils.str_append(tree_output.structure, definition_key, t_NL + indent);
+
+  if (!tree_output.least_remaining || tree_output.least_remaining > in_tree.REMAINING_LENGTH) {
+    tree_output.least_remaining = in_tree.REMAINING_LENGTH;
+    tree_output.best_leaf = in_tree.DEFINITION_KEY;
+  }
+
+  if (in_tree.ALL_CHILDREN) {
+    in_tree.ALL_CHILDREN.forEach((child) => {
+      output_tree_failed(child, tree_output, indent + '  ');
     });
   }
 

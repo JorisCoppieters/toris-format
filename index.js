@@ -90,8 +90,10 @@ const k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE = '[NG2_ATTRIBUTE_TYPE_BINDI
 // ******************************
 
 module.exports['k_VERSION'] = k_VERSION;
-module.exports['format_html_file'] = format_html_file;
-module.exports['format_sass_file'] = format_sass_file;
+module.exports['format_html_file'] = format_html_contents;
+module.exports['format_html_contents'] = format_html_contents;
+module.exports['print_sass_contents'] = print_sass_contents;
+module.exports['format_sass_contents'] = format_sass_contents;
 module.exports['setup'] = setup;
 
 // ******************************
@@ -316,31 +318,56 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 // SCSS Format Functions:
 // ******************************
 
-function format_sass_file (in_file_contents) {
-  let tree = parser.parse_contents(in_file_contents, parser.k_DEFINITION_TYPE_SCSS);
+function format_sass_contents (in_contents) {
+  let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
-    throw 'Parser failed :(';
+    return in_contents;
   }
 
-  cprint.magenta('--TREE--');
-  console.log(tree_output.color_output);
-
-  fsp.write('./structure.txt', tree_output.values);
-
+  // fsp.write('./structure.txt', tree_output.values);
   return tree_output.output;
+}
+
+// ******************************
+
+function print_sass_contents (in_contents) {
+  let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
+  let tree_output = parser.output_tree(tree);
+  let tree_output_failed = parser.output_tree_failed(tree);
+
+  if (!tree_output.output) {
+    cprint.red('FAILED TO PARSE:');
+    let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
+    let unrecognised_contents_length = 1;
+
+    let recognised_contents = in_contents.substr(0, recognised_contents_length);
+    let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
+      unrecognised_contents_length += 1;
+      unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+    }
+
+    unrecognised_contents += '...';
+
+    cprint.green(recognised_contents);
+    cprint.red(unrecognised_contents);
+    return;
+  }
+
+  console.log(tree_output.color_output);
 }
 
 // ******************************
 // HTML Format Functions:
 // ******************************
 
-function format_html_file (in_file_contents, in_indent_count, in_wrap_with_divs) {
+function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) {
   let result = false;
 
   do {
-    let html_content = in_file_contents || '';
+    let html_content = in_contents || '';
     if (html_content.trim().length === 0) {
       if (g_ALLOW_EMPTY_FILES) {
         return '';
@@ -358,7 +385,7 @@ function format_html_file (in_file_contents, in_indent_count, in_wrap_with_divs)
 
     if (!parse_html(html_content)) {
       if (!in_wrap_with_divs) {
-        return format_html_file('<div>'+in_file_contents+'</div>', in_indent_count, true);
+        return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
       }
 
       throw 'Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ';
@@ -371,7 +398,7 @@ function format_html_file (in_file_contents, in_indent_count, in_wrap_with_divs)
       }
 
       if (!in_wrap_with_divs) {
-        return format_html_file('<div>'+in_file_contents+'</div>', in_indent_count, true);
+        return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
       }
 
       throw 'HTML stack still contained element: ' + top_element;

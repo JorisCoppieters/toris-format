@@ -37,13 +37,16 @@ function is_numeric (n) {
 // ******************************
 
 function str_append (in_string, in_append, in_delim) {
+  let string = in_string || '';
+  let append = in_append || '';
   if (in_delim) {
-    return in_string + (in_string.length ? in_delim : '') + in_append;
+    return string + (string.length ? in_delim : '') + append;
   }
-  return in_string + in_append;
+  return string + append;
 }
 
 // ******************************
+
 function str_repeat (s, n) {
   return Array(n+1).join(s);
 }
