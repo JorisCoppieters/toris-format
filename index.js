@@ -324,7 +324,22 @@ function format_sass_contents (in_contents) {
   let tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
-    return in_contents;
+    cprint.red('FAILED TO PARSE:');
+    let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
+    let unrecognised_contents_length = 1;
+
+    let recognised_contents = in_contents.substr(0, recognised_contents_length);
+    let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
+      unrecognised_contents_length += 1;
+      unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+    }
+
+    unrecognised_contents += '...';
+
+    cprint.green(recognised_contents);
+    cprint.red(unrecognised_contents);
+    throw 'Failed to parse';
   }
 
   // fsp.write('./structure.txt', tree_output.values);

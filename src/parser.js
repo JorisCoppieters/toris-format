@@ -425,12 +425,19 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 // ******************************
 
 function output_tree (in_tree, in_state, in_tree_output, in_indent) {
-  let state = in_state || {};
+  let state = in_state || { LAST_TOKEN: '' };
   let tree_output = in_tree_output || {};
   let indent = in_indent || '';
 
   let definition_key = in_tree.DEFINITION_KEY;
   let definition_value = (in_tree.VALUE || '').trim();
+  let whitespace_matches = (in_tree.VALUE || '').match(new RegExp('^' + r_v(r_W), 'i'));
+  let whitespace_before = '';
+  let whitespace_before_includes_newline = false;
+  if (whitespace_matches) {
+    whitespace_before = whitespace_matches[1];
+    whitespace_before_includes_newline = !whitespace_before.match(/^ +$/);
+  }
 
   let append = false;
   let color_func = false;
@@ -442,184 +449,210 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   switch (definition_key) {
     case 'DOT':
-      state.DOT_SELECTOR = true;
+      state.IDENTIFIER_TYPE = 'DOT_SELECTOR';
       break;
 
     case 'selector':
-      state.SEEN_SELECTOR_PREFIX = false;
-      state.TYPE = 'SELECTOR';
-      break;
-
-    case 'selectorPrefix':
-      state.SEEN_SELECTOR_PREFIX = true;
+      state.IDENTIFIER_TYPE = 'SELECTOR';
       break;
 
     case 'property':
-      state.TYPE = 'PROPERTY';
-      state.SEEN_AND = false;
+      state.IDENTIFIER_TYPE = 'PROPERTY';
       break;
 
     case 'expression':
-      state.TYPE = 'EXPRESSION';
+      state.IDENTIFIER_TYPE = 'EXPRESSION';
       break;
 
     case 'includeDeclaration':
-      state.TYPE = 'INCLUDE';
+      state.IDENTIFIER_TYPE = 'INCLUDE';
       break;
 
     case 'Identifier':
-      newline = (state.TYPE === 'PROPERTY' || !state.SEEN_BLOCK_IDENTIFIER);
-
-      if (state.TYPE === 'PROPERTY') {
+      if (state.IDENTIFIER_TYPE === 'PROPERTY') {
         append = definition_value;
         color_func = cprint.toGreen;
+        newline = true;
+        state.LAST_TOKEN = 'PROPERTY';
 
-      } else if (state.TYPE === 'INCLUDE') {
+      } else if (state.IDENTIFIER_TYPE === 'INCLUDE') {
         append = definition_value;
         color_func = cprint.toCyan;
+        state.LAST_TOKEN = 'INCLUDE';
 
-      } else if (state.TYPE === 'EXPRESSION') {
-        if (!state.SEEN_DOLLAR && !state.SEEN_VALUE) {
+      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+        if (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== 'VALUE') {
           append = ' ' + definition_value;
         } else {
           append = definition_value;
-          state.SEEN_DOLLAR = false;
-          state.SEEN_VALUE = false;
         }
         color_func = cprint.toYellow;
+        state.LAST_TOKEN = 'EXPRESSION';
 
-      } else if (state.TYPE === 'SELECTOR') {
-        append = (state.DOT_SELECTOR ? '.' : '') + definition_value;
+      } else if (state.IDENTIFIER_TYPE === 'SELECTOR' || state.IDENTIFIER_TYPE === 'DOT_SELECTOR') {
+        append = ((state.IDENTIFIER_TYPE === 'DOT_SELECTOR') ? '.' : '') + definition_value;
         color_func = cprint.toWhite;
-        newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && state.ADDITIONAL_SELECTORS) || newline
-        double_newline = (!state.SEEN_SELECTOR_PREFIX && !state.SEEN_AND && !state.ADDITIONAL_SELECTORS && state.SEEN_BLOCK_IDENTIFIER);
-        state.DOT_SELECTOR = false;
+        newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{' || state.LAST_TOKEN === ',');
+        double_newline = (state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT');
 
+        if (!newline && !double_newline) {
+          append = ' ' + append;
+        }
+
+        state.IDENTIFIER_TYPE = 'SELECTOR';
+        state.LAST_TOKEN = 'SELECTOR';
       } else {
         append = definition_value;
         color_func = cprint.toRed;
 
       }
-      state.SEEN_BLOCK_IDENTIFIER = true;
       break;
 
     case 'Unit':
       append = definition_value;
       color_func = cprint.toYellow;
+      state.LAST_TOKEN = 'UNIT';
+      break;
+
+    case 'TIMES':
+    case 'DIV':
+    case 'PLUS':
+    case 'MINUS':
+    case 'PERC':
+      append = ' ' + definition_value;
+      color_func = cprint.toYellow;
+      state.LAST_TOKEN = 'OPERATOR';
       break;
 
     case 'LPAREN':
       append = definition_value;
-      state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) + 1;
       color_func = cprint.toYellow;
+      state.LAST_TOKEN = '(';
       break;
 
     case 'RPAREN':
       append = definition_value;
-      state.PAREN_OPEN_COUNT = (state.PAREN_OPEN_COUNT || 0) - 1;
       color_func = cprint.toYellow;
+      state.LAST_TOKEN = ')';
       break;
 
     case 'DOLLAR':
-      if (state.TYPE === 'EXPRESSION') {
-        if (state.PAREN_OPEN_COUNT > 0) {
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+        if (state.LAST_TOKEN === '(') {
           append = definition_value;
         } else {
           append = ' ' + definition_value;
         }
-        state.SEEN_DOLLAR = true;
         color_func = cprint.toYellow;
       } else {
         append = definition_value;
         color_func = cprint.toYellow;
       }
+      state.LAST_TOKEN = '$';
       break;
 
     case 'Number':
     case 'Color':
     case 'RGB_VAL':
-      if (state.PAREN_OPEN_COUNT > 0 && !state.COMMA_SEEN) {
-        append = definition_value;
-      } else {
-        state.COMMA_SEEN = false;
-        append = ' ' + definition_value;
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+        if (state.LAST_TOKEN === '(') {
+          append = definition_value;
+        } else {
+          append = ' ' + definition_value;
+        }
       }
       color_func = cprint.toYellow;
-      state.SEEN_VALUE = true;
+      state.LAST_TOKEN = 'VALUE';
       break;
 
     case 'COMMA':
       append = definition_value;
 
-      if (state.TYPE === 'PROPERTY') {
+      if (state.IDENTIFIER_TYPE === 'PROPERTY') {
         color_func = cprint.toGreen;
-      } else if (state.TYPE === 'EXPRESSION') {
+      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         color_func = cprint.toYellow;
-      } else if (state.TYPE === 'SELECTOR') {
+      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
         color_func = cprint.toWhite;
         state.ADDITIONAL_SELECTORS = true;
       } else {
         color_func = cprint.toRed;
       }
 
-      state.COMMA_SEEN = true;
-
+      state.LAST_TOKEN = ',';
       break;
 
     case 'GT':
-      append = ' > ';
+      append = ' >';
       color_func = cprint.toCyan;
+      state.LAST_TOKEN = '>';
       break;
 
     case 'AND':
       append = '&';
-      newline = true;
-      double_newline = (!state.SEEN_AND && state.SEEN_BLOCK_IDENTIFIER);
-      state.SEEN_AND = true;
       color_func = cprint.toCyan;
+
+      newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
+      double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}');
+      if (!newline && !double_newline) {
+        append = ' ' + append;
+      }
+
+      state.LAST_TOKEN = '&';
       break;
 
     case 'COLON':
       append = ':';
       color_func = cprint.toCyan;
+      state.LAST_TOKEN = ':';
       break;
 
     case 'SEMI':
-      state.TYPE = false;
+      state.IDENTIFIER_TYPE = false;
       append = ';';
       color_func = cprint.toYellow;
+      state.LAST_TOKEN = ';';
+      break;
+
+    case 'COMMENT':
+      append = definition_value;
+      double_newline = true;
+      color_func = cprint.toMagenta;
+      state.LAST_TOKEN = 'MULTI_LINE_COMMENT';
       break;
 
     case 'SL_COMMENT':
-      append = ' ' + definition_value;
+      if (whitespace_before_includes_newline) {
+        append = definition_value;
+        newline = true;
+      } else {
+        append = ' ' + definition_value;
+      }
       color_func = cprint.toMagenta;
+      state.LAST_TOKEN = 'SINGLE_LINE_COMMENT';
       break;
 
     case 'INCLUDE':
       append = definition_value + ' ';
       double_newline = true;
       color_func = cprint.toCyan;
+      state.LAST_TOKEN = '@include';
       break;
 
     case 'BlockStart':
       append = ' {';
-      state.BLOCK_DEPTH = (state.BLOCK_DEPTH || 0) + 1;
       state.ADDITIONAL_SELECTORS = false;
-      state.SEEN_BLOCK_IDENTIFIER = false;
       color_func = cprint.toWhite;
       post_indent = 1;
+      state.LAST_TOKEN = '{';
       break;
 
     case 'BlockEnd':
       append = '}';
-      state.BLOCK_DEPTH = state.BLOCK_DEPTH - 1;
-      state.SEEN_VALUE = false;
-      state.SEEN_DOLLAR = false;
-      state.SEEN_SELECTOR_PREFIX = false;
-      state.SEEN_AND = false;
       color_func = cprint.toWhite;
       newline = true;
       pre_indent = -1;
+      state.LAST_TOKEN = '}';
       break;
 
     default:

@@ -8,12 +8,6 @@ tm-homepage-categories {
             columns: 3;
         }
     }
-
-    @include breakpoint($xl-min) {
-        ul {
-            columns: 4;
-        }
-    }
 }
 
 .status-code {
@@ -24,7 +18,24 @@ tm-homepage-categories {
     font-size: 8rem;
     font-weight: bold;
     color: rgba(235, 235, 235, 0.25);
+    height: 1 + 2 - 3 * 4 / 5;
+    padding-top: 4% 5;
+    width: 123; // width again!
     z-index: -1;
+}
+
+.homepage__categories__button--marketplace > a,
+.homepage__categories__button--property > a {
+    border: 0;
+}
+
+.homepage__categories__button--marketplace > a,
+.homepage__categories__button--property > a {
+    &,
+    &:visited,
+    &:active {
+        color: #fff;
+    }
 }
 
 .homepage__categories__button--marketplace > a,
@@ -48,102 +59,55 @@ tm-homepage-categories {
         box-shadow: $box-shadow-focus $pohutukawa-50, $box-shadow-inset-bottom $pohutukawa-800;
     }
 
-    &:hover {
-        background-color: $pohutukawa-300;
-        color: $white;
+    &:active {
+        background-color: $pohutukawa-700;
+        box-shadow: $box-shadow-inset-top $pohutukawa-900;
 
         &:focus { // This colours the focus on hover to match the button colour
             box-shadow: $box-shadow-focus $pohutukawa-50;
         }
     }
+    // fields are butted against each other so we need to remove the border radius on the left side
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
 
-    &:active {
-        background-color: $pohutukawa-700;
-        box-shadow: $box-shadow-inset-top $pohutukawa-900;
+.o-select-dropdown--is-active .o-select-dropdown__body {
+    display: block;
+}
 
-        &:focus {
-            box-shadow: $box-shadow-inset-top $pohutukawa-900;
+/** Top Line **/
+
+tg-button .redirect-link {
+    padding-right: 1.25 * $unit;
+    padding: $unit 2;
+
+    .o-card--compact {
+        @include breakpoint($md-min) {
+            tg-card-details {
+                padding: $unit / 2;
+            }
+
+            tg-card-main {
+                min-height: $unit * 9;
+            }
         }
     }
 }
 
-.homepage__categories__button--jobs > a {
-    background-color: $jaffa-500;
-    box-shadow: inset 0 -2px 0 $jaffa-700;
+// ===== Print Styles =====
+// TODO - Use tangram print styles instead - PDT-903
+// At this point we'll continue to show .desktop-header__nav, .header-desktop__search-form
+// But these are candidate for removal when this is moved to tangram
 
-    &:focus {
-        box-shadow: $box-shadow-focus $jaffa-50, $box-shadow-inset-bottom $jaffa-500;
-    }
-
-    &:hover {
-        background-color: $jaffa-300;
-        color: $white;
-
-        &:focus { // This colours the focus on hover to match the button colour
-            box-shadow: $box-shadow-focus $jaffa-50;
+.jb-parent {
+    @media print {
+        * {
+            background: transparent !important;
         }
-    }
 
-    &:active {
-        background-color: $jaffa-700;
-        box-shadow: $box-shadow-inset-top $jaffa-900;
-
-        &:focus {
-            box-shadow: $box-shadow-inset-top $jaffa-900;
-        }
-    }
-}
-
-.homepage__categories__button--motors > button {
-    background-color: $glacier-500;
-    box-shadow: inset 0 -2px 0 $glacier-700;
-
-    &:focus {
-        box-shadow: $box-shadow-focus $glacier-50, $box-shadow-inset-bottom $glacier-600;
-    }
-
-    &:hover {
-        background-color: $glacier-300;
-        color: $white;
-
-        &:focus { // This colours the focus on hover to match the button colour
-            box-shadow: $box-shadow-focus $glacier-50;
-        }
-    }
-
-    &:active {
-        background-color: $glacier-700;
-        box-shadow: $box-shadow-inset-top $glacier-900;
-
-        &:focus {
-            box-shadow: $box-shadow-inset-top $glacier-900;
-        }
-    }
-}
-
-.homepage__categories__button--property > a {
-    background-color: $feijoa-500;
-    box-shadow: inset 0 -2px 0 $feijoa-700;
-
-    &:focus {
-        box-shadow: $box-shadow-focus $feijoa-50, $box-shadow-inset-bottom $feijoa-600;
-    }
-
-    &:hover {
-        background-color: $feijoa-300;
-        color: $white;
-
-        &:focus { // This colours the focus on hover to match the button colour
-            box-shadow: $box-shadow-focus $feijoa-50;
-        }
-    }
-
-    &:active {
-        background-color: $feijoa-700;
-        box-shadow: $box-shadow-inset-top $feijoa-900;
-
-        &:focus {
-            box-shadow: $box-shadow-inset-top $feijoa-900;
+        @page {
+            margin: 0.7cm;
         }
     }
 }

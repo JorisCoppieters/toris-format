@@ -196,8 +196,8 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
         var inputHtml = preformattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
-        var test1_expectedOutputHtmlFile = '_formatHTMLTest_' + testName + '_expectedOutput.txt';
-        var test1_outputHtmlFile = '_formatHTMLTest_' + testName + '_output.txt';
+        var test1_expectedOutputHtmlFile = '_formatTest_html_' + testName + '_expectedOutput.txt';
+        var test1_outputHtmlFile = '_formatTest_html_' + testName + '_output.txt';
 
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
@@ -221,8 +221,8 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
         var inputHtml = formattedHtmlTemplate;
         var expectedOutputHtml = formattedHtmlTemplate;
 
-        var test2_expectedOutputHtmlFile = '_alreadyFormattedHTMLTest_' + testName + '_expectedOutput.txt';
-        var test2_outputHtmlFile = '_alreadyFormattedHTMLTest_' + testName + '_output.txt';
+        var test2_expectedOutputHtmlFile = '_formatTest_alreadyFormattedHTML_' + testName + '_expectedOutput.txt';
+        var test2_outputHtmlFile = '_formatTest_alreadyFormattedHTML_' + testName + '_output.txt';
 
         var outputHtml = torisFormat.format_html_file(inputHtml);
         if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
@@ -253,8 +253,8 @@ function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassT
         var inputSass = preformattedSassTemplate;
         var expectedOutputSass = formattedSassTemplate;
 
-        var test1_expectedOutputSassFile = '_formatSassTest_' + testName + '_expectedOutput.txt';
-        var test1_outputSassFile = '_formatSassTest_' + testName + '_output.txt';
+        var test1_expectedOutputSassFile = '_formatTest_sass_' + testName + '_expectedOutput.txt';
+        var test1_outputSassFile = '_formatTest_sass_' + testName + '_output.txt';
 
         var outputSass = torisFormat.format_sass_contents(inputSass);
         if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
@@ -278,8 +278,8 @@ function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassT
         var inputSass = formattedSassTemplate;
         var expectedOutputSass = formattedSassTemplate;
 
-        var test2_expectedOutputSassFile = '_alreadyFormattedSassTest_' + testName + '_expectedOutput.txt';
-        var test2_outputSassFile = '_alreadyFormattedSassTest_' + testName + '_output.txt';
+        var test2_expectedOutputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_expectedOutput.txt';
+        var test2_outputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_output.txt';
 
         var outputSass = torisFormat.format_sass_contents(inputSass);
         if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
