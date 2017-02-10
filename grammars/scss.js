@@ -37,7 +37,7 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'includeDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'includeDeclaration', 'pageDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
   },
   params: {
     OPERATOR: '&&',
@@ -71,9 +71,17 @@ var DEFINITION = {
     OPERATOR: '&&',
     SEGMENTS: ['MIXIN', 'Identifier', 'paramsInParen?', 'block']
   },
+  pageDeclaration: {
+    OPERATOR: '&&',
+    SEGMENTS: ['PAGE', 'block']
+  },
   includeDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['INCLUDE', 'Identifier', 'includeDeclarationTermination']
+    SEGMENTS: ['includeDeclarationPrefix', 'Identifier', 'includeDeclarationTermination']
+  },
+  includeDeclarationPrefix: {
+    OPERATOR: '||',
+    SEGMENTS: ['INCLUDE', 'MEDIA']
   },
   includeDeclarationTermination: {
     OPERATOR: '||',
@@ -289,7 +297,7 @@ var DEFINITION = {
   },
   blockPropertySemi: {
     OPERATOR: '&&',
-    SEGMENTS: ['property', 'SEMI']
+    SEGMENTS: ['property', 'IMPORTANT?', 'SEMI']
   },
   selectors: {
     OPERATOR: '&&',
@@ -365,23 +373,15 @@ var DEFINITION = {
   },
   identifierPart: {
     OPERATOR: '||',
-    SEGMENTS: ['identifierPartBlock', 'identifierPartAfter']
+    SEGMENTS: ['identifierPartBlock', 'Identifier']
   },
   identifierPartBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['InterpolationStartAfter', 'identifierVariableName', 'BlockEnd']
-  },
-  identifierPartAfter: {
-    OPERATOR: '&&',
-    SEGMENTS: ['IdentifierAfter']
+    SEGMENTS: ['InterpolationStart', 'identifierVariableName', 'BlockEnd']
   },
   identifierVariableName: {
     OPERATOR: '&&',
-    SEGMENTS: ['DOLLAR', 'IdentifierOrIdentifierAfter']
-  },
-  IdentifierOrIdentifierAfter: {
-    OPERATOR: '||',
-    SEGMENTS: ['Identifier', 'IdentifierAfter']
+    SEGMENTS: ['DOLLAR', 'Identifier']
   },
   property: {
     OPERATOR: '&&',

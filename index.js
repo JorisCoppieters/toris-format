@@ -357,19 +357,18 @@ function print_sass_contents (in_contents, in_indent_count) {
   if (!tree_output.output) {
     cprint.red('FAILED TO PARSE:');
     let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-    let unrecognised_contents_length = 1;
+    let unrecognised_contents_length = 10;
 
     let recognised_contents = in_contents.substr(0, recognised_contents_length);
     let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
     while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
-      unrecognised_contents_length += 1;
+      unrecognised_contents_length += 10;
       unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
     }
 
     unrecognised_contents += '...';
-
-    cprint.green(recognised_contents);
-    cprint.red(unrecognised_contents);
+    console.log(cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents));
+    console.log(cprint.toYellow('Best Path: ' + t_NL + tree_output_failed.best_path));
     return;
   }
 

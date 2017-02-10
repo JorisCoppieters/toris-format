@@ -209,9 +209,21 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '@import'
   },
+  IMPORTANT: {
+    OPERATOR: '==',
+    VALUE: '\\!important'
+  },
   RETURN: {
     OPERATOR: '==',
     VALUE: '@return'
+  },
+  MEDIA: {
+    OPERATOR: '==',
+    VALUE: '@media'
+  },
+  PAGE: {
+    OPERATOR: '==',
+    VALUE: '@page'
   },
   FROM: {
     OPERATOR: '==',
@@ -276,14 +288,6 @@ var DEFINITION = {
   COMMENT: {
     OPERATOR: '==',
     VALUE: '\\/\\*.*?\\*\\/'
-  },
-  IdentifierAfter: {
-    OPERATOR: '&&',
-    SEGMENTS: ['Identifier']
-  },
-  InterpolationStartAfter: {
-    OPERATOR: '&&',
-    SEGMENTS: ['InterpolationStart']
   },
   UrlEnd: {
     OPERATOR: '&&',
