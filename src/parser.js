@@ -495,6 +495,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         color_func = cprint.toCyan;
         state.LAST_TOKEN = 'MEDIA';
 
+      } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
+        append = definition_value;
+        color_func = cprint.toWhite;
+        state.LAST_TOKEN = 'VARIABLE';
+
       } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         if (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== 'VALUE') {
           append = ' ' + definition_value;
@@ -569,9 +574,14 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
           append = ' ' + definition_value;
         }
         color_func = cprint.toYellow;
+      } else if (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT') {
+        append = definition_value;
+        double_newline = true;
+        color_func = cprint.toWhite;
+        state.IDENTIFIER_TYPE = 'VARIABLE';
       } else {
         append = definition_value;
-        color_func = cprint.toYellow;
+        color_func = cprint.toRed;
       }
       state.LAST_TOKEN = '$';
       break;
@@ -640,14 +650,18 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'COMMENT':
-      append = definition_value;
-      double_newline = true;
+      if (whitespace_before_includes_newline) {
+        append = definition_value;
+        double_newline = true;
+      } else {
+        append = ' ' + definition_value;
+      }
       color_func = cprint.toMagenta;
       state.LAST_TOKEN = 'MULTI_LINE_COMMENT';
       break;
 
     case 'SL_COMMENT':
-      if (whitespace_before_includes_newline) {
+      if (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT') {
         append = definition_value;
         newline = true;
       } else {

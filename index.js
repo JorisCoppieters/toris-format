@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.6.0
+// TORIS FORMAT v1.6.1
 //
 // Version History:
 //
@@ -59,7 +59,7 @@ let fsp = require('fs-process');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.5.0';
+const k_VERSION = '1.6.1';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -318,62 +318,68 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 // SCSS Format Functions:
 // ******************************
 
-function format_sass_contents (in_contents) {
-  parser.set_indent_count(g_INDENT_COUNT);
-  let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
+function format_sass_contents (in_contents, in_indent_count) {
+  let contents = in_contents || '';
+  contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+
+  parser.set_indent_count(in_indent_count || 0);
+  let tree = parser.parse_contents(contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
-    cprint.red('FAILED TO PARSE:');
-    let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-    let unrecognised_contents_length = 1;
-
-    let recognised_contents = in_contents.substr(0, recognised_contents_length);
-    let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
-      unrecognised_contents_length += 1;
-      unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-    }
-
-    unrecognised_contents += '...';
-
-    cprint.green(recognised_contents);
-    cprint.red(unrecognised_contents);
-    throw 'Failed to parse';
+    let failed_output = get_failed_output(tree, contents);
+    throw 'Failed to parse:\n' + failed_output;
   }
 
   // fsp.write('./structure.txt', tree_output.values);
-  return tree_output.output;
+  let result = tree_output.output;
+  result = result.replace(new RegExp(t_NL, 'g'), g_NL);
+  return result;
 }
 
 // ******************************
 
 function print_sass_contents (in_contents, in_indent_count) {
+  let contents = in_contents || '';
+  contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+
   parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
-  let tree_output_failed = parser.output_tree_failed(tree);
 
   if (!tree_output.output) {
-    cprint.red('FAILED TO PARSE:');
-    let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-    let unrecognised_contents_length = 10;
-
-    let recognised_contents = in_contents.substr(0, recognised_contents_length);
-    let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
-      unrecognised_contents_length += 10;
-      unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-    }
-
-    unrecognised_contents += '...';
-    console.log(cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents));
-    console.log(cprint.toYellow('Best Path: ' + t_NL + tree_output_failed.best_path));
+    let failed_output = get_failed_output(tree, contents);
+    cprint.red('Failed to parse:');
+    console.log(failed_output);
     return;
   }
 
   fsp.write('./structure.txt', tree_output.values);
-  console.log(tree_output.color_output);
+  let result = tree_output.color_output;
+  result = result.replace(new RegExp(t_NL, 'g'), g_NL);
+  console.log(result);
+}
+
+// ******************************
+
+function get_failed_output (in_tree, in_contents) {
+  let tree_output_failed = parser.output_tree_failed(in_tree);
+  let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
+  let unrecognised_contents_length = 10;
+
+  let recognised_contents = in_contents.substr(0, recognised_contents_length);
+  let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+  while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
+    unrecognised_contents_length += 10;
+    unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+  }
+
+  if (recognised_contents.length > 100) {
+    recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
+  }
+
+  unrecognised_contents += '...';
+  return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
 }
 
 // ******************************

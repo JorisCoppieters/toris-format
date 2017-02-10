@@ -257,7 +257,7 @@ var DEFINITION = {
   },
   referenceUrl: {
     OPERATOR: '||',
-    SEGMENTS: ['referenceUrlStringLiteral,', 'referenceUrlUrl']
+    SEGMENTS: ['referenceUrlStringLiteral', 'referenceUrlUrl']
   },
   referenceUrlStringLiteral: {
     OPERATOR: '&&',
