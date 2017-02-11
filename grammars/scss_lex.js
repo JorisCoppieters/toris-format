@@ -45,10 +45,6 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '\\.\\.\\.'
   },
-  InterpolationStart: {
-    OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart']
-  },
   LPAREN: {
     OPERATOR: '==',
     VALUE: '\\('
@@ -265,15 +261,7 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '#[0-9a-fA-F]+'
   },
-  RGB: {
-    OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'RGB_VAL', 'COMMA', 'RGB_VAL', 'COMMA', 'RGB_VAL', 'RPAREN']
-  },
-  RGBA: {
-    OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'RGB_VAL', 'COMMA', 'RGB_VAL', 'COMMA', 'RGB_VAL', 'COMMA', 'Number', 'RPAREN']
-  },
-  RGB_VAL: {
+  RGB_NUMERIC_VAL: {
     OPERATOR: '==',
     VALUE: '(?:[0-9]{0,3}\\.)?[0-9]+'
   },
@@ -299,7 +287,7 @@ var DEFINITION = {
   },
   UrlVal: {
     OPERATOR: '==',
-    VALUE: '[^\\)\\n\\r;]+'
+    VALUE: '[^\)]+'
   }
 };
 

@@ -1,5 +1,5 @@
 tm-homepage-categories {
-    tg-box > .o-box > div > ul > li { // have to target ul and li like this becuase they get stripped out of the dom :/
+    > tg-box > .o-box > div > ul > li { // have to target ul and li like this becuase they get stripped out of the dom :/
         break-inside: avoid;
     }
 
@@ -109,4 +109,71 @@ tg-button .redirect-link {
             margin: 0.7cm;
         }
     }
+}
+// Variables
+
+$ping-brand-base-colour: $pinot-500;
+
+.tm-sell-payment-price-disabled {
+    color: $silver-fern-100;
+    // TANGRAM - This is a workaround to deal with
+    // disabled input leaving validation border colour bug
+    // Fix for this is on the way by TANGRAM team
+
+    .o-input--valid .o-input__body {
+        border-color: $silver-fern-50;
+        top: calc(50% -7px);
+    }
+    background: url(/images/frend/motors/motorweb-logo.svg) no-repeat;
+    background: url('/images/frend/motors/motorweb-logo.svg') no-repeat;
+    background: url("/images/frend/motors/motorweb-logo.svg") no-repeat;
+}
+
+.class {
+    padding: 0; /* Cannot do this via helpers */
+    margin: 0; /* Cannot do this via helpers */
+    min-height: 0; /* Cannot do this via helpers */
+}
+
+/* Manual box-shadow variable - this should be moved to tangram at some point, or become a helper */
+
+$box-shadow-fix-to-bottom: 0 10px 20px 5px;
+
+.o-image-viewer:hover,
+.o-image-viewer__button:hover {
+    background-color: $silver-fern-20;
+    background-image: linear-gradient(rgba($black, 0), rgba($black, 0.1));
+    margin-left: -$unit;
+    background: linear-gradient(to bottom, rgba($white, 0) 50%, $silver-fern-10 50%);
+}
+
+@media (max-width: 767px) {
+    .o-accordion__item__header {
+        width: 70px;
+    }
+}
+
+@import "./controls/controls";
+
+@media screen and(-ms-high-contrast: none) {
+    position: relative;
+    padding-left: $unit / 2;
+}
+
+@include breakpoint($md-min) {
+    // Required to make all flex items consume available space while still keeping thier own width based on individual content.
+    justify-content: space-around;
+
+    > .l-col {
+        flex: 0 0 auto;
+        width: auto;
+    }
+}
+
+.class {
+    padding-left: -$unit;
+    padding-top: 2 -$unit;
+    padding-right: -2 2 -$unit;
+    width: -2;
+    border: 0 -2px 0 0;
 }

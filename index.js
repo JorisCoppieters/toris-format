@@ -320,7 +320,6 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 
 function format_sass_contents (in_contents, in_indent_count) {
   let contents = in_contents || '';
-  contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
 
   parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(contents, parser.k_DEFINITION_TYPE_SCSS);
@@ -331,9 +330,7 @@ function format_sass_contents (in_contents, in_indent_count) {
     throw 'Failed to parse:\n' + failed_output;
   }
 
-  // fsp.write('./structure.txt', tree_output.values);
   let result = tree_output.output;
-  result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   return result;
 }
 
@@ -341,7 +338,6 @@ function format_sass_contents (in_contents, in_indent_count) {
 
 function print_sass_contents (in_contents, in_indent_count) {
   let contents = in_contents || '';
-  contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
 
   parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
@@ -356,7 +352,6 @@ function print_sass_contents (in_contents, in_indent_count) {
 
   fsp.write('./structure.txt', tree_output.values);
   let result = tree_output.color_output;
-  result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   console.log(result);
 }
 
@@ -378,8 +373,9 @@ function get_failed_output (in_tree, in_contents) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
+  fsp.write('./structure.txt', tree_output_failed.values);
   unrecognised_contents += '...';
-  return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+  return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents) + '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path)
 }
 
 // ******************************
@@ -1730,7 +1726,7 @@ function parse_style (in_html_content) {
     } else if (css.trim().length) {
       output += '<style type="text/css">';
       inc_indent(1);
-      css = format_sass_contents(css);
+      css = format_sass_contents(css, g_INDENT_COUNT);
       output += t_NL + get_indent() + css;
       inc_indent(-1);
       output += t_NL + get_indent() + '</style>';

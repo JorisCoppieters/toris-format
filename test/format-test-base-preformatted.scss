@@ -129,6 +129,9 @@ $ping-brand-base-colour: $pinot-500;
         border-color: $silver-fern-50;
         top: calc(50% - 7px);
     }
+    background: url(/images/frend/motors/motorweb-logo.svg) no-repeat;
+    background: url('/images/frend/motors/motorweb-logo.svg') no-repeat;
+    background: url("/images/frend/motors/motorweb-logo.svg") no-repeat;
 }
 
 .class {
@@ -136,16 +139,13 @@ $ping-brand-base-colour: $pinot-500;
     margin: 0; /* Cannot do this via helpers */
     min-height: 0; /* Cannot do this via helpers */
 
-    background: url(/images/frend/motors/motorweb-logo.svg) no-repeat;
-    background: url('/images/frend/motors/motorweb-logo.svg') no-repeat;
-    background: url("/images/frend/motors/motorweb-logo.svg") no-repeat;
 }
 
 /* Manual box-shadow variable - this should be moved to tangram at some point, or become a helper */
 $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 
 
-    .o-image-viewer:hover .o-image-viewer__button:hover {
+    .o-image-viewer:hover, .o-image-viewer__button:hover {
         background-color: $silver-fern-20;
     background-image: linear-gradient(rgba($black, 0), rgba($black, 0.1));
     margin-left: -$unit;
@@ -176,3 +176,13 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
         }
 
 
+
+.class {
+        padding-left: -$unit;
+    padding-top: 2 -$unit;
+    padding-right: -2 2 -$unit;
+
+    width:-2;
+    border: 0 -2px 0 0;
+
+}

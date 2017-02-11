@@ -37,7 +37,7 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'includeDeclaration', 'pageDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'mediaDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
   },
   params: {
     OPERATOR: '&&',
@@ -77,15 +77,23 @@ var DEFINITION = {
   },
   includeDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['includeDeclarationPrefix', 'Identifier', 'includeDeclarationTermination']
-  },
-  includeDeclarationPrefix: {
-    OPERATOR: '||',
-    SEGMENTS: ['INCLUDE', 'MEDIA']
+    SEGMENTS: ['INCLUDE', 'Identifier', 'includeDeclarationTermination']
   },
   includeDeclarationTermination: {
     OPERATOR: '||',
-    SEGMENTS: ['SEMI', 'valuesInParenSemiBlock']
+    SEGMENTS: ['SEMI+', 'valuesInParenSemiBlock']
+  },
+  mediaDeclaration: {
+    OPERATOR: '&&',
+    SEGMENTS: ['MEDIA', 'mediaDeclarationPart+', 'mediaDeclarationTermination']
+  },
+  mediaDeclarationPart: {
+    OPERATOR: '||',
+    SEGMENTS: ['propertyInParen', 'identifier']
+  },
+  mediaDeclarationTermination: {
+    OPERATOR: '||',
+    SEGMENTS: ['SEMI+', 'valuesInParenSemiBlock']
   },
   valuesInParenSemi: {
     OPERATOR: '&&',
@@ -105,7 +113,7 @@ var DEFINITION = {
   },
   functionReturn: {
     OPERATOR: '&&',
-    SEGMENTS: ['RETURN', 'commandStatement', 'SEMI']
+    SEGMENTS: ['RETURN', 'commandStatement', 'SEMI+']
   },
   functionStatement: {
     OPERATOR: '&&',
@@ -113,7 +121,7 @@ var DEFINITION = {
   },
   semiOrStatement: {
     OPERATOR: '||',
-    SEGMENTS: ['SEMI', 'statement']
+    SEGMENTS: ['SEMI+', 'statement']
   },
   commandStatement: {
     OPERATOR: '&&',
@@ -121,7 +129,15 @@ var DEFINITION = {
   },
   expressionOrCommandStatement: {
     OPERATOR: '||',
-    SEGMENTS: ['expression+', 'commandStatementInParens']
+    SEGMENTS: ['expressions', 'expression+', 'commaCommandStatement', 'commandStatementInParens']
+  },
+  expressions: {
+    OPERATOR: '&&',
+    SEGMENTS: ['expression', 'commaExpression+']
+  },
+  commaExpression: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'expression+']
   },
   commandStatementInParens: {
     OPERATOR: '&&',
@@ -137,7 +153,19 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['measurement', 'identifier', 'RGB', 'RGBA', 'Color', 'StringLiteral', 'NULL', 'url', 'variableName', 'functionCall']
+    SEGMENTS: ['functionCall', 'url', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+  },
+  RGB: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'RGB_VAL', 'COMMA_RGB_VAL*', 'RPAREN']
+  },
+  COMMA_RGB_VAL: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'RGB_VAL']
+  },
+  RGB_VAL: {
+    OPERATOR: '||',
+    SEGMENTS: ['RGB_NUMERIC_VAL', 'variableName']
   },
   ifDeclaration: {
     OPERATOR: '&&',
@@ -185,7 +213,7 @@ var DEFINITION = {
   },
   variableDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['variableName', 'COLON', 'values', 'POUND_DEFAULT?', 'SEMI']
+    SEGMENTS: ['variableName', 'COLON', 'values', 'POUND_DEFAULT?', 'SEMI+']
   },
   commaVariableName: {
     OPERATOR: '&&',
@@ -253,7 +281,7 @@ var DEFINITION = {
   },
   importDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['IMPORT', 'referenceUrl', 'mediaTypes?', 'SEMI']
+    SEGMENTS: ['IMPORT', 'referenceUrl', 'mediaTypes?', 'SEMI+']
   },
   referenceUrl: {
     OPERATOR: '||',
@@ -297,7 +325,7 @@ var DEFINITION = {
   },
   blockPropertySemi: {
     OPERATOR: '&&',
-    SEGMENTS: ['property', 'IMPORTANT?', 'SEMI']
+    SEGMENTS: ['property', 'IMPORTANT?', 'SEMI+']
   },
   selectors: {
     OPERATOR: '&&',
@@ -305,7 +333,11 @@ var DEFINITION = {
   },
   selector: {
     OPERATOR: '&&',
-    SEGMENTS: ['element+', 'selectorPrefixElement*', 'attrib*', 'pseudo?']
+    SEGMENTS: ['selectorStart+', 'attrib*', 'pseudo?']
+  },
+  selectorStart: {
+    OPERATOR: '||',
+    SEGMENTS: ['element', 'selectorPrefixElement']
   },
   selectorPrefixElement: {
     OPERATOR: '&&',
@@ -369,7 +401,7 @@ var DEFINITION = {
   },
   identifierIdentifierBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['InterpolationStart', 'identifierVariableName', 'BlockEnd', 'identifierPart*']
+    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableName', 'BlockEnd', 'identifierPart*']
   },
   identifierPart: {
     OPERATOR: '||',
@@ -377,7 +409,7 @@ var DEFINITION = {
   },
   identifierPartBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['InterpolationStart', 'identifierVariableName', 'BlockEnd']
+    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableName', 'BlockEnd']
   },
   identifierVariableName: {
     OPERATOR: '&&',
@@ -386,6 +418,10 @@ var DEFINITION = {
   property: {
     OPERATOR: '&&',
     SEGMENTS: ['identifier', 'colonValues']
+  },
+  propertyInParen: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'property', 'RPAREN']
   },
   values: {
     OPERATOR: '&&',
@@ -401,11 +437,11 @@ var DEFINITION = {
   },
   measurement: {
     OPERATOR: '&&',
-    SEGMENTS: ['Number', 'Unit?']
+    SEGMENTS: ['Number', 'Unit']
   },
   functionCall: {
     OPERATOR: '&&',
-    SEGMENTS: ['Identifier', 'valuesInParen']
+    SEGMENTS: ['Identifier', 'commandStatementInParens']
   }
 };
 
