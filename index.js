@@ -369,7 +369,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
 
 // ******************************
 
-function get_failed_output (in_tree, in_contents, in_include_best_path) {
+function get_failed_output (in_tree, in_contents, in_debug) {
   let tree_output_failed = parser.output_tree_failed(in_tree);
   let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
   let unrecognised_contents_length = 10;
@@ -385,13 +385,13 @@ function get_failed_output (in_tree, in_contents, in_include_best_path) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
-  if (in_include_best_path) {
-    fsp.write('./structure.txt', tree_output_failed.values);
+  if (in_debug) {
+    fsp.write('./failed_structure.txt', tree_output_failed.values);
   }
 
   unrecognised_contents += '...';
   let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
-  if (in_include_best_path) {
+  if (in_debug) {
     result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
   }
   return result;

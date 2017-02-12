@@ -217,6 +217,10 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '@return'
   },
+  KEYFRAMES: {
+    OPERATOR: '==',
+    VALUE: '@keyframes'
+  },
   MEDIA: {
     OPERATOR: '==',
     VALUE: '@media'

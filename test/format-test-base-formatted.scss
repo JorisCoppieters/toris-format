@@ -78,7 +78,7 @@ tm-homepage-categories {
 
 /** Top Line **/
 
-tg-button .redirect-link {
+tg-button.redirect-link {
     padding-right: 1.25 * $unit;
     padding: $unit 2;
 
@@ -230,17 +230,19 @@ a[ui-sref="tm.property.home"]:visited {
 .attribute-searcher__input--has-selection {
     ::-webkit-input-placeholder {
         color: #fff;
-    }:-moz-placeholder {
+    }
+
+    :-moz-placeholder {
         color: #fff;
-    }::-moz-placeholder {
-        color: #fff;
-    }:-ms-input-placeholder {
+    }
+
+    #something {
         color: #fff;
     }
 }
 
 .photo-uploader__set-as-main-button .o-tile-button:active:hover,
-.photo-uploader__set-as-main-button .o-tile-button .o-tile-button--is-active:hover {
+.photo-uploader__set-as-main-button .o-tile-button.o-tile-button--is-active:hover {
     color: $white;
 }
 
@@ -269,6 +271,13 @@ a[ui-sref="tm.property.home"]:visited {
         12: (100%, 100%),
         13: (100%, 100%)
     );
+
+    @each $index, $topLeft in $topLeft-map {
+        :nth-child(#{$index}) {
+            left: #{nth($topLeft, 2)};
+            top: #{nth($topLeft / 2, 1)};
+        }
+    }
 }
 
 .tm-refine-summary__refinements::-webkit-scrollbar {
@@ -277,7 +286,7 @@ a[ui-sref="tm.property.home"]:visited {
     margin-bottom: -(1.25 * $unit);
     padding: (0.2 * $unit) $unit;
 
-    tg-rack-item-link a .o-rack-item:not([href]) {
+    tg-rack-item-link a.o-rack-item:not([href]) {
         cursor: default;
         padding: ($unit) ($unit * 0.5) ($unit * 0.5);
     }
@@ -294,12 +303,37 @@ a[ui-sref="tm.property.home"]:visited {
 }
 
 @for $i from 1 through 4 {
-    #{refiner__option--level}-#{$i} {
+    .#{refiner__option--level}-#{$i} {
         padding-left: $unit * ($i + 1) / 4;
-        margin-top: -3px;
+        margin-left: calc(#{$motors-image-viewer-button-width} + #{$unit / 4});
 
         tg-rack-item-prefix {
             padding-left: $unit / 4;
+        }
+    }
+}
+
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(720deg); }
+}
+
+@each $string, $value in $profile-image-sizes-multipliers {
+    .profile-image--size-#{$string} {
+        $unitSize: $value + px;
+        width: $value + px;
+        height: $value + px;
+        border-radius: ($value / 2) + px;
+
+        .icon {
+            width: $value + px;
+            height: $value + px;
+        }
+
+        .profile-image__placeholder {
+            width: $value + px;
+            height: $value + px;
+            font-size: ($value / 2) + px;
         }
     }
 }

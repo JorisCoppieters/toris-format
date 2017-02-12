@@ -1,0 +1,6 @@
+        @each $index, $topLeft in $topLeft-map {
+            :nth-child(#{$index}) {
+                left: #{nth($topLeft, 2)};
+                top: #{nth($topLeft / 2, 1)};
+            }
+        }

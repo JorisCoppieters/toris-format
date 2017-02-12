@@ -37,7 +37,7 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'mediaDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
   },
   params: {
     OPERATOR: '&&',
@@ -83,9 +83,33 @@ var DEFINITION = {
     OPERATOR: '||',
     SEGMENTS: ['SEMI+', 'valuesInParenSemiBlock']
   },
+  keyframesDeclaration: {
+    OPERATOR: '&&',
+    SEGMENTS: ['KEYFRAMES', 'Identifier', 'BlockStart', 'keyframesEntry*', 'BlockEnd']
+  },
+  keyframesEntry: {
+    OPERATOR: '&&',
+    SEGMENTS: ['measurement', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryBlockEnd']
+  },
+  keyframesEntryProperty: {
+    OPERATOR: '&&',
+    SEGMENTS: ['identifier', 'colonValues']
+  },
+  keyframesEntryBlockEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
+  },
   mediaDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['MEDIA', 'mediaDeclarationPart+', 'mediaDeclarationTermination']
+    SEGMENTS: ['MEDIA', 'mediaDeclarationParts', 'mediaDeclarationTermination']
+  },
+  mediaDeclarationParts: {
+    OPERATOR: '&&',
+    SEGMENTS: ['mediaDeclarationPart+', 'commaMediaDeclarationPart*']
+  },
+  commaMediaDeclarationPart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'mediaDeclarationPart*']
   },
   mediaDeclarationPart: {
     OPERATOR: '||',
@@ -243,14 +267,6 @@ var DEFINITION = {
     OPERATOR: '&&',
     SEGMENTS: ['COMMA', 'Identifier']
   },
-  commaIdentifierListOrMap: {
-    OPERATOR: '&&',
-    SEGMENTS: ['COMMA', 'identifierListOrMap']
-  },
-  commaIdentifierValue: {
-    OPERATOR: '&&',
-    SEGMENTS: ['COMMA', 'identifierValue']
-  },
   colonValues: {
     OPERATOR: '&&',
     SEGMENTS: ['COLON', 'values']
@@ -261,15 +277,15 @@ var DEFINITION = {
   },
   forDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_FOR', 'variableName', 'FROM', 'fromNumber', 'THROUGH', 'throughNumber', 'block']
+    SEGMENTS: ['AT_FOR', 'variableName', 'FROM', 'fromNumber', 'THROUGH', 'through', 'block']
   },
   fromNumber: {
     OPERATOR: '&&',
     SEGMENTS: ['Number']
   },
-  throughNumber: {
-    OPERATOR: '&&',
-    SEGMENTS: ['Number']
+  through: {
+    OPERATOR: '||',
+    SEGMENTS: ['Number', 'functionCall']
   },
   whileDeclaration: {
     OPERATOR: '&&',
@@ -280,20 +296,20 @@ var DEFINITION = {
     SEGMENTS: ['AT_EACH', 'variableName', 'commaVariableName*', 'IN', 'eachValueList', 'block']
   },
   eachValueList: {
+    OPERATOR: '&&',
+    SEGMENTS: ['eachValueListEntry', 'commaEachValueListEntry*']
+  },
+  eachValueListEntry: {
     OPERATOR: '||',
-    SEGMENTS: ['eachValueListIdentifier', 'eachValueListIdentifierList']
+    SEGMENTS: ['eachValueListInParen', 'Identifier', 'identifierValue', 'variableName']
   },
-  eachValueListIdentifier: {
+  commaEachValueListEntry: {
     OPERATOR: '&&',
-    SEGMENTS: ['Identifier', 'commaIdentifier*']
+    SEGMENTS: ['COMMA', 'eachValueListEntry']
   },
-  eachValueListIdentifierList: {
+  eachValueListInParen: {
     OPERATOR: '&&',
-    SEGMENTS: ['identifierListOrMap', 'commaIdentifierListOrMap*']
-  },
-  identifierListOrMap: {
-    OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'identifierValue', 'commaIdentifierValue*', 'RPAREN']
+    SEGMENTS: ['LPAREN', 'eachValueList', 'RPAREN']
   },
   identifierValue: {
     OPERATOR: '&&',
@@ -321,15 +337,7 @@ var DEFINITION = {
   },
   nested: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT', 'nest', 'selectors', 'BlockStart', 'stylesheet', 'BlockEnd']
-  },
-  nest: {
-    OPERATOR: '&&',
-    SEGMENTS: ['identifierOrAnd', 'Identifier*', 'pseudo*']
-  },
-  identifierOrAnd: {
-    OPERATOR: '||',
-    SEGMENTS: ['Identifier', 'AND']
+    SEGMENTS: ['AT', 'AND?', 'Identifier+', 'pseudo*', 'selectors', 'BlockStart', 'stylesheet', 'BlockEnd']
   },
   ruleset: {
     OPERATOR: '&&',
@@ -389,7 +397,7 @@ var DEFINITION = {
   },
   pseudoValue: {
     OPERATOR: '||',
-    SEGMENTS: ['pseudo', 'attrib', 'Number']
+    SEGMENTS: ['pseudo', 'attrib', 'Number', 'hashBlock']
   },
   pseudoIdentifier: {
     OPERATOR: '&&',
@@ -420,32 +428,24 @@ var DEFINITION = {
     SEGMENTS: ['EQ', 'PIPE_EQ', 'TILD_EQ']
   },
   identifier: {
+    OPERATOR: '&&',
+    SEGMENTS: ['hashBlockOrIdentifier', 'hashBlockOrIdentifierPart*']
+  },
+  hashBlockOrIdentifierPart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['DASH?', 'hashBlockOrIdentifier']
+  },
+  hashBlockOrIdentifier: {
     OPERATOR: '||',
-    SEGMENTS: ['identifierIdentifierPart', 'identifierIdentifierBlock']
+    SEGMENTS: ['hashBlock', 'Identifier']
   },
-  identifierIdentifierPart: {
+  hashBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['Identifier', 'identifierPart*']
+    SEGMENTS: ['HASH', 'BlockStart', 'hashBlockExpression', 'BlockEnd']
   },
-  identifierIdentifierBlock: {
+  hashBlockExpression: {
     OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableNameOrIdentifier', 'BlockEnd', 'identifierPart*']
-  },
-  identifierPart: {
-    OPERATOR: '&&',
-    SEGMENTS: ['DASH?', 'identifierPartBlockOrIdentifier']
-  },
-  identifierPartBlockOrIdentifier: {
-    OPERATOR: '||',
-    SEGMENTS: ['identifierPartBlock', 'Identifier']
-  },
-  identifierPartBlock: {
-    OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableNameOrIdentifier', 'BlockEnd']
-  },
-  identifierVariableNameOrIdentifier: {
-    OPERATOR: '||',
-    SEGMENTS: ['identifierVariableName', 'Identifier']
+    SEGMENTS: ['expression+']
   },
   identifierVariableName: {
     OPERATOR: '&&',

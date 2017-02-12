@@ -12,7 +12,7 @@ printTestSCSS();
 // ******************************
 
 function printTestSCSS () {
-    var contents = fs.readFileSync(path.resolve(__dirname, './test/format-test-base-preformatted.scss'), 'utf8');
+    var contents = fs.readFileSync(path.resolve(__dirname, './test/print-test.scss'), 'utf8');
     torisFormat.print_sass_contents(contents, 0, true);
     return true;
 }
