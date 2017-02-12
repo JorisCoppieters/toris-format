@@ -359,7 +359,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     return;
   }
 
-  fsp.write('./structure.txt', tree_output.values);
+  // fsp.write('./_structure.txt', tree_output.values);
   let result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -386,7 +386,7 @@ function get_failed_output (in_tree, in_contents, in_debug) {
   }
 
   if (in_debug) {
-    fsp.write('./failed_structure.txt', tree_output_failed.values);
+    fsp.write('./_failed_structure.txt', tree_output_failed.values);
   }
 
   unrecognised_contents += '...';
