@@ -77,6 +77,10 @@ function parse_contents (in_contents, in_definition_type) {
   do {
     let contents = in_contents || '';
 
+    if (!contents.trim().length) {
+      throw "Empty file!";
+    }
+
     let definition;
 
     switch(in_definition_type) {
