@@ -256,7 +256,7 @@ function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassT
         var test1_expectedOutputSassFile = '_formatTest_sass_' + testName + '_expectedOutput.txt';
         var test1_outputSassFile = '_formatTest_sass_' + testName + '_output.txt';
 
-        var outputSass = torisFormat.format_sass_contents(inputSass);
+        var outputSass = torisFormat.format_sass_contents(inputSass, 0, true);
         if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
             cprint.green('Success!');
             fs.exists(test1_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test1_expectedOutputSassFile); } } );
@@ -281,7 +281,7 @@ function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassT
         var test2_expectedOutputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_expectedOutput.txt';
         var test2_outputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_output.txt';
 
-        var outputSass = torisFormat.format_sass_contents(inputSass);
+        var outputSass = torisFormat.format_sass_contents(inputSass, 0, true);
         if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
             cprint.green('Success!');
             fs.exists(test2_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputSassFile); } } );
@@ -309,7 +309,7 @@ function printTestSCSS () {
 
     cprint.magenta('Testing printing of formatted Sass output');
     // Test printing;
-    torisFormat.print_sass_contents('.class{position:relative;width:35px}');
+    torisFormat.print_sass_contents('.class{position:relative;width:35px}', 0, true);
     return true;
 }
 

@@ -170,8 +170,6 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
       if (result !== '') {
         tree.FAILED = true;
         result = '';
-      } else {
-        result = result.replace(new RegExp(t_NL, 'g'), g_NL);
       }
     }
   }
@@ -453,6 +451,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   let newline = false;
   let double_newline = false;
+  let space_before = false;
   let pre_indent = 0;
   let post_indent = 0;
 
@@ -475,6 +474,17 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.IDENTIFIER_TYPE = 'EXPRESSION';
       break;
 
+    case 'mapExpression':
+      post_indent = 1;
+      state.RECORD_MAP_EXPRESSION_PAREN_DEPTH = true;
+      state.MAP_EXPRESSION_PAREN_DEPTH = 0;
+      state.IDENTIFIER_TYPE = 'EXPRESSION';
+      break;
+
+    case 'mapEntry':
+      state.IDENTIFIER_TYPE = 'MAP_ENTRY';
+      break;
+
     case 'functionCall':
       state.IDENTIFIER_TYPE = 'FUNCTION';
       break;
@@ -493,6 +503,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'pageDeclaration':
       state.IDENTIFIER_TYPE = 'PAGE';
+      break;
+
+    case 'identifierIdentifierBlock':
+      state.IDENTIFIER_TYPE = 'IDENTIFIER_BLOCK';
       break;
 
     case 'Identifier':
@@ -517,6 +531,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         color_func = cprint.toWhite;
         last_token = 'VARIABLE';
 
+      } else if (state.IDENTIFIER_TYPE === 'IDENTIFIER_BLOCK') {
+        append = definition_value;
+        color_func = cprint.toWhite;
+        last_token = 'IDENTIFIER_BLOCK';
+
       } else if (state.IDENTIFIER_TYPE === 'FUNCTION') {
         if (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(') {
           append = ' ' + definition_value;
@@ -527,9 +546,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         last_token = 'FUNCTION';
 
       } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
-        if (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== 'VALUE') {
-          append = ' ' + definition_value;
-        } else if (state.LAST_TOKEN === '0') {
+        if (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && (state.LAST_TOKEN !== 'VALUE' || state.LAST_TOKEN === '0')) {
           append = ' ' + definition_value;
         } else {
           append = definition_value;
@@ -543,7 +560,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{' || state.LAST_TOKEN === ',');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
 
-        if (!newline && !double_newline && state.LAST_TOKEN !== ':') {
+        if (!newline && !double_newline && state.LAST_TOKEN !== ':' && state.LAST_TOKEN !== '::' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== '[') {
           append = ' ' + append;
         }
 
@@ -565,7 +582,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'TIMES':
       if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         append = ' *';
-        color_func = cprint.toYellow;
+        color_func = cprint.toMagenta;
         last_token = 'OPERATOR';
       } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
         append = '*';
@@ -580,8 +597,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'MINUS':
       if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
-        append = ' ' + definition_value;
-        color_func = cprint.toYellow;
+        if (state.LAST_TOKEN !== '(') {
+          append = ' ' + definition_value;
+        } else {
+          append = definition_value;
+        }
+        color_func = cprint.toMagenta;
         if (state.LAST_TOKEN === ':') {
           last_token = ':MINUS';
         } else {
@@ -594,10 +615,9 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'DIV':
-    case 'PLUS':
       if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         append = ' ' + definition_value;
-        color_func = cprint.toYellow;
+        color_func = cprint.toMagenta;
         last_token = 'OPERATOR';
       } else {
         append = definition_value;
@@ -605,19 +625,49 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       }
       break;
 
+    case 'PLUS':
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+        append = ' ' + definition_value;
+        color_func = cprint.toMagenta;
+        last_token = 'OPERATOR';
+      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
+        append = ' ' + definition_value;
+        color_func = cprint.toCyan;
+        last_token = '+';
+      } else {
+        append = definition_value;
+        color_func = cprint.toRed;
+      }
+      break;
+
     case 'LPAREN':
-      if (state.LAST_TOKEN === '@media') {
+      if (state.LAST_TOKEN === '@media' || (state.IDENTIFIER_TYPE === 'EXPRESSION' && state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== 'URL')) {
         append = ' ' + definition_value;
       } else {
         append = definition_value;
       }
-      color_func = cprint.toYellow;
+
+      if (state.RECORD_MAP_EXPRESSION_PAREN_DEPTH) {
+        state.MAP_EXPRESSION_PAREN_DEPTH = state.MAP_EXPRESSION_PAREN_DEPTH + 1;
+      }
+
+      color_func = cprint.toMagenta;
       last_token = '(';
       break;
 
     case 'RPAREN':
       append = definition_value;
-      color_func = cprint.toYellow;
+
+      if (state.RECORD_MAP_EXPRESSION_PAREN_DEPTH) {
+        state.MAP_EXPRESSION_PAREN_DEPTH = state.MAP_EXPRESSION_PAREN_DEPTH - 1;
+        if (state.MAP_EXPRESSION_PAREN_DEPTH === 0) {
+          state.RECORD_MAP_EXPRESSION_PAREN_DEPTH = false;
+          newline = true;
+          pre_indent = -1;
+        }
+      }
+
+      color_func = cprint.toMagenta;
       last_token = ')';
       break;
 
@@ -633,10 +683,14 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
           append = ' ' + definition_value;
         }
         color_func = cprint.toYellow;
+      } else if (state.IDENTIFIER_TYPE === 'IDENTIFIER_BLOCK') {
+        append = definition_value;
+        color_func = cprint.toWhite;
       } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
         append = definition_value;
+        newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-        if (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(' && !double_newline) {
+        if (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(' && !newline && !double_newline) {
           append = ' ' + definition_value;
         }
         color_func = cprint.toWhite;
@@ -661,6 +715,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         if (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT') {
           append = ' ' + definition_value;
         }
+      } else if (state.IDENTIFIER_TYPE === 'MAP_ENTRY') {
+        newline = true;
+        append = definition_value;
+      } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
+        append = ' ' + definition_value;
       } else if (state.IDENTIFIER_TYPE === 'FUNCTION') {
         append = ' ' + definition_value;
       }
@@ -676,7 +735,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'STRING_DOUBLE_QUOTED':
     case 'UrlVal':
       append = definition_value;
-      if (state.IDENTIFIER_TYPE === 'IMPORT') {
+      if (state.IDENTIFIER_TYPE === 'IMPORT' || state.LAST_TOKEN === ':') {
         append = ' ' + definition_value;
       }
       color_func = cprint.toYellow;
@@ -693,7 +752,15 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.IDENTIFIER_TYPE = 'EXPRESSION';
       break;
 
+    case 'extraComma':
+      state.LAST_TOKEN = 'IGNORE:,';
+      break;
+
     case 'COMMA':
+      if (state.LAST_TOKEN === 'IGNORE:,') {
+        break;
+      }
+
       append = definition_value;
 
       if (state.IDENTIFIER_TYPE === 'PROPERTY') {
@@ -735,10 +802,17 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       last_token = '&';
       break;
 
+    case 'LBRACK':
+    case 'RBRACK':
+    case 'EQ':
+    case 'HASH':
+    case 'DASH':
     case 'COLON':
-      append = ':';
+    case 'COLONCOLON':
+      append = definition_value;
+      newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
       color_func = cprint.toCyan;
-      last_token = ':';
+      last_token = definition_value;
       break;
 
     case 'SEMI':
@@ -755,11 +829,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'COMMENT':
       if (whitespace_before_includes_newline) {
         append = definition_value;
-        double_newline = true;
+        newline = (state.LAST_TOKEN === '{');
+        double_newline = !newline;
       } else {
         append = ' ' + definition_value;
       }
-      color_func = cprint.toMagenta;
+      color_func = cprint.toCyan;
       last_token = 'MULTI_LINE_COMMENT';
       break;
 
@@ -770,7 +845,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       } else {
         append = ' ' + definition_value;
       }
-      color_func = cprint.toMagenta;
+      color_func = cprint.toCyan;
       last_token = 'SINGLE_LINE_COMMENT';
       break;
 
@@ -804,6 +879,21 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       last_token = '@media';
       break;
 
+    case 'AT_FOR':
+      append = definition_value;
+      newline = true;
+      double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+      color_func = cprint.toCyan;
+      last_token = '@for';
+      break;
+
+    case 'FROM':
+    case 'THROUGH':
+      append = ' ' + definition_value;
+      color_func = cprint.toCyan;
+      last_token = definition_value.toUpperCase();
+      break;
+
     case 'PAGE':
       append = definition_value;
       newline = true;
@@ -813,7 +903,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'BlockStart':
-      append = ' {';
+      if (state.LAST_TOKEN === '#') {
+        append = '{';
+      } else {
+        append = ' {';
+      }
       state.ADDITIONAL_SELECTORS = false;
       color_func = cprint.toWhite;
       post_indent = 1;
@@ -823,7 +917,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'BlockEnd':
       append = '}';
       color_func = cprint.toWhite;
-      newline = true;
+
+      if (state.IDENTIFIER_TYPE !== 'IDENTIFIER_BLOCK') {
+        newline = true;
+      }
+
       pre_indent = -1;
       last_token = '}';
       break;
@@ -856,6 +954,8 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       delim = t_NL + t_NL + output_indent;
     } else if (newline) {
       delim = t_NL + output_indent;
+    } else if (space_before) {
+      delim = ' ';
     }
 
     color_func = color_func || cprint.toRed;

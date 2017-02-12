@@ -57,7 +57,7 @@ var DEFINITION = {
   },
   paramOptionalValue: {
     OPERATOR: '&&',
-    SEGMENTS: ['COLON', 'expression+']
+    SEGMENTS: ['COLON', 'expressions']
   },
   paramsInParen: {
     OPERATOR: '&&',
@@ -129,11 +129,15 @@ var DEFINITION = {
   },
   expressionOrCommandStatement: {
     OPERATOR: '||',
-    SEGMENTS: ['expressions', 'expression+', 'commaCommandStatement', 'commandStatementInParens']
+    SEGMENTS: ['expressions', 'commaCommandStatement', 'commandStatementInParens']
   },
   expressions: {
     OPERATOR: '&&',
-    SEGMENTS: ['expression', 'commaExpression+']
+    SEGMENTS: ['expression+', 'commaExpression*']
+  },
+  expressionsInParens: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'expressions', 'RPAREN']
   },
   commaExpression: {
     OPERATOR: '&&',
@@ -153,7 +157,23 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['functionCall', 'url', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+    SEGMENTS: ['expressionsInParens', 'mapExpression', 'functionCall', 'url', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+  },
+  mapExpression: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'RPAREN']
+  },
+  mapEntry: {
+    OPERATOR: '&&',
+    SEGMENTS: ['Number', 'COLON', 'expression']
+  },
+  extraComma: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA']
+  },
+  commaMapEntry: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'mapEntry']
   },
   RGB: {
     OPERATOR: '&&',
@@ -333,7 +353,7 @@ var DEFINITION = {
   },
   selector: {
     OPERATOR: '&&',
-    SEGMENTS: ['selectorStart+', 'attrib*', 'pseudo?']
+    SEGMENTS: ['selectorStart+', 'attrib*', 'pseudo*']
   },
   selectorStart: {
     OPERATOR: '||',
@@ -349,7 +369,7 @@ var DEFINITION = {
   },
   element: {
     OPERATOR: '||',
-    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'AND', 'TIMES']
+    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'AND', 'TIMES', 'pseudo']
   },
   hashIdentifier: {
     OPERATOR: '&&',
@@ -361,7 +381,15 @@ var DEFINITION = {
   },
   pseudo: {
     OPERATOR: '||',
-    SEGMENTS: ['pseudoIdentifier', 'pseudoFunctionCall']
+    SEGMENTS: ['pseudoValueInParens', 'pseudoIdentifier', 'pseudoFunctionCall']
+  },
+  pseudoValueInParens: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'pseudoValue', 'RPAREN']
+  },
+  pseudoValue: {
+    OPERATOR: '||',
+    SEGMENTS: ['pseudo', 'attrib', 'Number']
   },
   pseudoIdentifier: {
     OPERATOR: '&&',
@@ -373,7 +401,7 @@ var DEFINITION = {
   },
   colonOrColonColon: {
     OPERATOR: '||',
-    SEGMENTS: ['COLON', 'COLONCOLON']
+    SEGMENTS: ['COLONCOLON', 'COLON']
   },
   attrib: {
     OPERATOR: '&&',
@@ -401,15 +429,23 @@ var DEFINITION = {
   },
   identifierIdentifierBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableName', 'BlockEnd', 'identifierPart*']
+    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableNameOrIdentifier', 'BlockEnd', 'identifierPart*']
   },
   identifierPart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['DASH?', 'identifierPartBlockOrIdentifier']
+  },
+  identifierPartBlockOrIdentifier: {
     OPERATOR: '||',
     SEGMENTS: ['identifierPartBlock', 'Identifier']
   },
   identifierPartBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableName', 'BlockEnd']
+    SEGMENTS: ['HASH', 'BlockStart', 'identifierVariableNameOrIdentifier', 'BlockEnd']
+  },
+  identifierVariableNameOrIdentifier: {
+    OPERATOR: '||',
+    SEGMENTS: ['identifierVariableName', 'Identifier']
   },
   identifierVariableName: {
     OPERATOR: '&&',

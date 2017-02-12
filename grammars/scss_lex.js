@@ -113,9 +113,13 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '#'
   },
+  DASH: {
+    OPERATOR: '==',
+    VALUE: '\\-'
+  },
   COLONCOLON: {
     OPERATOR: '==',
-    VALUE: '\:\:'
+    VALUE: '::'
   },
   PLUS: {
     OPERATOR: '==',
@@ -235,7 +239,7 @@ var DEFINITION = {
   },
   Identifier: {
     OPERATOR: '==',
-    VALUE: '\\-?[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*'
+    VALUE: '\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*'
   },
   STRING: {
     OPERATOR: '||',
@@ -275,7 +279,7 @@ var DEFINITION = {
   },
   COMMENT: {
     OPERATOR: '==',
-    VALUE: '\\/\\*.*?\\*\\/'
+    VALUE: '\/\\*[\\s\\S]*?\\*\/'
   },
   UrlEnd: {
     OPERATOR: '&&',

@@ -318,8 +318,11 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 // SCSS Format Functions:
 // ******************************
 
-function format_sass_contents (in_contents, in_indent_count) {
+function format_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
+  if (in_convert_newlines) {
+    contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+  }
 
   parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(contents, parser.k_DEFINITION_TYPE_SCSS);
@@ -331,20 +334,26 @@ function format_sass_contents (in_contents, in_indent_count) {
   }
 
   let result = tree_output.output;
+  if (in_convert_newlines) {
+    result = result.replace(new RegExp(t_NL, 'g'), g_NL);
+  }
   return result;
 }
 
 // ******************************
 
-function print_sass_contents (in_contents, in_indent_count) {
+function print_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
+  if (in_convert_newlines) {
+    contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+  }
 
   parser.set_indent_count(in_indent_count || 0);
   let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
   let tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
-    let failed_output = get_failed_output(tree, contents);
+    let failed_output = get_failed_output(tree, contents, true);
     cprint.red('Failed to parse:');
     console.log(failed_output);
     return;
@@ -352,12 +361,15 @@ function print_sass_contents (in_contents, in_indent_count) {
 
   fsp.write('./structure.txt', tree_output.values);
   let result = tree_output.color_output;
+  if (in_convert_newlines) {
+    result = result.replace(new RegExp(t_NL, 'g'), g_NL);
+  }
   console.log(result);
 }
 
 // ******************************
 
-function get_failed_output (in_tree, in_contents) {
+function get_failed_output (in_tree, in_contents, in_include_best_path) {
   let tree_output_failed = parser.output_tree_failed(in_tree);
   let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
   let unrecognised_contents_length = 10;
@@ -373,9 +385,16 @@ function get_failed_output (in_tree, in_contents) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
-  fsp.write('./structure.txt', tree_output_failed.values);
+  if (in_include_best_path) {
+    fsp.write('./structure.txt', tree_output_failed.values);
+  }
+
   unrecognised_contents += '...';
-  return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents) + '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path)
+  let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+  if (in_include_best_path) {
+    result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
+  }
+  return result;
 }
 
 // ******************************
