@@ -451,7 +451,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   }
 
   let append = definition_value;
-  let color_func = cprint.toRed;
+  let color_func = cprint.toBackgroundRed;
 
   let newline = false;
   let double_newline = false;
@@ -554,7 +554,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         if (state.LAST_TOKEN === 'OPERATOR') {
           space_before = true;
         }
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightBlue;
         last_token = state.IDENTIFIER_TYPE;
 
       } else if (state.IDENTIFIER_TYPE === 'HASH_BLOCK_FUNCTION') {
@@ -626,7 +626,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         last_token = 'OPERATOR';
       } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
         space_before = true;
-        color_func = cprint.toCyan;
+        color_func = cprint.toLightCyan;
         last_token = '+';
       }
       break;
@@ -660,12 +660,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== 'OPERATOR');
         color_func = cprint.toYellow;
       } else if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightBlue;
       } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
         newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
         space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(');
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightBlue;
       }
       last_token = '$';
       break;
@@ -729,7 +729,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         color_func = cprint.toYellow;
       } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightBlue;
       } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
         color_func = cprint.toWhite;
       }
@@ -741,7 +741,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
       double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       space_before = true;
-      color_func = cprint.toCyan;
+      color_func = cprint.toLightCyan;
       last_token = '>';
       break;
 
@@ -749,7 +749,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
       double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       space_before = true;
-      color_func = cprint.toCyan;
+      color_func = cprint.toLightCyan;
       last_token = '&';
       break;
 
@@ -768,7 +768,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       }
       space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH'));
 
-      color_func = cprint.toCyan;
+      color_func = cprint.toLightCyan;
       last_token = definition_value;
       break;
 
@@ -776,7 +776,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       if (state.LAST_TOKEN === ';') {
         append = false;
       }
-      color_func = cprint.toYellow;
+      color_func = cprint.toRed;
       last_token = ';';
       break;
 
@@ -787,20 +787,20 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       } else {
         space_before = true;
       }
-      color_func = cprint.toCyan;
+      color_func = cprint.toDarkGrey;
       last_token = 'MULTI_LINE_COMMENT';
       break;
 
     case 'SL_COMMENT':
       newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       space_before = true;
-      color_func = cprint.toCyan;
+      color_func = cprint.toDarkGrey;
       last_token = 'SINGLE_LINE_COMMENT';
       break;
 
     case 'IMPORTANT':
       space_before = true;
-      color_func = cprint.toMagenta;
+      color_func = cprint.toLightRed;
       last_token = 'IMPORTANT';
       break;
 
@@ -827,7 +827,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'BlockStart':
       if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightMagenta;
         state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH += 1;
         last_token = '{';
       } else {
@@ -840,7 +840,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'BlockEnd':
       if (state.RECORD_HASH_BLOCK_EXPRESSION_BLOCK_DEPTH) {
-        color_func = cprint.toWhite;
+        color_func = cprint.toLightMagenta;
         state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH -= 1;
         if (state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH === 0) {
           state.IDENTIFIER_TYPE = false;

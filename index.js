@@ -390,7 +390,7 @@ function get_failed_output (in_tree, in_contents, in_debug) {
   }
 
   unrecognised_contents += '...';
-  let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+  let result = cprint.toGreen(recognised_contents) + cprint.toLightRed(unrecognised_contents);
   if (in_debug) {
     result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
   }
