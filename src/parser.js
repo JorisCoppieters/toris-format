@@ -50,39 +50,75 @@ const k_DEBUG_OFF = 'OFF';
 
 module.exports['k_DEFINITION_TYPE_HTML'] = k_DEFINITION_TYPE_HTML;
 module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
+module.exports['setup'] = setup;
 module.exports['parse_contents'] = parse_contents;
 module.exports['output_tree'] = output_tree;
 module.exports['output_tree_failed'] = output_tree_failed;
-module.exports['set_indent_count'] = set_indent_count;
 
 // ******************************
 // Globals:
 // ******************************
 
-let g_INDENT = '    ';
-let g_INDENT_COUNT = 0;
 let g_NL = '\n';
+
+// Config - General:
+let g_ALLOW_EMPTY_CONTENT = false;
+let g_DEFINITION_TYPE = k_DEFINITION_TYPE_HTML;
+
+// Config - Indenting:
+let g_INDENT_COUNT = 0;
+let g_INDENT = '    ';
+
+// Config - SASS:
+let g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = [];
+
+// ******************************
+// Setup Functions:
+// ******************************
+
+function setup (in_config) {
+  if (!in_config) {
+    return;
+  }
+
+  // General:
+  g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
+  g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
+  g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
+  g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT);
+
+  if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
+    // HTML:
+
+  } else if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_SCSS) {
+    // SASS:
+    g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = utils.get_setup_property(in_config, "format_property_values_on_newlines", g_FORMAT_PROPERTY_VALUES_ON_NEWLINES);
+  }
+}
 
 // ******************************
 // Functions:
 // ******************************
 
-function parse_contents (in_contents, in_definition_type) {
+function parse_contents (in_contents) {
   let fn = 'parse_contents';
   let result = false;
 
   do {
     let contents = in_contents || '';
-
-    if (!contents.trim().length) {
-      throw "Empty file!";
+    if (contents.trim().length === 0) {
+      if (g_ALLOW_EMPTY_CONTENT) {
+        return '';
+      }
+      throw_error(fn, 'No content to parse!');
     }
 
     let definition;
 
-    switch(in_definition_type) {
+    switch(g_DEFINITION_TYPE) {
       case k_DEFINITION_TYPE_HTML:
-        definition = GRAMMAR_HTML;
+        throw_error(fn, 'HTML parsing not supported yet...');
+        // definition = GRAMMAR_HTML;
         break;
 
       case k_DEFINITION_TYPE_SCSS:
@@ -90,7 +126,7 @@ function parse_contents (in_contents, in_definition_type) {
         break;
 
       default:
-        throw_error(fn, 'parse_contents: You must specify a valid definition type');
+        throw_error(fn, 'You must specify a valid definition type');
     }
 
     // definition[k_DEFINITION_KEY_START].DEBUG = 'ON';
@@ -474,6 +510,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
         break;
       }
+
+      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
+        state.IDENTIFIER_TYPE = 'MULTI_LINE_EXPRESSION';
+        break;
+      }
+
       state.IDENTIFIER_TYPE = 'EXPRESSION';
       break;
 
@@ -489,6 +531,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         state.IDENTIFIER_TYPE = 'HASH_BLOCK_FUNCTION';
         break;
       }
+
+      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
+        state.IDENTIFIER_TYPE = 'MULTI_LINE_FUNCTION';
+        break;
+      }
+
       state.IDENTIFIER_TYPE = 'FUNCTION';
       break;
 
@@ -561,10 +609,26 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       } else if (state.IDENTIFIER_TYPE === 'FUNCTION') {
         space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(');
         color_func = cprint.toCyan;
+        if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
+            post_indent = 1;
+            state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH = true;
+            state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = 0;
+        }
+        last_token = 'FUNCTION';
+
+      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_FUNCTION') {
+        newline = true;
+        color_func = cprint.toCyan;
         last_token = 'FUNCTION';
 
       } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
         space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && (state.LAST_TOKEN !== 'VALUE' || state.LAST_TOKEN === '0'));
+        color_func = cprint.toYellow;
+        last_token = 'EXPRESSION';
+
+      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
+        newline = (state.LAST_TOKEN !== 'EXPRESSION');
+        space_before = true;
         color_func = cprint.toYellow;
         last_token = 'EXPRESSION';
 
@@ -634,6 +698,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         state.MAP_EXPRESSION_PAREN_DEPTH = state.MAP_EXPRESSION_PAREN_DEPTH + 1;
       }
 
+      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
+        state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = state.MULTI_LINE_EXPRESSION_PAREN_DEPTH + 1;
+      }
+
       color_func = cprint.toMagenta;
       last_token = '(';
       break;
@@ -648,15 +716,21 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         }
       }
 
+      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
+        state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = state.MULTI_LINE_EXPRESSION_PAREN_DEPTH - 1;
+        if (state.MULTI_LINE_EXPRESSION_PAREN_DEPTH === 0) {
+          state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH = false;
+          newline = true;
+          pre_indent = -1;
+        }
+      }
+
       color_func = cprint.toMagenta;
       last_token = ')';
       break;
 
     case 'DOLLAR':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
-        space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== 'OPERATOR');
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
+      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
         color_func = cprint.toLightBlue;
       } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
         newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
@@ -676,7 +750,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'Number':
     case 'Color':
     case 'RGB_VAL':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
         space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
       } else if (state.IDENTIFIER_TYPE === 'MAP_ENTRY') {
         newline = true;
@@ -961,12 +1035,6 @@ function get_indent (in_inc) {
 
 function inc_indent (in_inc) {
   g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + in_inc);
-}
-
-// ******************************
-
-function set_indent_count (in_indent_count) {
-  g_INDENT_COUNT = Math.max(0, in_indent_count);
 }
 
 // ******************************

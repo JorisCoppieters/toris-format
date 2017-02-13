@@ -39,7 +39,7 @@ function formatTests (fileExtension, fileType, formatFunction) {
             let formattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-formatted.' + fileExtension), 'utf8');
             let configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
             loadConfigFile(configFile);
-            return formatTestFiles(fileType + '::' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
+            return formatTestFiles(fileExtension + '-' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
         })
     });
 
@@ -66,7 +66,7 @@ function printTests (fileExtension, fileType, formatFunction) {
             let sassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '.' + fileExtension), 'utf8');
             let configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
             loadConfigFile(configFile);
-            return printTestContents(fileType + '::' + testName, fileType, formatFunction, sassContents);
+            return printTestContents(fileExtension + '-' + testName, fileType, formatFunction, sassContents);
         })
     });
 
@@ -98,8 +98,8 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
         let input = preformattedContents;
         let expectedOutput = formattedContents;
 
-        let test1_expectedOutputFile = '_formatTest_' + fileType + '_' + testName + '_expectedOutput.txt';
-        let test1_outputFile = '_formatTest_' + fileType + '_' + testName + '_output.txt';
+        let test1_expectedOutputFile = '_formatTest_' + testName + '_expectedOutput.txt';
+        let test1_outputFile = '_formatTest_' + testName + '_output.txt';
 
         let output = formatFunction(input);
         if (output && expectedOutput && output.trim() == expectedOutput.trim()) {
@@ -123,8 +123,8 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
         let input = formattedContents;
         let expectedOutput = formattedContents;
 
-        let test2_expectedOutputFile = '_formatTest_alreadyFormatted_' + fileType + '_' + testName + '_expectedOutput.txt';
-        let test2_outputFile = '_formatTest_alreadyFormatted_' + fileType + '_' + testName + '_output.txt';
+        let test2_expectedOutputFile = '_formatTest_alreadyFormatted_' + testName + '_expectedOutput.txt';
+        let test2_outputFile = '_formatTest_alreadyFormatted_' + testName + '_output.txt';
 
         let output = formatFunction(input);
         if (output && expectedOutput && output.trim() == expectedOutput.trim()) {

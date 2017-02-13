@@ -23,9 +23,37 @@ function printTestSCSS () {
       return;
     }
 
-    var contents = fs.readFileSync(path.resolve(__dirname, g_FILE), 'utf8');
-    torisFormat.print_sass_contents(contents, 0, true);
-    return true;
+    torisFormat.setup({
+      definition_type: torisFormat.k_DEFINITION_TYPE_SCSS
+    });
+
+    let file = g_FILE;
+    let fileExtension = 'scss';
+    let dirname = path.dirname(file);
+    let basename = path.basename(file);
+
+    let regexp1 = new RegExp('(format-test-(.*))-(?:pre)?formatted.' + fileExtension);
+    let regexp2 = new RegExp('(print-test-(.*)).' + fileExtension);
+
+    let matches = basename.match(regexp1);
+    if (!matches) {
+      matches = basename.match(regexp2);
+    }
+
+    if (!matches) {
+        return;
+    }
+
+    let basenamePrefix = matches[1];
+    let testName = matches[2];
+    let sassContents = fs.readFileSync(file, 'utf8');
+    let configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
+    if (fs.existsSync(configFile)) {
+        let config = require(configFile);
+        torisFormat.setup(config);
+    }
+
+    torisFormat.print_sass_contents(sassContents, 0, true);
 }
 
 // ******************************

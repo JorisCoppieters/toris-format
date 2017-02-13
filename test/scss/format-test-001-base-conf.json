@@ -1,3 +1,4 @@
 {
-    "line_ending": "\r\n"
+    "line_ending": "\r\n",
+    "definition_type": "SCSS"
 }

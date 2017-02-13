@@ -52,6 +52,7 @@
 // ******************************
 
 let parser = require('./src/parser');
+let utils = require('./src/utils');
 let cprint = require('color-print');
 let fsp = require('fs-process');
 
@@ -90,6 +91,8 @@ const k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE = '[NG2_ATTRIBUTE_TYPE_BINDI
 // ******************************
 
 module.exports['k_VERSION'] = k_VERSION;
+module.exports['k_DEFINITION_TYPE_SCSS'] = parser.k_DEFINITION_TYPE_SCSS;
+module.exports['k_DEFINITION_TYPE_HTML'] = parser.k_DEFINITION_TYPE_HTML;
 module.exports['format_html_file'] = format_html_contents;
 module.exports['format_html_contents'] = format_html_contents;
 module.exports['print_sass_contents'] = print_sass_contents;
@@ -159,7 +162,14 @@ let g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'b
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
 let g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
-// Config:
+// Config - General:
+let g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
+
+// Config - Indenting:
+let g_INDENT_COUNT = 0;
+let g_INDENT = '    ';
+
+// Config - HTML:
 let g_ALLOW_EMPTY_FILES = false;
 let g_ANGULAR_VERSION = 1;
 let g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
@@ -174,10 +184,6 @@ let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
 let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
 let g_REMOVE_CSS = false;
 let g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
-
-// Config - Indenting:
-let g_INDENT_COUNT = 0;
-let g_INDENT = '    ';
 
 // Config - Deprecated
 let g__DEPRECATED__NG1_ATTRIBUTES_ORDER = [];
@@ -205,25 +211,36 @@ function setup (in_config) {
     return;
   }
 
-  g_ALLOW_EMPTY_FILES = get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
-  g_ANGULAR_VERSION = get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
-  g_BLOCK_ELEMENTS = get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
-  g_FORCE_BLOCK_WHITESPACE_FORMATTING = get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
-  g_FORCE_INLINE_WHITESPACE_FORMATTING = get_setup_property(in_config, "force_inline_whitespace_formatting", g_FORCE_INLINE_WHITESPACE_FORMATTING);
-  g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
-  g_INDENT = get_setup_property(in_config, "indent", g_INDENT);
-  g_INLINE_ELEMENTS = get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
-  g_MULTI_CLASSES_ORDER = get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
-  g_NG_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
-  g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
-  g_NL = get_setup_property(in_config, "line_ending", g_NL);
-  g_NONE_ONE_TIME_BOUND_ELEMENTS = get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
-  g_ONE_TIME_BOUND_ELEMENT_PREFIXES = get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
-  g_REMOVE_CSS = get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
-  g_SELF_CLOSING_HTML_TAGS = get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
+  // General:
+  g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
 
-  // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
-  setup_attribute_ordering(in_config);
+  if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
+    // HTML:
+    g_ALLOW_EMPTY_FILES = utils.get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
+    g_ANGULAR_VERSION = utils.get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
+    g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
+    g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
+    g_FORCE_INLINE_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_inline_whitespace_formatting", g_FORCE_INLINE_WHITESPACE_FORMATTING);
+    g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = utils.get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
+    g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
+    g_INLINE_ELEMENTS = utils.get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
+    g_MULTI_CLASSES_ORDER = utils.get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
+    g_NG_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
+    g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
+    g_NONE_ONE_TIME_BOUND_ELEMENTS = utils.get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
+    g_ONE_TIME_BOUND_ELEMENT_PREFIXES = utils.get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
+    g_REMOVE_CSS = utils.get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+    g_SELF_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
+
+    // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
+    setup_attribute_ordering(in_config);
+  } else if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_SCSS) {
+
+    // SASS:
+  }
+
+  parser.setup(in_config);
 }
 
 // ******************************
@@ -236,22 +253,22 @@ function setup_attribute_ordering(in_config) {
 
   let has_old_attributes_order_configs = false;
 
-  if (get_setup_property(in_config, "ng1_attributes_order", false)) {
+  if (utils.get_setup_property(in_config, "ng1_attributes_order", false)) {
     has_old_attributes_order_configs = true;
     console.warn('Using old config key "ng1_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
   }
 
-  if (get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
+  if (utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
     has_old_attributes_order_configs = true;
     console.warn('Using old config key "ng1_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
   }
 
-  if (get_setup_property(in_config, "ng2_attributes_order", false)) {
+  if (utils.get_setup_property(in_config, "ng2_attributes_order", false)) {
     has_old_attributes_order_configs = true;
     console.warn('Using old config key "ng2_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
   }
 
-  if (get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
+  if (utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
     has_old_attributes_order_configs = true;
     console.warn('Using old config key "ng2_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
   }
@@ -267,10 +284,10 @@ function setup_attribute_ordering(in_config) {
     return;
   }
 
-  g__DEPRECATED__NG1_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-  g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-  g__DEPRECATED__NG2_ATTRIBUTES_ORDER = get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-  g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
 
   let ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
   let ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
@@ -287,54 +304,26 @@ function setup_attribute_ordering(in_config) {
 }
 
 // ******************************
-
-function get_setup_property (in_config, in_field, in_default_value, in_base_value) {
-  if (!in_config) {
-    return in_default_value;
-  }
-
-  if (Array.isArray(in_field)) {
-    let valid_fields = in_field.filter((field) => {return typeof(in_config[field]) !== "undefined";});
-    if (!valid_fields || !valid_fields.length) {
-      return in_default_value;
-    }
-    let field = valid_fields[0];
-    return in_config[field];
-  }
-
-  if (typeof(in_config[in_field]) === "undefined") {
-    return in_default_value;
-  }
-  let val = in_config[in_field];
-
-  if (Array.isArray(in_base_value) && Array.isArray(val)) {
-    val = in_base_value.concat(val);
-  }
-
-  return val;
-}
-
-// ******************************
 // SCSS Format Functions:
 // ******************************
 
 function format_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
-  if (contents.trim().length === 0) {
-    if (g_ALLOW_EMPTY_FILES) {
-      return '';
-    }
-    throw 'Empty file!';
-  }
-
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
 
-  parser.set_indent_count(in_indent_count || 0);
-  let tree = parser.parse_contents(contents, parser.k_DEFINITION_TYPE_SCSS);
-  let tree_output = parser.output_tree(tree);
+  parser.setup({
+    indent_count: in_indent_count || 0,
+    definition_type: parser.k_DEFINITION_TYPE_SCSS
+  });
 
+  let tree = parser.parse_contents(contents);
+  if (tree === '') {
+    return '';
+  }
+
+  let tree_output = parser.output_tree(tree);
   if (!tree_output.output) {
     let failed_output = get_failed_output(tree, contents);
     throw 'Failed to parse:\n' + failed_output;
@@ -351,19 +340,20 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
 
 function print_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
-  if (contents.trim().length === 0) {
-    if (g_ALLOW_EMPTY_FILES) {
-      return '';
-    }
-    throw 'Empty file!';
-  }
-
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
 
-  parser.set_indent_count(in_indent_count || 0);
-  let tree = parser.parse_contents(in_contents, parser.k_DEFINITION_TYPE_SCSS);
+  parser.setup({
+    indent_count: in_indent_count || 0,
+    definition_type: parser.k_DEFINITION_TYPE_SCSS
+  });
+
+  let tree = parser.parse_contents(in_contents);
+  if (tree === '') {
+    console.log('Empty Contents');
+  }
+
   let tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
