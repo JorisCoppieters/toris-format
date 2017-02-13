@@ -1,0 +1,8 @@
+{
+    "ng_attributes_order": [
+        "my-z-.*",
+        "my-a-.*",
+        "my-.*"
+    ],
+    "ng_version": 1.5
+}

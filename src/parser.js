@@ -22,15 +22,15 @@ let GRAMMAR_HTML = require('../grammars/html');
 // Exposing Functions:
 // ******************************
 
-var r_A = GRAMMAR_CORE.r_A;
-var r_AG = GRAMMAR_CORE.r_AG;
-var r_W = GRAMMAR_CORE.r_W;
-var r_S = GRAMMAR_CORE.r_S;
-var r_w = GRAMMAR_CORE.r_w;
-var r_g = GRAMMAR_CORE.r_g;
-var r_v = GRAMMAR_CORE.r_v;
-var r_dq = GRAMMAR_CORE.r_dq;
-var r_sq = GRAMMAR_CORE.r_sq;
+let r_A = GRAMMAR_CORE.r_A;
+let r_AG = GRAMMAR_CORE.r_AG;
+let r_W = GRAMMAR_CORE.r_W;
+let r_S = GRAMMAR_CORE.r_S;
+let r_w = GRAMMAR_CORE.r_w;
+let r_g = GRAMMAR_CORE.r_g;
+let r_v = GRAMMAR_CORE.r_v;
+let r_dq = GRAMMAR_CORE.r_dq;
+let r_sq = GRAMMAR_CORE.r_sq;
 
 // ******************************
 // Constants:

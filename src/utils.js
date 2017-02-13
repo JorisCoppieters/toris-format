@@ -37,8 +37,8 @@ function is_numeric (n) {
 // ******************************
 
 function str_append (in_string, in_append, in_delim) {
-  let string = in_string || '';
-  let append = in_append || '';
+  var string = in_string || '';
+  var append = in_append || '';
   if (in_delim) {
     return string + (string.length ? in_delim : '') + append;
   }

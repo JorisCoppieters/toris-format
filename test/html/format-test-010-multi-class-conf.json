@@ -1,0 +1,6 @@
+{
+    "format_multi_classes_with_at_least": 1,
+    "multi_classes_order": [
+        "z-.*"
+    ]
+}

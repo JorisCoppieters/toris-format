@@ -1051,7 +1051,7 @@ function sort_attributes (in_attributes) {
 // ******************************
 
 function parse_classes_content (in_classes_content) {
-  var result = false;
+  let result = false;
 
   do {
     let classes_content = in_classes_content || '';
@@ -1193,7 +1193,7 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
 // ******************************
 
 function sort_classes (in_class_names) {
-  var result = false;
+  let result = false;
 
   do {
 
@@ -1803,7 +1803,7 @@ function reset_html_variables () {
 // ******************************
 
 function get_top_element_info (in_pop) {
-  var result = false;
+  let result = false;
 
   do
   {

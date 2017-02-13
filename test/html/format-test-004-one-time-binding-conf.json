@@ -1,0 +1,8 @@
+{
+    "none_one_time_bound_elements": [
+        "do-not-add-one-time-bindings"
+    ],
+    "one_time_bound_element_prefixes": [
+        "my-"
+    ]
+}
