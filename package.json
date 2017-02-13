@@ -19,5 +19,8 @@
   "dependencies": {
     "color-print": "^1.0.0",
     "fs-process": "^1.0.0"
+  },
+  "devDependencies": {
+    "minimist": "^1.2.0"
   }
 }

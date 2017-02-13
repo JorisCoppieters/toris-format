@@ -49,10 +49,23 @@ function formatTestSingleCommentSass () {
         line_ending: '\r\n'
     });
 
-    // Test single-comment formatting
+    // Test single comment formatting
     let preformattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-comment-preformatted.scss'), 'utf8');
     let formattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-comment-formatted.scss'), 'utf8');
     return formatTestSassFiles('SingleComment', preformattedSassContents, formattedSassContents);
+}
+
+// ******************************
+
+function formatTestSinglePseudoSelectorSass () {
+    torisFormat.setup({
+        line_ending: '\r\n'
+    });
+
+    // Test single pseudo selector formatting
+    let preformattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-pseudo-selector-preformatted.scss'), 'utf8');
+    let formattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-pseudo-selector-formatted.scss'), 'utf8');
+    return formatTestSassFiles('SinglePseudoSelector', preformattedSassContents, formattedSassContents);
 }
 
 // ******************************

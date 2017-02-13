@@ -339,3 +339,8 @@ a[ui-sref="tm.property.home"]:visited {
         }
     }
 }
+
+[ui-view="mobile-panel"] {
+    height: 100%;
+    position: relative;
+}

@@ -361,7 +361,7 @@ var DEFINITION = {
   },
   selector: {
     OPERATOR: '&&',
-    SEGMENTS: ['selectorStart+', 'attrib*', 'pseudo*']
+    SEGMENTS: ['selectorStart*', 'attrib*', 'pseudo*']
   },
   selectorStart: {
     OPERATOR: '||',
