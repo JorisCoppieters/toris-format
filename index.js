@@ -236,7 +236,6 @@ function setup (in_config) {
     // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
     setup_attribute_ordering(in_config);
   } else if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_SCSS) {
-
     // SASS:
   }
 
@@ -363,7 +362,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     return;
   }
 
-  // fsp.write('./_structure.txt', tree_output.values);
+  fsp.write('./_structure.txt', tree_output.values);
   let result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);

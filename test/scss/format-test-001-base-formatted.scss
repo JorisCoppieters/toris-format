@@ -144,9 +144,7 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 .o-image-viewer:hover,
 .o-image-viewer__button:hover {
     background-color: $silver-fern-20;
-    background-image: linear-gradient(rgba($black, 0), rgba($black, 0.1));
     margin-left: -$unit;
-    background: linear-gradient(to bottom, rgba($white, 0) 50%, $silver-fern-10 50%);
 }
 
 @media (max-width: 767px) {
@@ -157,7 +155,7 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 
 @import "./controls/controls";
 
-@media screen and(-ms-high-contrast: none) {
+@media screen and (-ms-high-contrast: none) {
     position: relative;
     padding-left: $unit / 2;
 }
@@ -193,15 +191,6 @@ a[ui-sref="tm.property.home"]:visited {
         max-width: $logo-no-tagline-max-width;
         margin-top: 12px;
     }
-}
-
-.mp-search-card__full-feature-gradient {
-    position: absolute;
-    background: linear-gradient(to top, rgba($black, 0.7) 10%, rgba($black, 0.6) 15%, rgba($black, 0.5) 20%, rgba(10, 10, 10, 0.35) 30%, rgba(10, 10, 10, 0.15) 40%, rgba(10, 10, 10, 0.1) 45%);
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
 }
 
 .motorweb-basic-report-section__table tr:last-child td {
@@ -344,3 +333,47 @@ a[ui-sref="tm.property.home"]:visited {
     height: 100%;
     position: relative;
 }
+// the SVG block below
+
+/*
+another here
+*/
+
+$profile-image-sizes-multipliers:
+    'extra-small' 26,
+    'small' 42,
+    'medium' 62,
+    'large' 112;
+
+$profile-image-placeholder-colors:
+    $pohutukawa-20 $pohutukawa-400, //0
+    $jaffa-30 $jaffa-400, //1
+    $hokey-pokey-30 $hokey-pokey-600, //2
+    $kiwifruit-30 $kiwifruit-700, //3
+    $feijoa-30 $feijoa-500, //4
+    $waitomo-30 $waitomo-500, //5
+    $paua-30 $paua-600, //6
+    $tasman-30 $tasman-600, //7
+    $mordor-30 $mordor-400, //8
+    $glacier-30 $glacier-400; //9
+
+@mixin sprite-width($sprite) {
+    width: nth($sprite, 3);
+}
+
+@mixin sprite-height($sprite) {
+    height: nth($sprite, 4);
+}
+
+$banner-image-placeholder-colors: (
+    $pohutukawa-50,
+    $jaffa-50,
+    $hokey-pokey-50,
+    $kiwifruit-50,
+    $feijoa-50,
+    $waitomo-50,
+    $paua-50,
+    $tasman-50,
+    $mordor-50,
+    $glacier-50
+);

@@ -156,6 +156,14 @@ var DEFINITION = {
     SEGMENTS: ['expressions', 'commaCommandStatement', 'commandStatementInParens']
   },
   expressions: {
+    OPERATOR: '||',
+    SEGMENTS: ['expressions3Plus', 'expressions3Less']
+  },
+  expressions3Plus: {
+    OPERATOR: '&&',
+    SEGMENTS: ['expression+', 'commaExpression', 'commaExpression+']
+  },
+  expressions3Less: {
     OPERATOR: '&&',
     SEGMENTS: ['expression+', 'commaExpression*']
   },
@@ -181,7 +189,7 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['expressionsInParens', 'mapExpression', 'functionCall', 'url', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+    SEGMENTS: ['expressionsInParens', 'mapExpression', 'functionCall', 'url', 'SL_COMMENT', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
   },
   mapExpression: {
     OPERATOR: '&&',
@@ -257,7 +265,11 @@ var DEFINITION = {
   },
   variableDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['variableName', 'COLON', 'values', 'POUND_DEFAULT?', 'SEMI+']
+    SEGMENTS: ['variableName', 'COLON', 'variableDeclarationValues', 'POUND_DEFAULT?', 'SEMI+']
+  },
+  variableDeclarationValues: {
+    OPERATOR: '&&',
+    SEGMENTS: ['values']
   },
   commaVariableName: {
     OPERATOR: '&&',
@@ -462,6 +474,10 @@ var DEFINITION = {
   values: {
     OPERATOR: '&&',
     SEGMENTS: ['commandStatement', 'commaCommandStatement*']
+  },
+  values3Plus: {
+    OPERATOR: '&&',
+    SEGMENTS: ['commandStatement', 'commandStatement', 'commandStatement', 'commaCommandStatement*']
   },
   commaCommandStatement: {
     OPERATOR: '&&',

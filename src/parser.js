@@ -499,13 +499,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.IDENTIFIER_TYPE = definition_key.toUpperCase();
       break;
 
-    case 'mapExpression':
-      post_indent = 1;
-      state.RECORD_MAP_EXPRESSION_PAREN_DEPTH = true;
-      state.MAP_EXPRESSION_PAREN_DEPTH = 0;
-      state.IDENTIFIER_TYPE = 'EXPRESSION';
-      break;
-
     case 'expression':
       if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
         break;
@@ -516,13 +509,41 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         break;
       }
 
+      if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES' && !state.MULTI_LINE_VARIABLE_VALUES) {
+        break;
+      }
+
+      if (state.MULTI_LINE_VARIABLE_VALUES) {
+        state.IDENTIFIER_TYPE = 'MULTI_LINE_EXPRESSION';
+        break;
+      }
+
       state.IDENTIFIER_TYPE = 'EXPRESSION';
+      break;
+
+    case 'mapExpression':
+    case 'expressions3Plus':
+      if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
+        post_indent = 1;
+        state.MULTI_LINE_VARIABLE_VALUES = true;
+        break;
+      }
       break;
 
     case 'variableName':
       if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
         break;
       }
+
+      if (state.IDENTIFIER_TYPE === 'VARIABLE_DEC') {
+        break;
+      }
+
+      if (state.MULTI_LINE_VARIABLE_VALUES) {
+        state.IDENTIFIER_TYPE = 'MULTI_LINE_VARIABLE';
+        break;
+      }
+
       state.IDENTIFIER_TYPE = 'VARIABLE';
       break;
 
@@ -544,12 +565,26 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.IDENTIFIER_TYPE = 'MAP_ENTRY';
       break;
 
+    case 'variableDeclaration':
+      state.IDENTIFIER_TYPE = 'VARIABLE_DEC';
+      break;
+
+    case 'variableDeclarationValues':
+      state.IDENTIFIER_TYPE = 'VARIABLE_VALUES';
+      state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = true;
+      state.VARIABLE_VALUES_PAREN_DEPTH = 0;
+      break;
+
     case 'importDeclaration':
       state.IDENTIFIER_TYPE = 'IMPORT';
       break;
 
     case 'includeDeclaration':
       state.IDENTIFIER_TYPE = 'INCLUDE';
+      break;
+
+    case 'mixinDeclaration':
+      state.IDENTIFIER_TYPE = 'MIXIN';
       break;
 
     case 'eachDeclaration':
@@ -590,17 +625,21 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         color_func = cprint.toGreen;
         last_token = state.IDENTIFIER_TYPE;
 
-      } else if (['INCLUDE', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
+      } else if (['INCLUDE', 'MIXIN', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
         space_before = true;
         color_func = cprint.toCyan;
         last_token = state.IDENTIFIER_TYPE;
 
-      } else if (['VARIABLE', 'HASH_BLOCK'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
+      } else if (['VARIABLE', 'VARIABLE_DEC', 'HASH_BLOCK'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
         if (state.LAST_TOKEN === 'OPERATOR') {
           space_before = true;
         }
         color_func = cprint.toLightBlue;
         last_token = state.IDENTIFIER_TYPE;
+
+      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
+        color_func = cprint.toLightBlue;
+        last_token = 'MULTI_LINE_VARIABLE';
 
       } else if (state.IDENTIFIER_TYPE === 'HASH_BLOCK_FUNCTION') {
         color_func = cprint.toCyan;
@@ -661,7 +700,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'MINUS':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
         space_before = (state.LAST_TOKEN !== '(');
         color_func = cprint.toMagenta;
         if (state.LAST_TOKEN === ':') {
@@ -693,27 +732,43 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case 'LPAREN':
-      space_before = (state.LAST_TOKEN === '@media' || ((state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') && state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== 'URL'));
-      if (state.RECORD_MAP_EXPRESSION_PAREN_DEPTH) {
-        state.MAP_EXPRESSION_PAREN_DEPTH = state.MAP_EXPRESSION_PAREN_DEPTH + 1;
+      if (state.RECORD_VARIABLE_VALUES_PAREN_DEPTH) {
+        state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH + 1;
       }
 
       if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
         state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = state.MULTI_LINE_EXPRESSION_PAREN_DEPTH + 1;
       }
 
-      color_func = cprint.toMagenta;
-      last_token = '(';
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
+        space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== 'URL');
+        color_func = cprint.toMagenta;
+        last_token = '(';
+      } else if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
+        space_before = true;
+        color_func = cprint.toMagenta;
+        last_token = '(';
+      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
+        space_before = true;
+        color_func = cprint.toMagenta;
+        last_token = '(';
+      } else if (state.IDENTIFIER_TYPE === 'MEDIA') {
+        space_before = true;
+        color_func = cprint.toMagenta;
+        last_token = '(';
+      } else {
+        color_func = cprint.toMagenta;
+        last_token = '(';
+      }
       break;
 
     case 'RPAREN':
-      if (state.RECORD_MAP_EXPRESSION_PAREN_DEPTH) {
-        state.MAP_EXPRESSION_PAREN_DEPTH = state.MAP_EXPRESSION_PAREN_DEPTH - 1;
-        if (state.MAP_EXPRESSION_PAREN_DEPTH === 0) {
-          state.RECORD_MAP_EXPRESSION_PAREN_DEPTH = false;
-          newline = true;
-          pre_indent = -1;
-        }
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE_VALUES' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
+        color_func = cprint.toMagenta;
+        last_token = ')';
+      } else {
+        color_func = cprint.toMagenta;
+        last_token = ')';
       }
 
       if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
@@ -725,17 +780,28 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         }
       }
 
-      color_func = cprint.toMagenta;
-      last_token = ')';
+      if (state.MULTI_LINE_VARIABLE_VALUES) {
+        state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH - 1;
+        if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
+          state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
+          state.MULTI_LINE_VARIABLE_VALUES = false;
+          newline = true;
+          pre_indent = -1;
+        }
+      }
       break;
 
     case 'DOLLAR':
       if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
         color_func = cprint.toLightBlue;
-      } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
+      } else if (state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'VARIABLE_DEC') {
         newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
         space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(');
+        color_func = cprint.toLightBlue;
+      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
+        newline = (state.LAST_TOKEN === '(' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === ',' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+        space_before = true;
         color_func = cprint.toLightBlue;
       }
       last_token = '$';
@@ -750,7 +816,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'Number':
     case 'Color':
     case 'RGB_VAL':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
+      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
         space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
       } else if (state.IDENTIFIER_TYPE === 'MAP_ENTRY') {
         newline = true;
@@ -770,8 +836,19 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'STRING_SINGLE_QUOTED':
     case 'STRING_DOUBLE_QUOTED':
     case 'UrlVal':
-      space_before = (state.IDENTIFIER_TYPE === 'IMPORT' || state.LAST_TOKEN === ':');
-      color_func = cprint.toYellow;
+      if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
+        newline = true;
+        color_func = cprint.toYellow;
+      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+        space_before = (state.LAST_TOKEN === ':');
+        color_func = cprint.toYellow;
+      } else if (state.IDENTIFIER_TYPE === 'IMPORT') {
+        space_before = (state.IDENTIFIER_TYPE === 'IMPORT' || state.LAST_TOKEN === ':');
+        color_func = cprint.toYellow;
+      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
+        space_before = (state.LAST_TOKEN === ':');
+        color_func = cprint.toYellow;
+      }
       last_token = 'VALUE';
       break;
 
@@ -797,10 +874,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
       if (state.IDENTIFIER_TYPE === 'PROPERTY') {
         color_func = cprint.toGreen;
-      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
+      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
         color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'VARIABLE') {
-        color_func = cprint.toLightBlue;
+      } else if (state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
+        color_func = cprint.toYellow;
       } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
         color_func = cprint.toWhite;
       }
@@ -838,7 +915,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       }
       space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH'));
-
       color_func = cprint.toLightCyan;
       last_token = definition_value;
       break;
@@ -847,6 +923,15 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       if (state.LAST_TOKEN === ';') {
         append = false;
       }
+
+      if (state.MULTI_LINE_VARIABLE_VALUES) {
+        if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
+          state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
+          state.MULTI_LINE_VARIABLE_VALUES = false;
+          pre_indent = -1;
+        }
+      }
+
       color_func = cprint.toRed;
       last_token = ';';
       break;
@@ -855,6 +940,8 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       if (whitespace_before_includes_newline) {
         newline = (state.LAST_TOKEN === '{');
         double_newline = !newline;
+      } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
+        double_newline = true;
       } else {
         space_before = true;
       }
@@ -877,6 +964,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'IMPORT':
     case 'INCLUDE':
+    case 'MIXIN':
     case 'MEDIA':
     case 'KEYFRAMES':
     case 'PAGE':
