@@ -1,4 +1,5 @@
 node_modules
+npm-debug.log
 _structure.txt
 _failed_structure.txt
 _formatTest_*

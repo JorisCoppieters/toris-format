@@ -3,13 +3,16 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.6.1
+// TORIS FORMAT v1.6.0
 //
 // Version History:
 //
 // 1.6.0
 // - Started work on refactoring into proper AST with Grammar files
 // - Added support for scss files
+//
+// 1.5.1
+// - Bug fix around whitespace before content within block elements
 //
 // 1.5.0
 // - Refactored attribute value object parsing
@@ -60,7 +63,7 @@ let fsp = require('fs-process');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.6.1';
+const k_VERSION = '1.6.0';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -1613,9 +1616,7 @@ function parse_content (in_html_content) {
     let indent = '';
 
     let top_element_info = get_top_element_info();
-    if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
-      indent = t_NL + get_indent();
-    } else if (space_content) {
+    if (space_content) {
       if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
         if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
           indent = ' ';
