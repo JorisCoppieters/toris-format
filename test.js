@@ -8,12 +8,13 @@ var fsp = require('fs-process');
 
 // ******************************
 
-formatTest();
+runTests();
 
 // ******************************
 
-function formatTest () {
-    if (!formatTestBaseSCSS()) { return };
+function runTests () {
+    if (!formatTestBaseSass()) { return };
+    if (!formatTestSingleCommentSass()) { return };
     if (!formatTestBase()) { return };
     if (!formatTestNG1()) { return };
     if (!formatTestNG2()) { return };
@@ -24,31 +25,47 @@ function formatTest () {
     if (!formatTestLinuxLineEndings()) { return };
     if (!formatTestRemoveCSS()) { return };
     if (!formatTestMultiClassFormatting()) { return };
-    if (!printTestSCSS()) { return };
+
+    if (!printTestBaseSass()) { return };
 }
 
 // ******************************
 
-function formatTestBaseSCSS () {
+function formatTestBaseSass () {
     torisFormat.setup({
+        line_ending: '\r\n'
     });
 
-    // Test base style formatting
-    let preformattedSassTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-base-preformatted.scss'), 'utf8');
-    let formattedSassTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-base-formatted.scss'), 'utf8');
-    return formatTestSassFiles("base", preformattedSassTemplate, formattedSassTemplate);
+    // Test base formatting
+    let preformattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-base-preformatted.scss'), 'utf8');
+    let formattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-base-formatted.scss'), 'utf8');
+    return formatTestSassFiles('Base', preformattedSassContents, formattedSassContents);
+}
+
+// ******************************
+
+function formatTestSingleCommentSass () {
+    torisFormat.setup({
+        line_ending: '\r\n'
+    });
+
+    // Test single-comment formatting
+    let preformattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-comment-preformatted.scss'), 'utf8');
+    let formattedSassContents = fs.readFileSync(path.resolve(__dirname, './test/scss/format-test-single-comment-formatted.scss'), 'utf8');
+    return formatTestSassFiles('SingleComment', preformattedSassContents, formattedSassContents);
 }
 
 // ******************************
 
 function formatTestBase () {
     torisFormat.setup({
+        line_ending: '\r\n'
     });
 
     // Test base style formatting
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-base-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-base-formatted.html'), 'utf8');
-    return formatTestFiles("base", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-base-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-base-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('Base', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -64,9 +81,9 @@ function formatTestNG1 () {
     });
 
     // Test NG1 style formatting
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-ng1-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-ng1-formatted.html'), 'utf8');
-    return formatTestFiles("NG1", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-ng1-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-ng1-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('NG1', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -84,9 +101,9 @@ function formatTestNG2 () {
     });
 
     // Test NG2 style formatting
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-ng2-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-ng2-formatted.html'), 'utf8');
-    return formatTestFiles("NG2", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-ng2-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-ng2-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('NG2', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -98,9 +115,9 @@ function formatTestOneTimeBinding () {
     });
 
     // Test one time binding
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-one-time-binding-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-one-time-binding-formatted.html'), 'utf8');
-    return formatTestFiles("OneTimeBinding", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-one-time-binding-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-one-time-binding-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('OneTimeBinding', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -114,9 +131,9 @@ function formatTestForceFormatting () {
     });
 
     // Test forcing block/inline formatting
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-block-inline-formatting-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-block-inline-formatting-formatted.html'), 'utf8');
-    return formatTestFiles("ForceFormatting", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-block-inline-formatting-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-block-inline-formatting-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('ForceFormatting', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -127,9 +144,9 @@ function formatTestMacOSXLineEndings () {
     });
 
     // Test NG2 MacOSX Line Endings
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-macosx-line-endings-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-macosx-line-endings-formatted.html'), 'utf8');
-    return formatTestFiles("MacOSXLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-macosx-line-endings-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-macosx-line-endings-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('MacOSXLineEndings', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -140,9 +157,9 @@ function formatTestWindowsLineEndings () {
     });
 
     // Test NG2 Windows Line Endings
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-windows-line-endings-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-windows-line-endings-formatted.html'), 'utf8');
-    return formatTestFiles("WindowsLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-windows-line-endings-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-windows-line-endings-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('WindowsLineEndings', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -153,9 +170,9 @@ function formatTestLinuxLineEndings () {
     });
 
     // Test NG2 Linux Line Endings
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-linux-line-endings-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-linux-line-endings-formatted.html'), 'utf8');
-    return formatTestFiles("LinuxLineEndings", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-linux-line-endings-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-linux-line-endings-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('LinuxLineEndings', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ***********************************
@@ -166,9 +183,9 @@ function formatTestRemoveCSS () {
     });
 
     // Test removing CSS
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-remove-css-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-remove-css-formatted.html'), 'utf8');
-    return formatTestFiles("RemoveCSS", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-remove-css-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-remove-css-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('RemoveCSS', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
@@ -182,62 +199,91 @@ function formatTestMultiClassFormatting () {
     });
 
     // Test formatting multi classes
-    let preformattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-multi-class-preformatted.html'), 'utf8');
-    let formattedHtmlTemplate = fs.readFileSync(path.resolve(__dirname, './test/format-test-multi-class-formatted.html'), 'utf8');
-    return formatTestFiles("MultiClassFormatting", preformattedHtmlTemplate, formattedHtmlTemplate);
+    let preformattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-multi-class-preformatted.html'), 'utf8');
+    let formattedHtmlContents = fs.readFileSync(path.resolve(__dirname, './test/html/format-test-multi-class-formatted.html'), 'utf8');
+    return formatTestHTMLFiles('MultiClassFormatting', preformattedHtmlContents, formattedHtmlContents);
 }
 
 // ******************************
 
-function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTemplate) {
+function printTestBaseSass () {
+    torisFormat.setup({
+        line_ending: '\r\n'
+    });
+
+    // Test printing base
+    return printTestSassContents('Base', '.class{position:relative;width:35px}');
+}
+
+// ******************************
+//
+//
+// TESTER FUNCTIONS
+//
+//
+// ******************************
+
+function formatTestHTMLFiles (testName, preformattedHtmlContents, formattedHtmlContents) {
+    return formatTestFiles(testName, 'HTML', torisFormat.format_html_contents, preformattedHtmlContents, formattedHtmlContents);
+}
+
+// ******************************
+
+function formatTestSassFiles (testName, preformattedSassContents, formattedSassContents) {
+    return formatTestFiles(testName, 'Sass', (contents) => { return torisFormat.format_sass_contents(contents, 0, true); }, preformattedSassContents, formattedSassContents);
+}
+
+// ******************************
+
+function formatTestFiles (testName, fileType, formatFunction, preformattedContents, formattedContents) {
     try {
-        cprint.magenta('Testing ' + testName + ' formatting preformatted html outputs to formatted html');
+        var testIdentifier = '[Test] ' + testName + ' formatting preformatted ' + fileType + ' outputs to formatted ' + fileType;
 
-        var inputHtml = preformattedHtmlTemplate;
-        var expectedOutputHtml = formattedHtmlTemplate;
+        var input = preformattedContents;
+        var expectedOutput = formattedContents;
 
-        var test1_expectedOutputHtmlFile = '_formatTest_html_' + testName + '_expectedOutput.txt';
-        var test1_outputHtmlFile = '_formatTest_html_' + testName + '_output.txt';
+        var test1_expectedOutputFile = '_formatTest_' + fileType + '_' + testName + '_expectedOutput.txt';
+        var test1_outputFile = '_formatTest_' + fileType + '_' + testName + '_output.txt';
 
-        var outputHtml = torisFormat.format_html_file(inputHtml);
-        if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
-            cprint.green('Success!');
-            fs.exists(test1_expectedOutputHtmlFile, (exists) => { if (exists) { fsp.remove(test1_expectedOutputHtmlFile); } } );
-            fs.exists(test1_outputHtmlFile, (exists) => { if (exists) { fsp.remove(test1_outputHtmlFile); } } );
-        } else if (outputHtml) {
-            cprint.red('Unexpected HTML');
-            fsp.write(test1_expectedOutputHtmlFile, expectedOutputHtml);
-            fsp.write(test1_outputHtmlFile, outputHtml);
+        var output = formatFunction(input);
+        if (output && expectedOutput && output.trim() == expectedOutput.trim()) {
+            console.log(cprint.toGreen('✔') + ' ' + cprint.toMagenta(testIdentifier));
+            fs.exists(test1_expectedOutputFile, (exists) => { if (exists) { fsp.remove(test1_expectedOutputFile); } } );
+            fs.exists(test1_outputFile, (exists) => { if (exists) { fsp.remove(test1_outputFile); } } );
+        } else if (output) {
+            console.log(cprint.toRed('✘') + ' ' + cprint.toMagenta(testIdentifier) + '\n' + cprint.toRed('Unexpected ' + fileType));
+            fsp.write(test1_expectedOutputFile, expectedOutput);
+            fsp.write(test1_outputFile, output);
             return;
         }
     } catch (err) {
-        cprint.red('Couldn\'t parse preformatted HTML template');
+        console.log(cprint.toRed('✘') + ' ' + cprint.toMagenta(testIdentifier) + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
         cprint.red(err);
     }
 
     try {
-        cprint.magenta('Testing ' + testName + ' formatting already formatted html still outputs to formatted html');
+        var testIdentifier = '[Test] ' + testName + ' formatting already formatted ' + fileType + ' still outputs to formatted ' + fileType;
 
-        var inputHtml = formattedHtmlTemplate;
-        var expectedOutputHtml = formattedHtmlTemplate;
+        var input = formattedContents;
+        var expectedOutput = formattedContents;
 
-        var test2_expectedOutputHtmlFile = '_formatTest_alreadyFormattedHTML_' + testName + '_expectedOutput.txt';
-        var test2_outputHtmlFile = '_formatTest_alreadyFormattedHTML_' + testName + '_output.txt';
+        var test2_expectedOutputFile = '_formatTest_alreadyFormatted_' + fileType + '_' + testName + '_expectedOutput.txt';
+        var test2_outputFile = '_formatTest_alreadyFormatted_' + fileType + '_' + testName + '_output.txt';
 
-        var outputHtml = torisFormat.format_html_file(inputHtml);
-        if (outputHtml && expectedOutputHtml && outputHtml.trim() == expectedOutputHtml.trim()) {
-            cprint.green('Success!');
-            fs.exists(test2_expectedOutputHtmlFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputHtmlFile); } } );
-            fs.exists(test2_outputHtmlFile, (exists) => { if (exists) { fsp.remove(test2_outputHtmlFile); } } );
-        } else if (outputHtml) {
-            cprint.red('Unexpected HTML');
-            fsp.write(test2_expectedOutputHtmlFile, expectedOutputHtml);
-            fsp.write(test2_outputHtmlFile, outputHtml);
+        var output = formatFunction(input);
+        if (output && expectedOutput && output.trim() == expectedOutput.trim()) {
+            console.log(cprint.toGreen('✔') + ' ' + cprint.toMagenta(testIdentifier));
+            fs.exists(test2_expectedOutputFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputFile); } } );
+            fs.exists(test2_outputFile, (exists) => { if (exists) { fsp.remove(test2_outputFile); } } );
+        } else if (output) {
+            console.log(cprint.toRed('✘') + ' ' + cprint.toMagenta(testIdentifier) + '\n' + cprint.toRed('Unexpected ' + fileType));
+            fsp.write(test2_expectedOutputFile, expectedOutput);
+            fsp.write(test2_outputFile, output);
             return;
         }
 
     } catch (err) {
-        cprint.red('Couldn\'t parse preformatted HTML template');
+        console.log(cprint.toRed('✘') + ' ' + cprint.toMagenta(testIdentifier) + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
         cprint.red(err);
     }
 
@@ -246,70 +292,21 @@ function formatTestFiles (testName, preformattedHtmlTemplate, formattedHtmlTempl
 
 // ******************************
 
-function formatTestSassFiles (testName, preformattedSassTemplate, formattedSassTemplate) {
-    try {
-        cprint.magenta('Testing ' + testName + ' formatting preformatted sass outputs to formatted sass');
-
-        var inputSass = preformattedSassTemplate;
-        var expectedOutputSass = formattedSassTemplate;
-
-        var test1_expectedOutputSassFile = '_formatTest_sass_' + testName + '_expectedOutput.txt';
-        var test1_outputSassFile = '_formatTest_sass_' + testName + '_output.txt';
-
-        var outputSass = torisFormat.format_sass_contents(inputSass, 0, true);
-        if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
-            cprint.green('Success!');
-            fs.exists(test1_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test1_expectedOutputSassFile); } } );
-            fs.exists(test1_outputSassFile, (exists) => { if (exists) { fsp.remove(test1_outputSassFile); } } );
-        } else if (outputSass) {
-            cprint.red('Unexpected Sass');
-            fsp.write(test1_expectedOutputSassFile, expectedOutputSass);
-            fsp.write(test1_outputSassFile, outputSass);
-            return;
-        }
-    } catch (err) {
-        cprint.red('Couldn\'t parse preformatted Sass template');
-        cprint.red(err);
-    }
-
-    try {
-        cprint.magenta('Testing ' + testName + ' formatting already formatted sass still outputs to formatted sass');
-
-        var inputSass = formattedSassTemplate;
-        var expectedOutputSass = formattedSassTemplate;
-
-        var test2_expectedOutputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_expectedOutput.txt';
-        var test2_outputSassFile = '_formatTest_alreadyFormattedSass_' + testName + '_output.txt';
-
-        var outputSass = torisFormat.format_sass_contents(inputSass, 0, true);
-        if (outputSass && expectedOutputSass && outputSass.trim() == expectedOutputSass.trim()) {
-            cprint.green('Success!');
-            fs.exists(test2_expectedOutputSassFile, (exists) => { if (exists) { fsp.remove(test2_expectedOutputSassFile); } } );
-            fs.exists(test2_outputSassFile, (exists) => { if (exists) { fsp.remove(test2_outputSassFile); } } );
-        } else if (outputSass) {
-            cprint.red('Unexpected Sass');
-            fsp.write(test2_expectedOutputSassFile, expectedOutputSass);
-            fsp.write(test2_outputSassFile, outputSass);
-            return;
-        }
-
-    } catch (err) {
-        cprint.red('Couldn\'t parse preformatted Sass template');
-        cprint.red(err);
-    }
-
-    return true;
+function printTestSassContents (testName, contents) {
+    return printTestContents(testName, 'Sass', (contents) => { return torisFormat.print_sass_contents(contents, 0, true); }, contents);
 }
 
 // ******************************
 
-function printTestSCSS () {
+function printTestContents (testName, fileType, printFunction, contents) {
     torisFormat.setup({
     });
 
-    cprint.magenta('Testing printing of formatted Sass output');
-    // Test printing;
-    torisFormat.print_sass_contents('.class{position:relative;width:35px}', 0, true);
+    var testIdentifier = '[Visual Test] Printing of formatted ' + fileType + ' output';
+
+    console.log(cprint.toYellow(cprint.toBold('?', true)) + ' ' + cprint.toMagenta(testIdentifier) + cprint.toBold(cprint.toYellow(' - Does this look good?', true)));
+    printFunction(contents);
+
     return true;
 }
 

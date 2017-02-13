@@ -320,6 +320,13 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 
 function format_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
+  if (contents.trim().length === 0) {
+    if (g_ALLOW_EMPTY_FILES) {
+      return '';
+    }
+    throw 'Empty file!';
+  }
+
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
@@ -344,6 +351,13 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
 
 function print_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
   let contents = in_contents || '';
+  if (contents.trim().length === 0) {
+    if (g_ALLOW_EMPTY_FILES) {
+      return '';
+    }
+    throw 'Empty file!';
+  }
+
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
@@ -390,7 +404,7 @@ function get_failed_output (in_tree, in_contents, in_debug) {
   }
 
   unrecognised_contents += '...';
-  let result = cprint.toGreen(recognised_contents) + cprint.toLightRed(unrecognised_contents);
+  let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
   if (in_debug) {
     result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
   }

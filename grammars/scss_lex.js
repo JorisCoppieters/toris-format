@@ -279,7 +279,7 @@ var DEFINITION = {
   },
   SL_COMMENT: {
     OPERATOR: '==',
-    VALUE: '\\/\\/[^\\n\\r]*(?:[\\n]|[\\r](?:[\\n])?)'
+    VALUE: '\\/\\/[^\\n\\r]*(?:$|[\\n]|[\\r](?:[\\n])?)'
   },
   COMMENT: {
     OPERATOR: '==',

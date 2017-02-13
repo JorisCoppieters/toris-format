@@ -61,10 +61,7 @@ module.exports['set_indent_count'] = set_indent_count;
 
 let g_INDENT = '    ';
 let g_INDENT_COUNT = 0;
-
-let t_NL = '\n';
-let g_NL = '\r\n';
-let g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
+let g_NL = '\n';
 
 // ******************************
 // Functions:
@@ -135,7 +132,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
 
     let is_start = (definition_key === k_DEFINITION_KEY_START);
     if (is_start) {
-      contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+      contents = contents.replace(new RegExp(r_g('\\r\\n|\\r|\\n'), 'g'), g_NL);
     }
 
     if (debug === k_DEBUG_ON) {
@@ -875,9 +872,9 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   if (append) {
     let delim = '';
     if (double_newline) {
-      delim = t_NL + t_NL + output_indent;
+      delim = g_NL + g_NL + output_indent;
     } else if (newline) {
-      delim = t_NL + output_indent;
+      delim = g_NL + output_indent;
     } else if (space_before) {
       delim = ' ';
     }
@@ -889,8 +886,8 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   }
 
   let definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
-  tree_output.values = utils.str_append(tree_output.values, definition_key_value, t_NL + indent);
-  tree_output.structure = utils.str_append(tree_output.structure, definition_key, t_NL + indent);
+  tree_output.values = utils.str_append(tree_output.values, definition_key_value, g_NL + indent);
+  tree_output.structure = utils.str_append(tree_output.structure, definition_key, g_NL + indent);
 
   if (in_tree.CHILDREN) {
     in_tree.CHILDREN.forEach((child) => {
@@ -916,8 +913,8 @@ function output_tree_failed (in_tree, in_tree_output, in_tree_path, in_indent) {
   let definition_value = (in_tree.VALUE || '').trim();
 
   let definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
-  tree_output.values = utils.str_append(tree_output.values, definition_key_value, t_NL + indent);
-  tree_output.structure = utils.str_append(tree_output.structure, definition_key, t_NL + indent);
+  tree_output.values = utils.str_append(tree_output.values, definition_key_value, g_NL + indent);
+  tree_output.structure = utils.str_append(tree_output.structure, definition_key, g_NL + indent);
 
   if (!tree_output.least_remaining || tree_output.least_remaining > in_tree.REMAINING_LENGTH) {
     tree_output.least_remaining = in_tree.REMAINING_LENGTH;
@@ -926,7 +923,7 @@ function output_tree_failed (in_tree, in_tree_output, in_tree_path, in_indent) {
 
   if (in_tree.ALL_CHILDREN) {
     in_tree.ALL_CHILDREN.forEach((child) => {
-      output_tree_failed(child, tree_output, tree_path + t_NL + indent + definition_key_value, indent + '  ');
+      output_tree_failed(child, tree_output, tree_path + g_NL + indent + definition_key_value, indent + '  ');
     });
   }
 
