@@ -148,16 +148,7 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
 
 // ******************************
 
-function printTestSassContents (testName, contents) {
-    return printTestContents(testName, 'Sass', (contents) => { return torisFormat.print_sass_contents(contents, 0, true); }, contents);
-}
-
-// ******************************
-
 function printTestContents (testName, fileType, printFunction, contents) {
-    torisFormat.setup({
-    });
-
     let testIdentifier = cprint.toWhite(' : ') + cprint.toCyan(testName) + cprint.toWhite(' : ') + cprint.toMagenta('Printing of formatted ' + fileType + ' output');
 
     console.log(cprint.toYellow(cprint.toBold('? Visual-Test', true)) + testIdentifier + cprint.toBold(cprint.toYellow(' - Does this look good?', true)));
