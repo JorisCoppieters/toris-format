@@ -333,6 +333,10 @@ a[ui-sref="tm.property.home"]:visited {
     height: 100%;
     position: relative;
 }
+
+tg-rack ~ .refine-height-filler-helper {
+    position: relative;
+}
 // the SVG block below
 
 /*
@@ -361,8 +365,8 @@ $profile-image-placeholder-colors:
     width: nth($sprite, 3);
 }
 
-@mixin sprite-height($sprite) {
-    height: nth($sprite, 4);
+@function sprite-width($sprite) {
+    @return nth($sprite, 3);
 }
 
 $banner-image-placeholder-colors: (

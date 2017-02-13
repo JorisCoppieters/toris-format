@@ -583,6 +583,14 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       state.IDENTIFIER_TYPE = 'INCLUDE';
       break;
 
+    case 'functionDeclaration':
+      state.IDENTIFIER_TYPE = 'FUNCTION_DEC';
+      break;
+
+    case 'returnDeclaration':
+      state.IDENTIFIER_TYPE = 'RETURN_DEC';
+      break;
+
     case 'mixinDeclaration':
       state.IDENTIFIER_TYPE = 'MIXIN';
       break;
@@ -625,7 +633,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         color_func = cprint.toGreen;
         last_token = state.IDENTIFIER_TYPE;
 
-      } else if (['INCLUDE', 'MIXIN', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
+      } else if (['INCLUDE', 'MIXIN', 'FUNCTION_DEC', 'RETURN_DEC', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
         space_before = true;
         color_func = cprint.toCyan;
         last_token = state.IDENTIFIER_TYPE;
@@ -904,7 +912,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'DOT':
     case 'LBRACK':
     case 'RBRACK':
-    case 'TILD':
+    case 'TIL':
     case 'EQ':
     case 'HASH':
     case 'DASH':
@@ -914,7 +922,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       }
-      space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH'));
+      space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH' || definition_key === 'TIL'));
       color_func = cprint.toLightCyan;
       last_token = definition_value;
       break;
@@ -964,6 +972,8 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case 'IMPORT':
     case 'INCLUDE':
+    case 'FUNCTION':
+    case 'RETURN':
     case 'MIXIN':
     case 'MEDIA':
     case 'KEYFRAMES':
