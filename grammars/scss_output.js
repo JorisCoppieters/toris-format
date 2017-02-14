@@ -35,7 +35,7 @@ var r_sq = utils.r_sq;
 
 function get_output (in_definition_key, in_definition_value, in_state, in_options) {
   var state = in_state || { LAST_TOKEN: '' };
-  var options = in_options || { FORMAT_PROPERTY_VALUES_ON_NEWLINES: [] };
+  var options = in_options || { FORMAT_PROPERTY_VALUES_ON_NEWLINES: [], DEBUG: false };
 
   var definition_key = in_definition_key;
   var definition_value = (in_definition_value || '').trim();
@@ -218,7 +218,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     // Value Output:
-
     case 'COLON':
     case 'COLONCOLON':
     case 'DASH':
@@ -287,13 +286,14 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         default:
-          append = state.DECLARATION_TYPE + ':' + definition_key;
-          color_func = cprint.toBackgroundYellow;
+          if (options.DEBUG) {
+            append = state.DECLARATION_TYPE + ':' + definition_key;
+            color_func = cprint.toBackgroundYellow;
+          }
           break;
 
       }
       break;
-
     case 'BlockEnd':
       last_token = '}';
       pre_indent = -1;
@@ -326,8 +326,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         default:
-          append = state.DECLARATION_TYPE + ':' + definition_key;
-          color_func = cprint.toBackgroundYellow;
+          if (options.DEBUG) {
+            append = state.DECLARATION_TYPE + ':' + definition_key;
+            color_func = cprint.toBackgroundYellow;
+          }
           break;
 
       }
@@ -354,7 +356,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       color_func = cprint.toMagenta;
       last_token = '(';
       break;
-
     case 'RPAREN':
       space_before = false;
 
@@ -405,7 +406,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'extraComma':
       state.LAST_TOKEN = 'IGNORE:,';
       break;
-
     case 'COMMA':
       if (state.LAST_TOKEN === 'IGNORE:,') {
         state.LAST_TOKEN = false;
@@ -428,7 +428,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       color_func = cprint.toDarkGrey;
       last_token = 'MULTI_LINE_COMMENT';
       break;
-
     case 'SL_COMMENT':
       newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       color_func = cprint.toDarkGrey;
@@ -507,8 +506,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         default:
-          append = state.DECLARATION_TYPE + ':' + definition_key;
-          color_func = cprint.toBackgroundYellow;
+          if (options.DEBUG) {
+            append = state.DECLARATION_TYPE + ':' + definition_key;
+            color_func = cprint.toBackgroundYellow;
+          }
           break;
 
       }
@@ -548,6 +549,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case 'PROPERTY_VALUE':
           space_before = (['0', 'PROPERTY_VALUE', ':'].indexOf(state.LAST_TOKEN) >= 0);
+          color_func = cprint.toYellow;
+          break;
+
+        case 'MEASUREMENT':
           color_func = cprint.toYellow;
           break;
 
@@ -600,8 +605,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               break;
 
             default:
-              append = state.DECLARATION_TYPE + ':' + definition_key;
-              color_func = cprint.toBackgroundYellow;
+              if (options.DEBUG) {
+                append = state.DECLARATION_TYPE + ':' + definition_key;
+                color_func = cprint.toBackgroundYellow;
+              }
               break;
           }
           break;
@@ -643,8 +650,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         default:
           if (state.VALUE_TYPE) {
-            append = state.VALUE_TYPE + ':' + definition_key;
-            color_func = cprint.toBackgroundRed;
+            if (options.DEBUG) {
+              append = state.VALUE_TYPE + ':' + definition_key;
+              color_func = cprint.toBackgroundRed;
+            }
             break;
           }
 
@@ -686,8 +695,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               break;
 
             default:
-              append = state.DECLARATION_TYPE + ':' + definition_key;
-              color_func = cprint.toBackgroundRed;
+              if (options.DEBUG) {
+                append = state.DECLARATION_TYPE + ':' + definition_key;
+                color_func = cprint.toBackgroundRed;
+              }
               break;
           }
           break;
@@ -717,8 +728,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         default:
-          append = state.DECLARATION_TYPE + ':' + definition_key;
-          color_func = cprint.toBackgroundYellow;
+          if (options.DEBUG) {
+            append = state.DECLARATION_TYPE + ':' + definition_key;
+            color_func = cprint.toBackgroundYellow;
+          }
           break;
 
       }

@@ -50,6 +50,7 @@ const k_DEBUG_OFF = 'OFF';
 // Globals:
 // ******************************
 
+var g_DEBUG = false;
 var g_NL = '\n';
 
 // Config - General:
@@ -74,6 +75,7 @@ function setup (in_config) {
 
   // General:
   g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
+  g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
   g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
   g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT);
@@ -477,6 +479,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
     case k_DEFINITION_TYPE_SCSS:
       var options = {
+        DEBUG: g_DEBUG,
         FORMAT_PROPERTY_VALUES_ON_NEWLINES: g_FORMAT_PROPERTY_VALUES_ON_NEWLINES,
       }
       output = GRAMMAR_SCSS_OUTPUT.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
@@ -511,10 +514,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   }
 
   if (append) {
-    if (!color_func) {
+    if (!color_func && g_DEBUG) {
       append = definition_key;
       color_func = cprint.toBackgroundRed;
     }
+
+    color_func = color_func || cprint.toRed;
 
     var delim = '';
     if (double_newline) {
