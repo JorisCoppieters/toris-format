@@ -167,6 +167,7 @@ let g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'em
 
 // Config - General:
 let g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
+let g_DEBUG = false;
 
 // Config - Indenting:
 let g_INDENT_COUNT = 0;
@@ -216,6 +217,7 @@ function setup (in_config) {
 
   // General:
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
+  g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
 
   if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
     // HTML:
@@ -365,7 +367,9 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     return;
   }
 
-  fsp.write('./_structure.txt', tree_output.values);
+  if (g_DEBUG) {
+    fsp.write('./_debug_ast_structure.txt', tree_output.values);
+  }
   let result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -375,7 +379,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
 
 // ******************************
 
-function get_failed_output (in_tree, in_contents, in_debug) {
+function get_failed_output (in_tree, in_contents) {
   let tree_output_failed = parser.output_tree_failed(in_tree);
   let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
   let unrecognised_contents_length = 10;
@@ -391,13 +395,13 @@ function get_failed_output (in_tree, in_contents, in_debug) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
-  if (in_debug) {
-    fsp.write('./_failed_structure.txt', tree_output_failed.values);
+  if (g_DEBUG) {
+    fsp.write('./_debug_ast_failed_structure.txt', tree_output.values);
   }
 
   unrecognised_contents += '...';
   let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
-  if (in_debug) {
+  if (g_DEBUG) {
     result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
   }
   return result;

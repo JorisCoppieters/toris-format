@@ -24,7 +24,8 @@ function printTestSCSS () {
     }
 
     torisFormat.setup({
-      definition_type: torisFormat.k_DEFINITION_TYPE_SCSS
+      definition_type: torisFormat.k_DEFINITION_TYPE_SCSS,
+      debug: true
     });
 
     let file = g_FILE;

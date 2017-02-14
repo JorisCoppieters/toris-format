@@ -1,0 +1,139 @@
+tm-homepage-categories {
+    > tg-box > .o-box > div > ul > li {
+    }
+}
+
+.homepage__categories__button--marketplace > a,
+.homepage__categories__button--property > a {
+    border: 0;
+}
+
+.homepage__categories__button--marketplace > a,
+.homepage__categories__button--property > a {
+    &,
+    &:visited,
+    &:active {
+        color: #fff;
+    }
+}
+
+.homepage__categories__button--marketplace > a,
+.homepage__categories__button--jobs > a,
+.homepage__categories__button--motors > button,
+.homepage__categories__button--property > a {
+    border: 0;
+
+    &,
+    &:visited,
+    &:active {
+        color: #fff;
+    }
+}
+
+.homepage__categories__button--marketplace > a {
+    &:active {
+        &:focus {
+        }
+    }
+}
+
+a[ui-sref="tm.jobs.home"]:visited,
+a[ui-sref="tm.motors.home"]:visited,
+a[ui-sref="tm.property.home"]:visited {
+    text-decoration: none;
+}
+
+.motorweb-basic-report-section__table tr:last-child td {
+    margin-right: -($unit / 2);
+}
+
+.tm-motors-dealership__card-contact-phone:not(:last-of-type):after {
+    > li {
+        flex-grow: 1;
+        text-align: center;
+
+        &:last-child .desktop-header__nav__link {
+            border-right: none;
+        }
+    }
+
+    .o-toggle__input:checked + .o-toggle__label {
+        color: $white;
+    }
+}
+
+.attribute-searcher__input--has-selection {
+    ::-webkit-input-placeholder {
+        color: #fff;
+    }
+
+    :-moz-placeholder {
+        color: #fff;
+    }
+
+    #something {
+        color: #fff;
+    }
+}
+
+.photo-uploader__set-as-main-button .o-tile-button:active:hover,
+.photo-uploader__set-as-main-button .o-tile-button.o-tile-button--is-active:hover {
+    color: $white;
+}
+
+.favourites__saved-search-card > div > tg-rack-item:last-child > .o-rack-item {
+    box-shadow: 0 2px 0 $silver-fern-20;
+}
+
+.tm-refine-summary__refinements::-webkit-scrollbar {
+    tg-rack-item-link a.o-rack-item:not([href]) {
+        cursor: default;
+    }
+
+    & --single-select {
+        width: 100%;
+    }
+
+    .jb-landing-page__column:nth-child(2) {
+        // this width is to occupy all the space after the fixed size ads column in the first row
+        width: 55%;
+    }
+}
+
+@for $i from 1 through 4 {
+    .#{refiner__option--level}-#{$i} {
+        padding-left: $unit * ($i + 1) / 4;
+    }
+}
+
+@each $string, $value in $profile-image-sizes-multipliers {
+    .profile-image--size-#{$string} {
+        $unitSize: $value + px;
+    }
+}
+
+[ui-view="mobile-panel"] {
+    height: 100%;
+}
+
+tg-rack ~ .refine-height-filler-helper {
+    position: relative;
+}
+
+.banner-image__placeholder--color-#{$i - 1} {
+}
+
+.banner-image__placeholder--color-#{$i-1} {
+}
+
+tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
+}
+
+tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
+}
+
+tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
+}
+
+tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
+}

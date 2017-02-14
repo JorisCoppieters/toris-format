@@ -85,11 +85,15 @@ var DEFINITION = {
   },
   keyframesDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['KEYFRAMES', 'Identifier', 'BlockStart', 'keyframesEntry*', 'BlockEnd']
+    SEGMENTS: ['KEYFRAMES', 'Identifier', 'BlockStart', 'keyframesEntry*', 'keyframesEntryBlockEnd']
   },
   keyframesEntry: {
     OPERATOR: '&&',
-    SEGMENTS: ['measurement', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryBlockEnd']
+    SEGMENTS: ['measurement', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryEnd']
+  },
+  keyframesEntryEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
   },
   keyframesEntryProperty: {
     OPERATOR: '&&',
@@ -193,11 +197,23 @@ var DEFINITION = {
   },
   mapExpression: {
     OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'RPAREN']
+    SEGMENTS: ['mapExpressionStart', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'mapExpressionEnd']
+  },
+  mapExpressionStart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN']
+  },
+  mapExpressionEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['RPAREN']
   },
   mapEntry: {
     OPERATOR: '&&',
-    SEGMENTS: ['Number', 'COLON', 'expression']
+    SEGMENTS: ['Number', 'COLON', 'mapEntryValues']
+  },
+  mapEntryValues: {
+    OPERATOR: '&&',
+    SEGMENTS: ['expression']
   },
   extraComma: {
     OPERATOR: '&&',
@@ -453,11 +469,19 @@ var DEFINITION = {
   },
   hashBlock: {
     OPERATOR: '&&',
-    SEGMENTS: ['HASH', 'BlockStart', 'hashBlockExpression', 'BlockEnd']
+    SEGMENTS: ['HASH', 'hashBlockStart', 'hashBlockExpression', 'hashBlockEnd']
   },
   hashBlockExpression: {
     OPERATOR: '&&',
     SEGMENTS: ['expression+']
+  },
+  hashBlockStart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockStart']
+  },
+  hashBlockEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
   },
   identifierVariableName: {
     OPERATOR: '&&',
@@ -493,7 +517,19 @@ var DEFINITION = {
   },
   functionCall: {
     OPERATOR: '&&',
-    SEGMENTS: ['Identifier', 'commandStatementInParens']
+    SEGMENTS: ['Identifier', 'functionCallStart', 'functionCallArguments', 'functionCallEnd']
+  },
+  functionCallStart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN']
+  },
+  functionCallEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['RPAREN']
+  },
+  functionCallArguments: {
+    OPERATOR: '&&',
+    SEGMENTS: ['commandStatement']
   }
 };
 

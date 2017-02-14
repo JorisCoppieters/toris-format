@@ -488,437 +488,164 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   let newline = false;
   let double_newline = false;
-  let space_before = false;
+  let space_before = true;
   let pre_indent = 0;
   let post_indent = 0;
   let last_token = false;
 
   switch (definition_key) {
+
+    // Declaration Types:
+    case 'importDeclaration':
+      state.DECLARATION_TYPE = 'IMPORT';
+      state.VALUE_TYPE = false;
+      break;
+    case 'includeDeclaration':
+      state.DECLARATION_TYPE = 'INCLUDE';
+      state.VALUE_TYPE = false;
+      break;
+    case 'functionDeclaration':
+      state.DECLARATION_TYPE = 'FUNCTION';
+      state.VALUE_TYPE = false;
+      break;
+    case 'returnDeclaration':
+      state.DECLARATION_TYPE = 'RETURN';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mixinDeclaration':
+      state.DECLARATION_TYPE = 'MIXIN';
+      state.VALUE_TYPE = false;
+      break;
+    case 'eachDeclaration':
+      state.DECLARATION_TYPE = 'EACH';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mediaDeclaration':
+      state.DECLARATION_TYPE = 'MEDIA';
+      state.VALUE_TYPE = false;
+      break;
+    case 'keyframesDeclaration':
+      state.DECLARATION_TYPE = 'KEYFRAMES';
+      state.VALUE_TYPE = false;
+      break;
+    case 'keyframesEntry':
+      state.DECLARATION_TYPE = 'KEYFRAMES_ENTRY';
+      state.VALUE_TYPE = false;
+      break;
+    case 'keyframesEntryEnd':
+      state.DECLARATION_TYPE = 'KEYFRAMES_ENTRY_END';
+      state.VALUE_TYPE = false;
+      break;
+    case 'keyframesEntryBlockEnd':
+      state.DECLARATION_TYPE = 'KEYFRAMES_END';
+      state.VALUE_TYPE = false;
+      break;
+    case 'pageDeclaration':
+      state.DECLARATION_TYPE = 'PAGE';
+      state.VALUE_TYPE = false;
+      break;
+    case 'variableDeclaration':
+      state.DECLARATION_TYPE = 'VARIABLE';
+      state.VALUE_TYPE = false;
+      break;
+    case 'functionCall':
+      if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1) {
+        state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION_CALL';
+        state.VALUE_TYPE = 'MULTI_LINE_FUNCTION_CALL';
+      } else {
+        state.DECLARATION_TYPE = 'FUNCTION_CALL';
+        state.VALUE_TYPE = 'FUNCTION_CALL';
+      }
+      break;
+    case 'functionCallStart':
+      if (state.MULTI_LINE_FUNCTION) {
+        state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION_START';
+      } else {
+        state.DECLARATION_TYPE = 'FUNCTION_START';
+      }
+      break;
+    case 'functionCallEnd':
+      if (state.MULTI_LINE_FUNCTION) {
+        state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION_END';
+      } else {
+        state.DECLARATION_TYPE = 'FUNCTION_END';
+      }
+      break;
+    case 'functionCallArguments':
+      if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1) {
+        state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION_CALL_ARGUMENTS';
+        state.VALUE_TYPE = false;
+      } else {
+        state.DECLARATION_TYPE = 'FUNCTION_CALL_ARGUMENTS';
+        state.VALUE_TYPE = false;
+      }
+      break;
+    case 'hashBlockStart':
+      state.DECLARATION_TYPE = 'HASH_BLOCK_START';
+      state.VALUE_TYPE = false;
+      break;
+    case 'hashBlockExpression':
+      state.DECLARATION_TYPE = 'HASH_BLOCK_EXPRESSION';
+      state.VALUE_TYPE = false;
+      break;
+    case 'hashBlockEnd':
+      state.DECLARATION_TYPE = 'HASH_BLOCK_END';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mapExpressionStart':
+      state.DECLARATION_TYPE = 'MAP_EXPRESSION_START';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mapExpressionEnd':
+      state.DECLARATION_TYPE = 'MAP_EXPRESSION_END';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mapEntry':
+      state.DECLARATION_TYPE = 'MAP_ENTRY';
+      state.VALUE_TYPE = false;
+      break;
+    case 'mapEntryValues':
+      state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
+      state.VALUE_TYPE = false;
+      break;
+
+    // Value Types:
     case 'selector':
     case 'property':
-      state.IDENTIFIER_TYPE = definition_key.toUpperCase();
+      state.DECLARATION_TYPE = definition_key.toUpperCase();
+      state.VALUE_TYPE = definition_key.toUpperCase();
       break;
-
-    case 'expression':
-      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        break;
-      }
-
-      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
-        state.IDENTIFIER_TYPE = 'MULTI_LINE_EXPRESSION';
-        break;
-      }
-
-      if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES' && !state.MULTI_LINE_VARIABLE_VALUES) {
-        break;
-      }
-
-      if (state.MULTI_LINE_VARIABLE_VALUES) {
-        state.IDENTIFIER_TYPE = 'MULTI_LINE_EXPRESSION';
-        break;
-      }
-
-      state.IDENTIFIER_TYPE = 'EXPRESSION';
+    case 'mathCharacter':
+      state.VALUE_TYPE = 'OPERATOR';
       break;
-
-    case 'mapExpression':
-    case 'expressions3Plus':
-      if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
-        post_indent = 1;
-        state.MULTI_LINE_VARIABLE_VALUES = true;
-        break;
-      }
-      break;
-
-    case 'variableName':
-      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        break;
-      }
-
-      if (state.IDENTIFIER_TYPE === 'VARIABLE_DEC') {
-        break;
-      }
-
-      if (state.MULTI_LINE_VARIABLE_VALUES) {
-        state.IDENTIFIER_TYPE = 'MULTI_LINE_VARIABLE';
-        break;
-      }
-
-      state.IDENTIFIER_TYPE = 'VARIABLE';
-      break;
-
-    case 'functionCall':
-      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        state.IDENTIFIER_TYPE = 'HASH_BLOCK_FUNCTION';
-        break;
-      }
-
-      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
-        state.IDENTIFIER_TYPE = 'MULTI_LINE_FUNCTION';
-        break;
-      }
-
-      state.IDENTIFIER_TYPE = 'FUNCTION';
-      break;
-
-    case 'mapEntry':
-      state.IDENTIFIER_TYPE = 'MAP_ENTRY';
-      break;
-
-    case 'variableDeclaration':
-      state.IDENTIFIER_TYPE = 'VARIABLE_DEC';
-      break;
-
-    case 'variableDeclarationValues':
-      state.IDENTIFIER_TYPE = 'VARIABLE_VALUES';
-      state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = true;
-      state.VARIABLE_VALUES_PAREN_DEPTH = 0;
-      break;
-
-    case 'importDeclaration':
-      state.IDENTIFIER_TYPE = 'IMPORT';
-      break;
-
-    case 'includeDeclaration':
-      state.IDENTIFIER_TYPE = 'INCLUDE';
-      break;
-
-    case 'functionDeclaration':
-      state.IDENTIFIER_TYPE = 'FUNCTION_DEC';
-      break;
-
-    case 'returnDeclaration':
-      state.IDENTIFIER_TYPE = 'RETURN_DEC';
-      break;
-
-    case 'mixinDeclaration':
-      state.IDENTIFIER_TYPE = 'MIXIN';
-      break;
-
-    case 'eachDeclaration':
-      state.IDENTIFIER_TYPE = 'EACH';
-      break;
-
-    case 'mediaDeclaration':
-      state.IDENTIFIER_TYPE = 'MEDIA';
-      break;
-
-    case 'keyframesDeclaration':
-      state.IDENTIFIER_TYPE = 'KEYFRAMES';
-      break;
-
-    case 'keyframesEntryProperty':
-    case 'keyframesEntryBlockEnd':
-      state.IDENTIFIER_TYPE = 'KEYFRAMES_PROPERTY';
-      break;
-
-    case 'pageDeclaration':
-      state.IDENTIFIER_TYPE = 'PAGE';
-      break;
-
-    case 'hashBlock':
-      state.RECORD_HASH_BLOCK_EXPRESSION_BLOCK_DEPTH = true;
-      state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH = 0;
-      state.IDENTIFIER_TYPE = 'HASH_BLOCK';
-      break;
-
-    case 'Identifier':
-      if (state.IDENTIFIER_TYPE === 'PROPERTY') {
-        newline = (state.LAST_TOKEN !== '(');
-        color_func = cprint.toGreen;
-        last_token = 'PROPERTY';
-
-      } else if (state.IDENTIFIER_TYPE === 'KEYFRAMES_PROPERTY') {
-        space_before = true;
-        color_func = cprint.toGreen;
-        last_token = state.IDENTIFIER_TYPE;
-
-      } else if (['INCLUDE', 'MIXIN', 'FUNCTION_DEC', 'RETURN_DEC', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
-        space_before = true;
-        color_func = cprint.toCyan;
-        last_token = state.IDENTIFIER_TYPE;
-
-      } else if (['VARIABLE', 'VARIABLE_DEC', 'HASH_BLOCK'].indexOf(state.IDENTIFIER_TYPE) >= 0) {
-        if (state.LAST_TOKEN === 'OPERATOR') {
-          space_before = true;
-        }
-        color_func = cprint.toLightBlue;
-        last_token = state.IDENTIFIER_TYPE;
-
-      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
-        color_func = cprint.toLightBlue;
-        last_token = 'MULTI_LINE_VARIABLE';
-
-      } else if (state.IDENTIFIER_TYPE === 'HASH_BLOCK_FUNCTION') {
-        color_func = cprint.toCyan;
-        last_token = 'FUNCTION';
-
-      } else if (state.IDENTIFIER_TYPE === 'FUNCTION') {
-        space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(');
-        color_func = cprint.toCyan;
-        if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
-            post_indent = 1;
-            state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH = true;
-            state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = 0;
-        }
-        last_token = 'FUNCTION';
-
-      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_FUNCTION') {
-        newline = true;
-        color_func = cprint.toCyan;
-        last_token = 'FUNCTION';
-
-      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
-        space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && (state.LAST_TOKEN !== 'VALUE' || state.LAST_TOKEN === '0'));
-        color_func = cprint.toYellow;
-        last_token = 'EXPRESSION';
-
-      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
-        newline = (state.LAST_TOKEN !== 'EXPRESSION');
-        space_before = true;
-        color_func = cprint.toYellow;
-        last_token = 'EXPRESSION';
-
-      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
-        newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{' || state.LAST_TOKEN === ',');
-        double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-        space_before = (state.LAST_TOKEN !== '.' && state.LAST_TOKEN !== '#' && state.LAST_TOKEN !== ':' && state.LAST_TOKEN !== '::' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== '[');
-
-        color_func = cprint.toWhite;
-        last_token = 'SELECTOR';
-      }
-      break;
-
-    case 'Unit':
-      color_func = cprint.toYellow;
-      last_token = 'UNIT';
-      break;
-
-    case 'TIMES':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = 'OPERATOR';
-      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
-        newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
-        double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-        color_func = cprint.toWhite;
-        last_token = '*';
-      }
-      break;
-
-    case 'MINUS':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
-        space_before = (state.LAST_TOKEN !== '(');
-        color_func = cprint.toMagenta;
-        if (state.LAST_TOKEN === ':') {
-          last_token = ':MINUS';
-        } else {
-          last_token = 'MINUS';
-        }
-      }
-      break;
-
-    case 'DIV':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = 'OPERATOR';
-      }
-      break;
-
-    case 'PLUS':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = 'OPERATOR';
-      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
-        space_before = true;
-        color_func = cprint.toLightCyan;
-        last_token = '+';
-      }
-      break;
-
-    case 'LPAREN':
-      if (state.RECORD_VARIABLE_VALUES_PAREN_DEPTH) {
-        state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH + 1;
-      }
-
-      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
-        state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = state.MULTI_LINE_EXPRESSION_PAREN_DEPTH + 1;
-      }
-
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE') {
-        space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== 'URL');
-        color_func = cprint.toMagenta;
-        last_token = '(';
-      } else if (state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = '(';
-      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = '(';
-      } else if (state.IDENTIFIER_TYPE === 'MEDIA') {
-        space_before = true;
-        color_func = cprint.toMagenta;
-        last_token = '(';
-      } else {
-        color_func = cprint.toMagenta;
-        last_token = '(';
-      }
-      break;
-
-    case 'RPAREN':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE_VALUES' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
-        color_func = cprint.toMagenta;
-        last_token = ')';
-      } else {
-        color_func = cprint.toMagenta;
-        last_token = ')';
-      }
-
-      if (state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH) {
-        state.MULTI_LINE_EXPRESSION_PAREN_DEPTH = state.MULTI_LINE_EXPRESSION_PAREN_DEPTH - 1;
-        if (state.MULTI_LINE_EXPRESSION_PAREN_DEPTH === 0) {
-          state.RECORD_MULTI_LINE_EXPRESSION_PAREN_DEPTH = false;
-          newline = true;
-          pre_indent = -1;
-        }
-      }
-
-      if (state.MULTI_LINE_VARIABLE_VALUES) {
-        state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH - 1;
-        if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
-          state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
-          state.MULTI_LINE_VARIABLE_VALUES = false;
-          newline = true;
-          pre_indent = -1;
-        }
-      }
-      break;
-
-    case 'DOLLAR':
-      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        color_func = cprint.toLightBlue;
-      } else if (state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'VARIABLE_DEC') {
-        newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
-        double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-        space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(');
-        color_func = cprint.toLightBlue;
-      } else if (state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
-        newline = (state.LAST_TOKEN === '(' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === ',' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-        space_before = true;
-        color_func = cprint.toLightBlue;
-      }
-      last_token = '$';
-      break;
-
     case 'measurement':
-      if (state.LAST_TOKEN === 'MINUS') {
-        last_token = '-MEASUREMENT';
-      }
+      state.VALUE_TYPE = 'MEASUREMENT';
+      break;
+    case 'StringLiteral':
+      state.VALUE_TYPE = 'STRING';
+      break;
+    case 'colonValues':
+      state.VALUE_TYPE = 'PROPERTY_VALUE';
+      break;
+    case 'variableName':
+      state.VALUE_TYPE = 'VARIABLE';
+      break;
+    case 'keyframesEntryProperty':
+      state.VALUE_TYPE = 'KEYFRAMES_ENTRY_PROPERTY';
       break;
 
-    case 'Number':
-    case 'Color':
-    case 'RGB_VAL':
-      if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION' || state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'VARIABLE_VALUES') {
-        space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
-      } else if (state.IDENTIFIER_TYPE === 'MAP_ENTRY') {
-        newline = true;
-      } else if (state.IDENTIFIER_TYPE === 'KEYFRAMES' || state.IDENTIFIER_TYPE === 'KEYFRAMES_PROPERTY') {
-        newline = true;
-      } else if (state.IDENTIFIER_TYPE === 'FUNCTION' || state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        space_before = true;
-      }
-      color_func = cprint.toYellow;
-      if (definition_value === '0') {
-        last_token = '0';
-      } else {
-        last_token = 'VALUE';
-      }
-      break;
+    // Value Output:
 
-    case 'STRING_SINGLE_QUOTED':
-    case 'STRING_DOUBLE_QUOTED':
-    case 'UrlVal':
-      if (state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
-        newline = true;
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION') {
-        space_before = (state.LAST_TOKEN === ':');
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'IMPORT') {
-        space_before = (state.IDENTIFIER_TYPE === 'IMPORT' || state.LAST_TOKEN === ':');
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
-        space_before = (state.LAST_TOKEN === ':');
-        color_func = cprint.toYellow;
-      }
-      last_token = 'VALUE';
-      break;
-
-    case 'UrlStartVal':
-      space_before = true;
-      color_func = cprint.toCyan;
-      last_token = 'URL';
-      break;
-
-    case 'commaExpression':
-      state.IDENTIFIER_TYPE = 'EXPRESSION';
-      break;
-
-    case 'extraComma':
-      state.LAST_TOKEN = 'IGNORE:,';
-      break;
-
-    case 'COMMA':
-      if (state.LAST_TOKEN === 'IGNORE:,') {
-        append = false;
-        break;
-      }
-
-      if (state.IDENTIFIER_TYPE === 'PROPERTY') {
-        color_func = cprint.toGreen;
-      } else if (state.IDENTIFIER_TYPE === 'EXPRESSION' || state.IDENTIFIER_TYPE === 'MULTI_LINE_EXPRESSION') {
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'VARIABLE' || state.IDENTIFIER_TYPE === 'MULTI_LINE_VARIABLE') {
-        color_func = cprint.toYellow;
-      } else if (state.IDENTIFIER_TYPE === 'SELECTOR') {
-        color_func = cprint.toWhite;
-      }
-
-      last_token = ',';
-      break;
-
-    case 'GT':
-      newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
-      double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-      space_before = true;
-      color_func = cprint.toLightCyan;
-      last_token = '>';
-      break;
-
-    case 'AND':
-      newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
-      double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-      space_before = true;
-      color_func = cprint.toLightCyan;
-      last_token = '&';
-      break;
-
+    case 'COLON':
+    case 'COLONCOLON':
+    case 'DASH':
     case 'DOT':
+    case 'EQ':
+    case 'HASH':
     case 'LBRACK':
     case 'RBRACK':
     case 'TIL':
-    case 'EQ':
-    case 'HASH':
-    case 'DASH':
-    case 'COLON':
-    case 'COLONCOLON':
-      if (state.IDENTIFIER_TYPE === 'SELECTOR' ) {
+      if (state.VALUE_TYPE === 'SELECTOR') {
         newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       }
@@ -927,59 +654,16 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       last_token = definition_value;
       break;
 
-    case 'SEMI':
-      if (state.LAST_TOKEN === ';') {
-        append = false;
-      }
-
-      if (state.MULTI_LINE_VARIABLE_VALUES) {
-        if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
-          state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
-          state.MULTI_LINE_VARIABLE_VALUES = false;
-          pre_indent = -1;
-        }
-      }
-
-      color_func = cprint.toRed;
-      last_token = ';';
-      break;
-
-    case 'COMMENT':
-      if (whitespace_before_includes_newline) {
-        newline = (state.LAST_TOKEN === '{');
-        double_newline = !newline;
-      } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
-        double_newline = true;
-      } else {
-        space_before = true;
-      }
-      color_func = cprint.toDarkGrey;
-      last_token = 'MULTI_LINE_COMMENT';
-      break;
-
-    case 'SL_COMMENT':
-      newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-      space_before = true;
-      color_func = cprint.toDarkGrey;
-      last_token = 'SINGLE_LINE_COMMENT';
-      break;
-
-    case 'IMPORTANT':
-      space_before = true;
-      color_func = cprint.toLightRed;
-      last_token = 'IMPORTANT';
-      break;
-
-    case 'IMPORT':
-    case 'INCLUDE':
-    case 'FUNCTION':
-    case 'RETURN':
-    case 'MIXIN':
-    case 'MEDIA':
-    case 'KEYFRAMES':
-    case 'PAGE':
     case 'AT_EACH':
     case 'AT_FOR':
+    case 'FUNCTION':
+    case 'IMPORT':
+    case 'INCLUDE':
+    case 'KEYFRAMES':
+    case 'MEDIA':
+    case 'MIXIN':
+    case 'PAGE':
+    case 'RETURN':
       newline = true;
       double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       color_func = cprint.toCyan;
@@ -989,41 +673,883 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'FROM':
     case 'THROUGH':
     case 'IN':
-      space_before = true;
       color_func = cprint.toCyan;
       last_token = definition_value.toUpperCase();
       break;
 
     case 'BlockStart':
-      if (state.IDENTIFIER_TYPE === 'HASH_BLOCK') {
-        color_func = cprint.toLightMagenta;
-        state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH += 1;
-        last_token = '{';
-      } else {
-        space_before = (state.LAST_TOKEN !== '#');
-        color_func = cprint.toWhite;
-        last_token = '{';
-      }
+      last_token = '{';
       post_indent = 1;
+      color_func = cprint.toWhite;
+
+      switch (state.DECLARATION_TYPE) {
+
+        case false:
+        case 'SELECTOR':
+        case 'FUNCTION_CALL_ARGUMENTS':
+        case 'HASH_BLOCK_EXPRESSION':
+        case 'PROPERTY':
+        case 'KEYFRAMES':
+        case 'FUNCTION':
+        case 'MEDIA':
+        case 'PAGE':
+        case 'EACH':
+        case 'INCLUDE':
+        case 'MIXIN':
+        case 'KEYFRAMES_ENTRY':
+          break;
+
+        case 'HASH_BLOCK_START':
+          space_before = false;
+          break;
+
+        default:
+          append = state.DECLARATION_TYPE + ':' + definition_key;
+          color_func = cprint.toBackgroundYellow;
+          break;
+
+      }
       break;
 
     case 'BlockEnd':
-      if (state.RECORD_HASH_BLOCK_EXPRESSION_BLOCK_DEPTH) {
-        color_func = cprint.toLightMagenta;
-        state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH -= 1;
-        if (state.HASH_BLOCK_EXPRESSION_BLOCK_DEPTH === 0) {
-          state.IDENTIFIER_TYPE = false;
-          state.RECORD_HASH_BLOCK_EXPRESSION_BLOCK_DEPTH = false;
-        }
-        last_token = '}';
-      } else {
-        newline = ((state.IDENTIFIER_TYPE !== 'KEYFRAMES_PROPERTY' || state.LAST_TOKEN === '}'));
-        space_before = (state.IDENTIFIER_TYPE === 'KEYFRAMES_PROPERTY');
-        color_func = cprint.toWhite;
-        last_token = '}';
-      }
+      last_token = '}';
       pre_indent = -1;
+      color_func = cprint.toWhite;
+
+      switch (state.DECLARATION_TYPE) {
+
+        case 'KEYFRAMES_ENTRY_END':
+          break;
+
+        case false:
+        case 'SELECTOR':
+        case 'VARIABLE':
+        case 'FUNCTION_END':
+        case 'FUNCTION_CALL_ARGUMENTS':
+        case 'PROPERTY':
+        case 'KEYFRAMES_END':
+          newline = true;
+          break;
+
+        case 'HASH_BLOCK_EXPRESSION':
+          space_before = false;
+          break;
+
+        case 'HASH_BLOCK_END':
+          space_before = false;
+          state.DECLARATION_TYPE = false;
+          break;
+
+        default:
+          append = state.DECLARATION_TYPE + ':' + definition_key;
+          color_func = cprint.toBackgroundYellow;
+          break;
+
+      }
       break;
+
+    case 'LPAREN':
+      space_before = (['0', 'VALUE', 'VARIABLE', 'PROPERTY_VALUE', 'UNIT', ',', ':', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0);
+      if (state.DECLARATION_TYPE === 'MEDIA') {
+        space_before = true;
+      }
+
+      if (state.DECLARATION_TYPE === 'MAP_EXPRESSION_START') {
+        post_indent = 1;
+      }
+
+      if (state.MULTI_LINE_FUNCTION) {
+        state.MULTI_LINE_FUNCTION_PAREN_DEPTH += 1;
+      }
+
+      color_func = cprint.toMagenta;
+      last_token = '(';
+      break;
+
+    case 'RPAREN':
+      space_before = false;
+
+      if (state.DECLARATION_TYPE === 'MAP_EXPRESSION_END') {
+        newline = true;
+        pre_indent = -1;
+      }
+
+      if (state.MULTI_LINE_FUNCTION) {
+        state.MULTI_LINE_FUNCTION_PAREN_DEPTH -= 1;
+        if (state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 0) {
+          newline = true;
+          state.MULTI_LINE_FUNCTION = false;
+          pre_indent = -1;
+        }
+      }
+
+      color_func = cprint.toMagenta;
+      last_token = ')';
+      break;
+
+    case 'SEMI':
+      if (state.LAST_TOKEN === ';') {
+        append = false;
+      }
+
+      space_before = false;
+      color_func = cprint.toRed;
+      last_token = ';';
+      break;
+
+    case 'extraComma':
+      state.LAST_TOKEN = 'IGNORE:,';
+      break;
+
+    case 'COMMA':
+      if (state.LAST_TOKEN === 'IGNORE:,') {
+        state.LAST_TOKEN = false;
+        append = false;
+        break;
+      }
+
+      space_before = false;
+      color_func = cprint.toWhite;
+      last_token = ',';
+      break;
+
+    case 'COMMENT':
+      if (whitespace_before_includes_newline) {
+        newline = (state.LAST_TOKEN === '{');
+        double_newline = !newline;
+      } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
+        double_newline = true;
+      }
+      color_func = cprint.toDarkGrey;
+      last_token = 'MULTI_LINE_COMMENT';
+      break;
+
+    case 'SL_COMMENT':
+      newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+      color_func = cprint.toDarkGrey;
+      last_token = 'SINGLE_LINE_COMMENT';
+      break;
+
+    case 'IMPORTANT':
+      color_func = cprint.toLightRed;
+      last_token = 'IMPORTANT';
+      break;
+
+    case 'Number':
+    case 'Color':
+    case 'RGB_VAL':
+    case 'STRING_SINGLE_QUOTED':
+    case 'STRING_DOUBLE_QUOTED':
+    case 'UrlVal':
+      switch (state.DECLARATION_TYPE) {
+
+        case 'PROPERTY':
+        case 'IMPORT':
+        case 'FUNCTION_CALL_ARGUMENTS':
+        case 'FUNCTION_END':
+        case 'HASH_BLOCK_EXPRESSION':
+        case 'MAP_ENTRY_VALUES':
+        case 'SELECTOR':
+        case 'VARIABLE':
+          if (state.LAST_TOKEN === '(' || state.LAST_TOKEN === '=') {
+            space_before = false;
+          } else if (state.LAST_TOKEN === '-' && (state.VALUE_TYPE === 'MEASUREMENT' || state.SECOND_TO_LAST_TOKEN === ':' || state.SECOND_TO_LAST_TOKEN === '(')) {
+            space_before = false;
+          }
+
+          if (definition_value === '0') {
+            last_token = '0'
+          } else {
+            last_token = 'VALUE';
+          }
+          color_func = cprint.toYellow;
+          break;
+
+        case 'MULTI_LINE_FUNCTION_END':
+          newline = (state.LAST_TOKEN === ',');
+          color_func = cprint.toYellow;
+          break;
+
+        case 'MAP_ENTRY':
+        case 'KEYFRAMES_ENTRY':
+          newline = true;
+          color_func = cprint.toGreen;
+          last_token = 'KEYFRAMES_ENTRY';
+          break;
+
+        default:
+          append = state.DECLARATION_TYPE + ':' + definition_key;
+          color_func = cprint.toBackgroundYellow;
+          break;
+
+      }
+      break;
+
+    case 'PLUS':
+    case 'MINUS':
+    case 'DIV':
+    case 'TIMES':
+    case 'GT':
+    case 'AND':
+    case 'DOLLAR':
+    case 'Identifier':
+      last_token = state.VALUE_TYPE;
+      switch (state.VALUE_TYPE) {
+
+        case 'SELECTOR':
+          newline = (['', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
+          double_newline = ([';', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+          color_func = cprint.toLightCyan;
+
+          if (definition_key === 'GT') {
+            last_token = '>';
+          } else if (definition_key === 'AND') {
+            last_token = '&';
+          } else {
+            space_before = (state.LAST_TOKEN !== '.' && state.LAST_TOKEN !== '#' && state.LAST_TOKEN !== ':' && state.LAST_TOKEN !== '::' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== '[');
+            color_func = cprint.toWhite;
+          }
+          break;
+
+        case 'PROPERTY':
+          newline = (state.LAST_TOKEN !== '(');
+          space_before = false;
+          color_func = cprint.toGreen;
+          break;
+
+        case 'PROPERTY_VALUE':
+          space_before = (['0', 'PROPERTY_VALUE', ':'].indexOf(state.LAST_TOKEN) >= 0);
+          color_func = cprint.toYellow;
+          break;
+
+        case 'VARIABLE':
+          color_func = cprint.toLightBlue;
+
+          switch (state.DECLARATION_TYPE) {
+
+            case 'MIXIN':
+            case 'FUNCTION':
+            case 'VARIABLE':
+            case 'FUNCTION_CALL_ARGUMENTS':
+            case 'INCLUDE':
+              if (definition_key === 'DOLLAR') {
+                newline = (['', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
+                double_newline = ([';', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+                if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
+                  space_before = false;
+                }
+                last_token = '$';
+              } else {
+                space_before = false;
+              }
+              break;
+
+            case 'PROPERTY':
+            case 'EACH':
+              if (definition_key === 'DOLLAR') {
+                if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
+                  space_before = false;
+                }
+                last_token = '$';
+              } else {
+                space_before = false;
+              }
+              break;
+
+            case 'HASH_BLOCK_EXPRESSION':
+              space_before = false;
+              break;
+
+            default:
+              append = state.DECLARATION_TYPE + ':' + definition_key;
+              color_func = cprint.toBackgroundYellow;
+              break;
+          }
+          break;
+
+        case 'OPERATOR':
+          color_func = cprint.toMagenta;
+
+          if (definition_key === 'MINUS') {
+            space_before = (state.LAST_TOKEN !== '(');
+            last_token = '-';
+          }
+          break;
+
+        case 'FUNCTION_CALL':
+          space_before = ([':', ',', '@return'].indexOf(state.LAST_TOKEN) >= 0);
+          color_func = cprint.toLightCyan;
+
+          if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
+            state.MULTI_LINE_FUNCTION = true;
+            state.MULTI_LINE_FUNCTION_PAREN_DEPTH = 0;
+            post_indent = 1;
+          }
+          break;
+
+        case 'MULTI_LINE_FUNCTION_CALL':
+          newline = (['', '(', ','].indexOf(state.LAST_TOKEN) >= 0);
+          color_func = cprint.toLightCyan;
+          break;
+
+        case 'KEYFRAMES_ENTRY_PROPERTY':
+          space_before = true;
+          color_func = cprint.toGreen;
+          break;
+
+        case 'STRING':
+          space_before = false;
+          color_func = cprint.toYellow;
+          break;
+
+        default:
+          if (state.VALUE_TYPE) {
+            append = state.VALUE_TYPE + ':' + definition_key;
+            color_func = cprint.toBackgroundRed;
+            break;
+          }
+
+          last_token = state.DECLARATION_TYPE + '_VALUE';
+          switch (state.DECLARATION_TYPE) {
+
+            case 'FUNCTION':
+            case 'INCLUDE':
+            case 'KEYFRAMES':
+            case 'MEDIA':
+            case 'MIXIN':
+            case 'RETURN':
+              color_func = cprint.toCyan;
+              break;
+
+            case 'HASH_BLOCK_EXPRESSION':
+              space_before = false;
+              color_func = cprint.toYellow;
+              break;
+
+            case 'FUNCTION_CALL_ARGUMENTS':
+              space_before = (state.LAST_TOKEN === 'FUNCTION_CALL_ARGUMENTS_VALUE');
+              color_func = cprint.toYellow;
+              break;
+
+            case 'MULTI_LINE_FUNCTION_CALL_ARGUMENTS':
+              newline = (['', '(', ','].indexOf(state.LAST_TOKEN) >= 0);
+              space_before = (state.LAST_TOKEN === 'MULTI_LINE_FUNCTION_CALL_ARGUMENTS_VALUE');
+              color_func = cprint.toYellow;
+              break;
+
+            case 'KEYFRAMES_ENTRY':
+              color_func = cprint.toGreen;
+              break;
+
+            default:
+              append = state.DECLARATION_TYPE + ':' + definition_key;
+              color_func = cprint.toBackgroundRed;
+              break;
+          }
+          break;
+      }
+      break;
+
+    case 'Unit':
+      switch (state.DECLARATION_TYPE) {
+
+        case 'PROPERTY':
+        case 'IMPORT':
+        case 'FUNCTION_END':
+        case 'FUNCTION_CALL_ARGUMENTS':
+        case 'MULTI_LINE_FUNCTION_END':
+        case 'MAP_ENTRY_VALUES':
+        case 'VARIABLE':
+          space_before = false;
+          color_func = cprint.toYellow;
+          last_token = 'UNIT';
+          break;
+
+        case 'KEYFRAMES_ENTRY':
+          space_before = false;
+          color_func = cprint.toGreen;
+          last_token = 'UNIT';
+          break;
+
+        default:
+          append = state.DECLARATION_TYPE + ':' + definition_key;
+          color_func = cprint.toBackgroundYellow;
+          break;
+
+      }
+      break;
+
+
+    // case 'colonValues':
+    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
+    //     state.DECLARATION_TYPE = 'MULTI_LINE_PROPERTY_VALUE';
+    //     break;
+    //   }
+
+    //   state.DECLARATION_TYPE = 'PROPERTY_VALUE';
+    //   break;
+
+    // case 'mapExpression':
+    // case 'expressions3Plus':
+    //   if (state.DECLARATION_TYPE === 'VARIABLE_VALUES') {
+    //     post_indent = 1;
+    //     state.MULTI_LINE_VARIABLE_VALUES = true;
+    //     break;
+    //   }
+    //   break;
+
+    // case 'variableName':
+    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
+    //     break;
+    //   }
+
+    //   if (state.DECLARATION_TYPE === 'VARIABLE_DEC') {
+    //     break;
+    //   }
+
+    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
+    //     state.DECLARATION_TYPE = 'MULTI_LINE_VARIABLE';
+    //     break;
+    //   }
+
+    //   state.DECLARATION_TYPE = 'VARIABLE';
+    //   break;
+
+    // case 'functionCall':
+    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
+    //     state.DECLARATION_TYPE = 'HASH_BLOCK_FUNCTION';
+    //     break;
+    //   }
+
+    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
+    //     state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION';
+    //     break;
+    //   }
+
+    //   state.DECLARATION_TYPE = 'FUNCTION';
+    //   break;
+
+    // case 'functionCallArguments':
+    //   state.DECLARATION_TYPE = 'FUNCTION_CALL_ARGUMENTS';
+    //   break;
+
+    // case 'mapEntry':
+    //   state.DECLARATION_TYPE = 'MAP_ENTRY';
+    //   break;
+
+    // case 'mapEntryValues':
+    //   state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
+    //   break;
+
+    // case 'variableDeclarationValues':
+    //   state.DECLARATION_TYPE = 'VARIABLE_VALUES';
+    //   state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = true;
+    //   state.VARIABLE_VALUES_PAREN_DEPTH = 0;
+    //   break;
+
+
+
+
+    // case 'keyframesEntryProperty':
+    // case 'keyframesEntryBlockEnd':
+    //   state.DECLARATION_TYPE = 'KEYFRAMES_PROPERTY';
+    //   break;
+
+    // case 'hashBlock':
+    //   state.RECORD_HASH_BLOCK_BLOCK_DEPTH = true;
+    //   state.HASH_BLOCK_BLOCK_DEPTH = 0;
+    //   state.DECLARATION_TYPE = 'HASH_BLOCK';
+    //   break;
+
+    // case 'pseudoIdentifier':
+    //   state.DECLARATION_TYPE = 'PSEUDO_IDENTIFIER';
+    //   break;
+
+    // case 'Identifier':
+    //   if (state.DECLARATION_TYPE === 'PROPERTY') {
+    //     newline = (state.LAST_TOKEN !== '(');
+    //     space_before = false;
+    //     color_func = cprint.toGreen;
+    //     last_token = 'PROPERTY';
+
+    //   } else if (state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY') {
+    //     color_func = cprint.toGreen;
+    //     last_token = state.DECLARATION_TYPE;
+
+    //   } else if (['INCLUDE', 'MIXIN', 'FUNCTION_DEC', 'RETURN_DEC', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.DECLARATION_TYPE) >= 0) {
+    //     color_func = cprint.toCyan;
+    //     last_token = state.DECLARATION_TYPE;
+
+    //   } else if (['VARIABLE', 'VARIABLE_DEC', 'HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0) {
+    //     space_before = false;
+    //     color_func = cprint.toLightBlue;
+    //     last_token = state.DECLARATION_TYPE;
+
+    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
+    //     space_before = false;
+    //     color_func = cprint.toLightBlue;
+    //     last_token = 'MULTI_LINE_VARIABLE';
+
+    //   } else if (state.DECLARATION_TYPE === 'HASH_BLOCK_FUNCTION') {
+    //     space_before = false;
+    //     color_func = cprint.toCyan;
+    //     last_token = 'FUNCTION';
+
+    //   } else if (state.DECLARATION_TYPE === 'FUNCTION') {
+    //     space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(');
+    //     color_func = cprint.toCyan;
+    //     if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
+    //         post_indent = 1;
+    //         state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = true;
+    //         state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = 0;
+    //     }
+    //     last_token = 'FUNCTION';
+
+    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION') {
+    //     newline = true;
+    //     color_func = cprint.toCyan;
+    //     last_token = 'FUNCTION';
+
+    //   } else if (state.DECLARATION_TYPE === 'PROPERTY_VALUE') {
+    //     space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && (state.LAST_TOKEN !== 'VALUE' || state.LAST_TOKEN === '0'));
+    //     color_func = cprint.toYellow;
+    //     last_token = 'PROPERTY_VALUE';
+
+    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
+    //     newline = (state.LAST_TOKEN !== 'PROPERTY_VALUE');
+    //     color_func = cprint.toYellow;
+    //     last_token = 'PROPERTY_VALUE';
+
+    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
+    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{' || state.LAST_TOKEN === ',');
+    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //     space_before = (state.LAST_TOKEN !== '.' && state.LAST_TOKEN !== '#' && state.LAST_TOKEN !== ':' && state.LAST_TOKEN !== '::' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== '[');
+
+    //     color_func = cprint.toWhite;
+    //     last_token = 'SELECTOR';
+    //   } else if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS') {
+    //     newline = (state.LAST_TOKEN !== 'FUNCTION_CALL_ARGUMENTS' && state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH);
+    //     space_before = (state.LAST_TOKEN === 'FUNCTION_CALL_ARGUMENTS' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === '0');
+    //     color_func = cprint.toYellow;
+    //     last_token = 'FUNCTION_CALL_ARGUMENTS';
+    //   } else if (state.LAST_TOKEN === 'OPERATOR') {
+    //     color_func = cprint.toYellow;
+    //     last_token = 'OPERATOR';
+    //   }
+    //   break;
+
+    // case 'Unit':
+    //   space_before = false;
+    //   color_func = cprint.toYellow;
+    //   last_token = 'UNIT';
+    //   break;
+
+    // case 'TIMES':
+    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE') {
+    //     color_func = cprint.toMagenta;
+    //     last_token = 'OPERATOR';
+    //   } else if (state.DECLARATION_TYPE === 'SELECTOR') {
+    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
+    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //     color_func = cprint.toWhite;
+    //     last_token = '*';
+    //   }
+    //   break;
+
+    // case 'MINUS':
+    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
+    //     space_before = (state.LAST_TOKEN !== '(');
+    //     color_func = cprint.toMagenta;
+    //     if (state.LAST_TOKEN === ':') {
+    //       last_token = ':MINUS';
+    //     } else {
+    //       last_token = 'MINUS';
+    //     }
+    //   }
+    //   break;
+
+    // case 'DIV':
+    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'HASH_BLOCK') {
+    //     color_func = cprint.toMagenta;
+    //     last_token = 'OPERATOR';
+    //   }
+    //   break;
+
+    // case 'PLUS':
+    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE') {
+    //     color_func = cprint.toMagenta;
+    //     last_token = 'OPERATOR';
+    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
+    //     color_func = cprint.toLightCyan;
+    //     last_token = '+';
+    //   }
+    //   break;
+
+    // case 'DOLLAR':
+    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
+    //     space_before = false;
+    //     color_func = cprint.toLightBlue;
+    //   } else if (state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'VARIABLE_DEC') {
+    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
+    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //     space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(');
+    //     color_func = cprint.toLightBlue;
+    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
+    //     newline = (state.LAST_TOKEN === '(' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === ',' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //     color_func = cprint.toLightBlue;
+    //   }
+    //   last_token = '$';
+    //   break;
+
+    // // case 'measurement':
+    // //   if (state.LAST_TOKEN === 'MINUS') {
+    // //     last_token = '-MEASUREMENT';
+    // //   }
+    // //   break;
+
+    // case 'Number':
+    // case 'Color':
+    // case 'RGB_VAL':
+    //   if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS' || state.DECLARATION_TYPE === 'MAP_ENTRY_VALUES' || state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION' || state.DECLARATION_TYPE === 'FUNCTION' || state.DECLARATION_TYPE === 'MEASUREMENT' || state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'PROPERTY_VALUE' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'VARIABLE_VALUES') {
+    //     space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
+    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
+    //     space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
+    //     newline = (state.LAST_TOKEN === ',' && state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 1)
+    //   } else if (state.DECLARATION_TYPE === 'MAP_ENTRY') {
+    //     newline = true;
+    //   } else if (state.DECLARATION_TYPE === 'KEYFRAMES' || state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY') {
+    //     newline = true;
+    //   }
+
+    //   if (definition_key === 'Color' && state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH && state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 1) {
+    //     newline = true;
+    //   }
+
+    //   color_func = cprint.toYellow;
+    //   if (definition_value === '0') {
+    //     last_token = '0';
+    //   } else {
+    //     last_token = 'VALUE';
+    //   }
+    //   break;
+
+    // case 'STRING_SINGLE_QUOTED':
+    // case 'STRING_DOUBLE_QUOTED':
+    // case 'UrlVal':
+    //   if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
+    //     newline = true;
+    //     color_func = cprint.toYellow;
+    //   } else if (state.DECLARATION_TYPE === 'STRING_LITERAL') {
+    //     space_before = (state.LAST_TOKEN !== "=");
+    //     color_func = cprint.toYellow;
+    //   } else if (state.DECLARATION_TYPE === 'IMPORT') {
+    //     space_before = (state.DECLARATION_TYPE === 'IMPORT' || state.LAST_TOKEN === ':');
+    //     color_func = cprint.toYellow;
+    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
+    //     space_before = (state.LAST_TOKEN === ':');
+    //     color_func = cprint.toYellow;
+    //   }
+    //   last_token = 'VALUE';
+    //   break;
+
+    // case 'UrlStartVal':
+    //   color_func = cprint.toCyan;
+    //   last_token = 'URL';
+    //   break;
+
+    // // case 'commaExpression':
+    // //   state.DECLARATION_TYPE = 'EXPRESSION';
+    // //   break;
+
+    // case 'COMMA':
+    //   if (state.LAST_TOKEN === 'IGNORE:,') {
+    //     append = false;
+    //     break;
+    //   }
+
+    //   space_before = false;
+
+    //   if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS' || state.DECLARATION_TYPE === 'MAP_ENTRY_VALUES' || state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'PROPERTY_VALUE' || state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE' || state.DECLARATION_TYPE === 'FUNCTION' || state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION') {
+    //     color_func = cprint.toYellow;
+    //   } else if (state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
+    //     color_func = cprint.toYellow;
+    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
+    //     color_func = cprint.toWhite;
+    //   }
+
+    //   last_token = ',';
+    //   break;
+
+    // case 'GT':
+    //   newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
+    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //   color_func = cprint.toLightCyan;
+    //   last_token = '>';
+    //   break;
+
+    // case 'AND':
+    //   newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
+    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //   color_func = cprint.toLightCyan;
+    //   last_token = '&';
+    //   break;
+
+    // case 'LBRACK':
+    // case 'RBRACK':
+    // case 'DOT':
+    // case 'TIL':
+    // case 'EQ':
+    // case 'HASH':
+    // case 'DASH':
+    // case 'COLON':
+    // case 'COLONCOLON':
+    //   if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
+    //     newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
+    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //   }
+    //   space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH' || definition_key === 'TIL'));
+    //   color_func = cprint.toLightCyan;
+    //   last_token = definition_value;
+    //   break;
+
+    // case 'LPAREN':
+    //   if (state.RECORD_VARIABLE_VALUES_PAREN_DEPTH) {
+    //     state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH + 1;
+    //   }
+
+    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
+    //     state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH + 1;
+    //   }
+
+    //   if (['PSEUDO_IDENTIFIER', 'INCLUDE', 'FUNCTION_DEC', 'MIXIN'].indexOf(state.DECLARATION_TYPE) >= 0 || ['URL', 'FUNCTION', ':MINUS', 'MINUS'].indexOf(state.LAST_TOKEN) >= 0) {
+    //     space_before = false;
+    //   }
+
+    //   color_func = cprint.toMagenta;
+    //   last_token = '(';
+    //   break;
+
+    // case 'RPAREN':
+    //   space_before = false;
+
+    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
+    //     state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH - 1;
+    //     if (state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 0) {
+    //       state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = false;
+    //       newline = true;
+    //       pre_indent = -1;
+    //     }
+    //   }
+
+    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
+    //     state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH - 1;
+    //     if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
+    //       state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
+    //       state.MULTI_LINE_VARIABLE_VALUES = false;
+    //       newline = true;
+    //       pre_indent = -1;
+    //     }
+    //   }
+
+    //   color_func = cprint.toMagenta;
+    //   last_token = ')';
+    //   break;
+
+    // case 'SEMI':
+    //   if (state.LAST_TOKEN === ';') {
+    //     append = false;
+    //   }
+
+    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
+    //     if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
+    //       state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
+    //       state.MULTI_LINE_VARIABLE_VALUES = false;
+    //       pre_indent = -1;
+    //     }
+    //   }
+
+    //   space_before = false;
+    //   color_func = cprint.toRed;
+    //   last_token = ';';
+    //   break;
+
+    // case 'COMMENT':
+    //   if (whitespace_before_includes_newline) {
+    //     newline = (state.LAST_TOKEN === '{');
+    //     double_newline = !newline;
+    //   } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
+    //     double_newline = true;
+    //   }
+    //   color_func = cprint.toDarkGrey;
+    //   last_token = 'MULTI_LINE_COMMENT';
+    //   break;
+
+    // case 'SL_COMMENT':
+    //   newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //   color_func = cprint.toDarkGrey;
+    //   last_token = 'SINGLE_LINE_COMMENT';
+    //   break;
+
+    // case 'IMPORTANT':
+    //   color_func = cprint.toLightRed;
+    //   last_token = 'IMPORTANT';
+    //   break;
+
+    // case 'IMPORT':
+    // case 'INCLUDE':
+    // case 'FUNCTION':
+    // case 'RETURN':
+    // case 'MIXIN':
+    // case 'MEDIA':
+    // case 'KEYFRAMES':
+    // case 'PAGE':
+    // case 'AT_EACH':
+    // case 'AT_FOR':
+    //   newline = true;
+    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+    //   color_func = cprint.toCyan;
+    //   last_token = definition_value;
+    //   break;
+
+    // case 'FROM':
+    // case 'THROUGH':
+    // case 'IN':
+    //   color_func = cprint.toCyan;
+    //   last_token = definition_value.toUpperCase();
+    //   break;
+
+    // case 'BlockStart':
+    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
+    //     state.HASH_BLOCK_BLOCK_DEPTH += 1;
+    //     space_before = false;
+    //     color_func = cprint.toLightMagenta;
+    //     last_token = '{';
+    //   } else {
+    //     space_before = (state.LAST_TOKEN !== '#');
+    //     color_func = cprint.toWhite;
+    //     last_token = '{';
+    //   }
+    //   post_indent = 1;
+    //   break;
+
+    // case 'BlockEnd':
+    //   if (state.RECORD_HASH_BLOCK_BLOCK_DEPTH) {
+    //     state.HASH_BLOCK_BLOCK_DEPTH -= 1;
+    //     if (state.HASH_BLOCK_BLOCK_DEPTH === 0) {
+    //       state.DECLARATION_TYPE = false;
+    //       state.RECORD_HASH_BLOCK_BLOCK_DEPTH = false;
+    //     }
+    //     space_before = false;
+    //     color_func = cprint.toLightMagenta;
+    //     last_token = '}';
+    //   } else {
+    //     newline = ((state.DECLARATION_TYPE !== 'KEYFRAMES_PROPERTY' || state.LAST_TOKEN === '}'));
+    //     space_before = (state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY');
+    //     color_func = cprint.toWhite;
+    //     last_token = '}';
+    //   }
+    //   pre_indent = -1;
+    //   break;
   }
 
   if (last_token) {
@@ -1050,8 +1576,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     } else if (space_before) {
       delim = ' ';
     }
-
-    color_func = color_func;
 
     tree_output.output = utils.str_append(tree_output.output, append, delim);
     tree_output.color_output = utils.str_append(tree_output.color_output, color_func(append), delim);

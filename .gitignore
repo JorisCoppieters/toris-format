@@ -1,5 +1,4 @@
 node_modules
 npm-debug.log
-_structure.txt
-_failed_structure.txt
+_debug_*
 _formatTest_*

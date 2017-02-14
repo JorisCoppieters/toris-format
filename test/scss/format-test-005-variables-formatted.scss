@@ -1,0 +1,60 @@
+$profile-image-sizes-multipliers:
+    'extra-small' 26,
+    'small' 42,
+    'medium' 62,
+    'large' 112;
+
+$profile-image-placeholder-colors:
+    $pohutukawa-20 $pohutukawa-400, //0
+    $jaffa-30 $jaffa-400, //1
+    $hokey-pokey-30 $hokey-pokey-600, //2
+    $kiwifruit-30 $kiwifruit-700, //3
+    $feijoa-30 $feijoa-500, //4
+    $waitomo-30 $waitomo-500, //5
+    $paua-30 $paua-600, //6
+    $tasman-30 $tasman-600, //7
+    $mordor-30 $mordor-400, //8
+    $glacier-30 $glacier-400; //9
+
+$banner-image-placeholder-colors: (
+    $pohutukawa-50,
+    $jaffa-50,
+    $hokey-pokey-50,
+    $kiwifruit-50,
+    $feijoa-50,
+    $waitomo-50,
+    $paua-50,
+    $tasman-50,
+    $mordor-50,
+    $glacier-50
+);
+
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(720deg); }
+}
+
+.login-modal__bg-icons {
+    $topLeft-map: (
+        1: (20%, 3%),
+        2: (3%, 25%),
+        3: (85%, 75%),
+        4: (20%, 55%),
+        5: (0%, 82%),
+        6: (55%, 90%),
+        7: (-15%, -2%),
+        8: (92%, 8%),
+        9: (100%, 100%),
+        10: (78%, 33%),
+        11: (100%, 100%),
+        12: (100%, 100%),
+        13: (100%, 100%)
+    );
+
+    @each $index, $topLeft in $topLeft-map {
+        :nth-child(#{$index}) {
+            left: #{nth($topLeft, 2)};
+            top: #{nth($topLeft / 2, 1)};
+        }
+    }
+}
