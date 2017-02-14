@@ -273,13 +273,9 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '(?:[0-9]{0,3}\\.)?[0-9]+'
   },
-  WS: {
-    OPERATOR: '==',
-    VALUE: '[ \\t\\n\\r]+'
-  },
   SL_COMMENT: {
     OPERATOR: '==',
-    VALUE: '\\/\\/[^\\n\\r]*(?:$|[\\n]|[\\r](?:[\\n])?)'
+    VALUE: '\\/\\/[^\\n\\r]*'
   },
   COMMENT: {
     OPERATOR: '==',

@@ -6,6 +6,7 @@
     font-size: 8rem;
     font-weight: bold;
     color: rgba(235, 235, 235, 0.25);
+    box-shadow: 0px 4px 1px -2px rgba(0, 0, 0, 0.25);
     height: 1 + 2 - 3 * 4 / 5;
     padding-top: 4% 5;
     border: 1px solid $waitomo-500;
@@ -25,11 +26,10 @@
         background-color: $pohutukawa-700;
         box-shadow: $box-shadow-inset-top $pohutukawa-900;
 
-        &:focus { // This colours the focus on hover to match the button colour
+        &:focus {
             box-shadow: $box-shadow-focus $pohutukawa-50;
         }
     }
-    // fields are butted against each other so we need to remove the border radius on the left side
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
@@ -37,64 +37,6 @@
 .o-select-dropdown--is-active .o-select-dropdown__body {
     display: block;
 }
-
-/** Top Line **/
-
-tg-button.redirect-link {
-    padding-right: 1.25 * $unit;
-    padding: $unit 2;
-
-    .o-card--compact {
-        @include breakpoint($md-min) {
-            tg-card-details {
-                padding: $unit / 2;
-            }
-
-            tg-card-main {
-                min-height: $unit * 9;
-            }
-        }
-    }
-}
-// ===== Print Styles =====
-// TODO - Use tangram print styles instead - PDT-903
-// At this point we'll continue to show .desktop-header__nav, .header-desktop__search-form
-// But these are candidate for removal when this is moved to tangram
-
-.jb-parent {
-    @media print {
-        * {
-            background: transparent !important;
-        }
-
-        @page {
-            margin: 0.7cm;
-        }
-    }
-}
-// Variables
-
-$ping-brand-base-colour: $pinot-500;
-
-.tm-sell-payment-price-disabled {
-    color: $silver-fern-100;
-    // TANGRAM - This is a workaround to deal with
-    // disabled input leaving validation border colour bug
-    // Fix for this is on the way by TANGRAM team
-
-    .o-input--valid .o-input__body {
-        border-color: $silver-fern-50;
-        top: calc(50% -7px);
-    }
-}
-
-.class {
-    padding: 0; /* Cannot do this via helpers */
-    margin: 0; /* Cannot do this via helpers */
-    min-height: 0; /* Cannot do this via helpers */
-}
-
-/* Manual box-shadow variable - this should be moved to tangram at some point, or become a helper */
 
 $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 
@@ -104,20 +46,7 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
     margin-left: -$unit;
 }
 
-@media (max-width: 767px) {
-    .o-accordion__item__header {
-        width: 70px;
-    }
-}
-
-@import "./controls/controls";
-
-@media screen and (-ms-high-contrast: none) {
-    position: relative;
-    padding-left: $unit / 2;
-}
-
-@include breakpoint($md-min) {
+.a-class {
     // Required to make all flex items consume available space while still keeping thier own width based on individual content.
     justify-content: space-around;
 
@@ -145,48 +74,16 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
     content: "/";
 }
 
-.loader-sticky-box {
-    /*    position: absolute;
-            z-index: auto; */
-}
-
-@keyframes spinner {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(720deg); }
-}
-// the SVG block below
-
-/*
-another here
-*/
-
-@mixin sprite-width($sprite) {
-    width: nth($sprite, 3);
-}
-
-@function sprite-width($sprite) {
-    @return nth($sprite, 3);
-}
-// =============================================================================
-// Third party libraries
-// =============================================================================
-
-@import "~breakpoint-sass/stylesheets/breakpoint";
-// Tangram
-// =============================================================================
-
-@media (min-width: 768px) {
-    .class {
-        & -icon {
-            top: calc(50% -6px);
-            top: calc(100% - #{$unit * 0.75});
-            margin: $unit (-0.5 * $unit) 0 (-0.5 * $unit);
-            background: linear-gradient(to left, rgba(247, 247, 247, 0.5), rgba(247, 247, 247, 0.9) 40%, #f7f7f7);
-            margin-top: $unit * - 1;
-            padding: $unit / 2 $unit;
-            margin-bottom: $unit * 4;
-            margin-bottom: 3 * $unit;
-            font-weight: 700
-        }
+.class {
+    & -icon {
+        top: calc(50% -6px);
+        top: calc(100% - #{$unit * 0.75});
+        margin: $unit (-0.5 * $unit) 0 (-0.5 * $unit);
+        background: linear-gradient(to left, rgba(247, 247, 247, 0.5), rgba(247, 247, 247, 0.9) 40%, #f7f7f7);
+        margin-top: $unit * - 1;
+        padding: $unit / 2 $unit;
+        margin-bottom: $unit * 4;
+        margin-bottom: 3 * $unit;
+        font-weight: 700
     }
 }

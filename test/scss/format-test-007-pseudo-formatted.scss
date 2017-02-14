@@ -1,0 +1,53 @@
+// =============================================================================
+// Third party libraries
+// =============================================================================
+@import "~breakpoint-sass/stylesheets/breakpoint";
+
+// =============================================================================
+// Tangram
+// =============================================================================
+
+@import "./controls/controls";
+@import "./controls/controls";
+@import "./controls/controls";
+
+@import "./controls/controls";
+@import "./controls/controls";
+
+.ping-latest-transaction__reference-number {
+    @include small-text();
+}
+
+.jb-parent {
+    @media print {
+        @page {
+            margin: 0.7cm;
+        }
+    }
+}
+
+@media(max-width: 767px) {
+    .o-accordion__item__header {
+        width: 70px;
+    }
+}
+
+@media screen and(-ms-high-contrast: none) {
+    position: relative;
+}
+
+@include breakpoint($md-min) {
+}
+
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(720deg); }
+}
+
+@mixin sprite-width($sprite) {
+    width: nth($sprite, 3);
+}
+
+@function sprite-width($sprite) {
+    @return nth($sprite, 3);
+}

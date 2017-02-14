@@ -1,0 +1,38 @@
+/** Top Line **/
+
+// ===== Print Styles =====
+// TODO - Use tangram print styles instead - PDT-903
+// At this point we'll continue to show .desktop-header__nav, .header-desktop__search-form
+// But these are candidate for removal when this is moved to tangram
+
+.tm-sell-payment-price-disabled {
+    color: $silver-fern-100;
+    // TANGRAM - This is a workaround to deal with
+    // disabled input leaving validation border colour bug
+    // Fix for this is on the way by TANGRAM team
+
+    .o-input--valid .o-input__body { // inline
+        border-color: $silver-fern-50; // inline
+        top: calc(50% -7px); // inline
+    } // inline
+}
+
+.class {
+    &:focus { // This colours the focus on hover to match the button colour
+        box-shadow: $box-shadow-focus $pohutukawa-50;
+    }
+    padding: 0; /* Cannot do this via helpers */
+    margin: 0; /* Cannot do this via helpers */
+    min-height: 0; /* Cannot do this via helpers */
+}
+
+.loader-sticky-box {
+    /*    position: absolute;
+            z-index: auto; */
+}
+
+// the SVG block below
+
+/*
+another here
+*/

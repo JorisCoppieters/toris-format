@@ -42,9 +42,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
   var whitespace_matches = (in_definition_value || '').match(new RegExp('^' + r_v(r_W), 'i'));
   var whitespace_before = '';
   var whitespace_before_includes_newline = false;
+  var whitespace_before_includes_double_newline = false;
   if (whitespace_matches) {
     whitespace_before = whitespace_matches[1];
-    whitespace_before_includes_newline = !whitespace_before.match(/^ +$/);
+    whitespace_before_includes_newline = whitespace_before.match(/^[\s]*?(\n|\r\n?)[\s]*?$/);
+    whitespace_before_includes_double_newline = whitespace_before.match(/^[\s]*?(\n|\r\n?)[\s]*?(\n|\r\n?)[\s]*?$/);
   }
 
   var append = definition_value;
@@ -246,8 +248,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'MIXIN':
     case 'PAGE':
     case 'RETURN':
-      newline = true;
-      double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+      double_newline = (whitespace_before_includes_double_newline);
+      newline = (whitespace_before_includes_newline || [';', '{', ',', '}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       color_func = cprint.toCyan;
       last_token = definition_value;
       break;
@@ -306,6 +308,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case false:
         case 'SELECTOR':
+        case 'INCLUDE':
         case 'VARIABLE':
         case 'VARIABLE_VALUES':
         case 'FUNCTION_END':
@@ -336,9 +339,12 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'LPAREN':
-      space_before = (['0', 'VALUE', 'VARIABLE', 'PROPERTY_VALUE', 'UNIT', ',', ':', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0);
-      if (state.DECLARATION_TYPE === 'MEDIA') {
-        space_before = true;
+      if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', '-', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
+        space_before = false;
+      }
+
+      if (['INCLUDE', 'MEDIA', 'MIXIN', 'PAGE', 'FUNCTION', 'RETURN'].indexOf(state.DECLARATION_TYPE) >= 0) {
+        space_before = false;
       }
 
       if (state.DECLARATION_TYPE === 'MAP_EXPRESSION_START') {
@@ -419,17 +425,15 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'COMMENT':
-      if (whitespace_before_includes_newline) {
-        newline = (state.LAST_TOKEN === '{');
-        double_newline = !newline;
-      } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
-        double_newline = true;
-      }
+      double_newline = (whitespace_before_includes_double_newline || ['SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+      newline = (whitespace_before_includes_newline);
       color_func = cprint.toDarkGrey;
       last_token = 'MULTI_LINE_COMMENT';
       break;
+
     case 'SL_COMMENT':
-      newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
+      double_newline = (whitespace_before_includes_double_newline || ['MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+      newline = (whitespace_before_includes_newline || ['SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       color_func = cprint.toDarkGrey;
       last_token = 'SINGLE_LINE_COMMENT';
       break;
@@ -568,8 +572,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'FUNCTION_CALL_ARGUMENTS':
             case 'INCLUDE':
               if (definition_key === 'DOLLAR') {
-                newline = (['', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
-                double_newline = ([';', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+                double_newline = (whitespace_before_includes_double_newline || ['}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+                newline = (whitespace_before_includes_newline || [';', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
                 if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
                   space_before = false;
                 }
@@ -623,8 +627,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'FUNCTION_CALL':
-          space_before = ([':', ',', '@return'].indexOf(state.LAST_TOKEN) >= 0);
           color_func = cprint.toLightCyan;
+
+          if (['{'].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
+          }
 
           if (options.FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
             state.MULTI_LINE_FUNCTION = true;
