@@ -29,6 +29,9 @@
     }
 }
 
+@mixin sprite($sprite, $display: block) {
+    }
+
 @media (max-width: 767px) {
    .o-accordion__item__header {
     width: 70px;;
@@ -44,7 +47,9 @@
 
         }
 
-
+    @include breakpoint( max-width $lg-min) {
+        font-size: $pt-native-ad-card-font-small - 1;
+    }
 
 @keyframes spinner {
     0% {transform: rotate(0deg);}
@@ -59,4 +64,9 @@
     @return nth($sprite, 3);
 }
 
+@keyframes fadeFromHidden {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
 

@@ -8,6 +8,10 @@ var fsp = require('fs-process');
 
 // ******************************
 
+var g_TEST_FAILED = false;
+
+// ******************************
+
 runTests();
 
 // ******************************
@@ -25,6 +29,10 @@ function formatTests (fileExtension, fileType, formatFunction) {
     fsp.list('./test/' + fileExtension, filter).then(function (files) {
         files.sort();
         files.forEach(function (file) {
+            if (g_TEST_FAILED) {
+                return;
+            }
+
             var dirname = path.dirname(file);
             var basename = path.basename(file);
 
@@ -39,11 +47,9 @@ function formatTests (fileExtension, fileType, formatFunction) {
             var formattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-formatted.' + fileExtension), 'utf8');
             var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
             loadConfigFile(configFile);
-            return formatTestFiles(fileExtension + '-' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
+            formatTestFiles(fileExtension + '-' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
         })
     });
-
-    return true;
 }
 
 // ******************************
@@ -53,6 +59,10 @@ function printTests (fileExtension, fileType, formatFunction) {
     fsp.list('./test/' + fileExtension, filter).then(function (files) {
         files.sort();
         files.forEach(function (file) {
+            if (g_TEST_FAILED) {
+                return;
+            }
+
             var dirname = path.dirname(file);
             var basename = path.basename(file);
 
@@ -66,11 +76,9 @@ function printTests (fileExtension, fileType, formatFunction) {
             var sassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '.' + fileExtension), 'utf8');
             var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
             loadConfigFile(configFile);
-            return printTestContents(fileExtension + '-' + testName, fileType, formatFunction, sassContents);
+            printTestContents(fileExtension + '-' + testName, fileType, formatFunction, sassContents);
         })
     });
-
-    return true;
 }
 
 // ******************************
@@ -108,9 +116,11 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
             fs.exists(test1_outputFile, function (exists) { if (exists) { fsp.remove(test1_outputFile); } } );
         } else if (output) {
             console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Unexpected ' + fileType));
+            torisFormat.print_contents_diff(expectedOutput, output);
             fsp.write(test1_expectedOutputFile, expectedOutput);
             fsp.write(test1_outputFile, output);
-            return;
+            g_TEST_FAILED = true;
+            return false;
         }
     } catch (err) {
         console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
@@ -133,9 +143,11 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
             fs.exists(test2_outputFile, function (exists) { if (exists) { fsp.remove(test2_outputFile); } } );
         } else if (output) {
             console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Unexpected ' + fileType));
+            torisFormat.print_contents_diff(expectedOutput, output);
             fsp.write(test2_expectedOutputFile, expectedOutput);
             fsp.write(test2_outputFile, output);
-            return;
+            g_TEST_FAILED = true;
+            return false;
         }
 
     } catch (err) {

@@ -1,4 +1,5 @@
 {
     "line_ending": "\r\n",
-    "definition_type": "SCSS"
+    "definition_type": "SCSS",
+    "debug": true
 }

@@ -153,6 +153,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         state.VALUE_TYPE = false;
       }
       break;
+    case 'hashBlock':
+      state.DECLARATION_TYPE = 'HASH_BLOCK';
+      state.VALUE_TYPE = false;
+      break;
     case 'hashBlockStart':
       state.DECLARATION_TYPE = 'HASH_BLOCK_START';
       state.VALUE_TYPE = false;
@@ -180,6 +184,14 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'mapEntryValues':
       state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
       state.VALUE_TYPE = false;
+      break;
+    case 'keyframesEntryProperty':
+      state.DECLARATION_TYPE = 'KEYFRAMES_ENTRY_PROPERTY';
+      state.VALUE_TYPE = 'KEYFRAMES_ENTRY_PROPERTY';
+      break;
+    case 'keyframesEntryPropertyValues':
+      state.DECLARATION_TYPE = 'KEYFRAMES_ENTRY_PROPERTY_VALUE';
+      state.VALUE_TYPE = 'KEYFRAMES_ENTRY_PROPERTY_VALUE';
       break;
 
     case 'expressions3Plus':
@@ -215,9 +227,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'variableName':
       state.VALUE_TYPE = 'VARIABLE';
       break;
-    case 'keyframesEntryProperty':
-      state.VALUE_TYPE = 'KEYFRAMES_ENTRY_PROPERTY';
-      break;
 
     // Value Output:
     case 'COLON':
@@ -233,7 +242,25 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
         double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
       }
-      space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH' || definition_key === 'TIL'));
+
+      if (['PROPERTY'].indexOf(state.LAST_TOKEN) >= 0) {
+        space_before = false;
+      } else if (['DASH'].indexOf(definition_key) >= 0) {
+        space_before = false;
+      } else if (['VARIABLE', 'MAP_ENTRY'].indexOf(state.DECLARATION_TYPE) >= 0) {
+        space_before = false;
+      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && [':', 'MINUS'].indexOf(state.LAST_TOKEN) < 0) {
+        space_before = false;
+      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['-'].indexOf(state.LAST_TOKEN) >= 0) {
+        space_before = false;
+      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON', 'LBRACK', 'EQ', 'RBRACK'].indexOf(definition_key) >= 0) {
+        space_before = false;
+      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && !whitespace_before) {
+        space_before = false;
+      } else if (['KEYFRAMES_ENTRY', 'KEYFRAMES_ENTRY_PROPERTY_VALUE', 'MIXIN'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON'].indexOf(definition_key) >= 0) {
+        space_before = false;
+      }
+
       color_func = cprint.toLightCyan;
       last_token = definition_value;
       break;
@@ -299,16 +326,15 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'BlockEnd':
       last_token = '}';
       pre_indent = -1;
+      newline = true;
       color_func = cprint.toWhite;
 
       switch (state.DECLARATION_TYPE) {
 
-        case 'KEYFRAMES_ENTRY_END':
-          break;
-
         case false:
         case 'SELECTOR':
         case 'INCLUDE':
+        case 'MIXIN':
         case 'VARIABLE':
         case 'VARIABLE_VALUES':
         case 'FUNCTION_END':
@@ -316,14 +342,19 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         case 'PROPERTY':
         case 'KEYFRAMES_END':
         case 'URL':
-          newline = true;
+          break;
+
+        case 'KEYFRAMES_ENTRY_END':
+          newline = false;
           break;
 
         case 'HASH_BLOCK_EXPRESSION':
+          newline = false;
           space_before = false;
           break;
 
         case 'HASH_BLOCK_END':
+          newline = false;
           space_before = false;
           state.DECLARATION_TYPE = false;
           break;
@@ -339,7 +370,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'LPAREN':
-      if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', '-', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
+      if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
         space_before = false;
       }
 
@@ -392,7 +423,9 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       last_token = ')';
       break;
 
+    case 'NOSEMI':
     case 'SEMI':
+      append = ';';
       if (state.LAST_TOKEN === ';') {
         append = false;
       }
@@ -464,13 +497,16 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         case 'VARIABLE_VALUES':
           if (state.LAST_TOKEN === '(' || state.LAST_TOKEN === '=') {
             space_before = false;
-          } else if (state.LAST_TOKEN === '-' && (state.VALUE_TYPE === 'MEASUREMENT' || state.SECOND_TO_LAST_TOKEN === ':' || state.SECOND_TO_LAST_TOKEN === '(')) {
+          } else if (state.LAST_TOKEN === 'MINUS' && state.VALUE_TYPE === 'MEASUREMENT' && state.DECLARATION_TYPE !== 'FUNCTION_CALL_ARGUMENTS') {
+            space_before = false;
+          } else if (state.LAST_TOKEN === 'MINUS' && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
             space_before = false;
           }
 
           if (definition_value === '0') {
             last_token = '0'
           }
+
           color_func = cprint.toYellow;
           break;
 
@@ -509,6 +545,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           last_token = 'KEYFRAMES_ENTRY';
           break;
 
+        case 'KEYFRAMES_ENTRY_PROPERTY_VALUE':
+          color_func = cprint.toYellow;
+          last_token = 'KEYFRAMES_ENTRY_PROPERTY_VALUE';
+          break;
+
         default:
           if (options.DEBUG) {
             append = state.DECLARATION_TYPE + ':' + definition_key;
@@ -528,6 +569,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'DOLLAR':
     case 'Identifier':
       last_token = state.VALUE_TYPE;
+
       switch (state.VALUE_TYPE) {
 
         case 'SELECTOR':
@@ -562,24 +604,25 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case 'VARIABLE':
           color_func = cprint.toLightBlue;
+          last_token = definition_value;
 
           switch (state.DECLARATION_TYPE) {
 
-            case 'MIXIN':
             case 'FUNCTION':
             case 'VARIABLE':
             case 'VARIABLE_VALUES':
-            case 'FUNCTION_CALL_ARGUMENTS':
             case 'INCLUDE':
               if (definition_key === 'DOLLAR') {
                 double_newline = (whitespace_before_includes_double_newline || ['}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
                 newline = (whitespace_before_includes_newline || [';', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
-                if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
+                if (state.LAST_TOKEN === 'MINUS' || state.LAST_TOKEN === '(') {
                   space_before = false;
                 }
                 last_token = '$';
               } else {
-                space_before = false;
+                if (state.LAST_TOKEN === '$') {
+                  space_before = false;
+                }
               }
               break;
 
@@ -588,19 +631,25 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
                 newline = (['(', ':', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
                 last_token = '$';
               } else {
-                space_before = false;
+                if (state.LAST_TOKEN === '$') {
+                  space_before = false;
+                }
               }
               break;
 
+            case 'MIXIN':
             case 'PROPERTY':
+            case 'FUNCTION_CALL_ARGUMENTS':
             case 'EACH':
               if (definition_key === 'DOLLAR') {
-                if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
+                if (state.LAST_TOKEN === 'MINUS' || state.LAST_TOKEN === '(') {
                   space_before = false;
                 }
                 last_token = '$';
               } else {
-                space_before = false;
+                if (state.LAST_TOKEN === '$') {
+                  space_before = false;
+                }
               }
               break;
 
@@ -622,7 +671,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
           if (definition_key === 'MINUS') {
             space_before = (state.LAST_TOKEN !== '(');
-            last_token = '-';
+            last_token = 'MINUS';
           }
           break;
 

@@ -8,6 +8,7 @@
     color: rgba(235, 235, 235, 0.25);
     box-shadow: 0px 4px 1px -2px rgba(0, 0, 0, 0.25);
     height: 1 + 2 - 3 * 4 / 5;
+    margin-bottom: $unit * -0.25;
     padding-top: 4% 5;
     border: 1px solid $waitomo-500;
     width: 123; // width again!
@@ -76,14 +77,15 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 
 .class {
     & -icon {
-        top: calc(50% -6px);
+        top: calc(50% - 6px);
         top: calc(100% - #{$unit * 0.75});
         margin: $unit (-0.5 * $unit) 0 (-0.5 * $unit);
         background: linear-gradient(to left, rgba(247, 247, 247, 0.5), rgba(247, 247, 247, 0.9) 40%, #f7f7f7);
-        margin-top: $unit * - 1;
+        margin-top: $unit * -1;
         padding: $unit / 2 $unit;
+        border: 2px $hokey-pokey-100 solid;
         margin-bottom: $unit * 4;
         margin-bottom: 3 * $unit;
-        font-weight: 700
+        font-weight: 700;
     }
 }

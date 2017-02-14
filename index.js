@@ -90,19 +90,6 @@ const k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT = '[NG2_ATTRIBUTE_TYPE_BINDING_EVENT]';
 const k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE = '[NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE]';
 
 // ******************************
-// Exports:
-// ******************************
-
-module.exports['k_VERSION'] = k_VERSION;
-module.exports['k_DEFINITION_TYPE_SCSS'] = parser.k_DEFINITION_TYPE_SCSS;
-module.exports['k_DEFINITION_TYPE_HTML'] = parser.k_DEFINITION_TYPE_HTML;
-module.exports['format_html_file'] = format_html_contents;
-module.exports['format_html_contents'] = format_html_contents;
-module.exports['print_sass_contents'] = print_sass_contents;
-module.exports['format_sass_contents'] = format_sass_contents;
-module.exports['setup'] = setup;
-
-// ******************************
 // RegEx Shorthand:
 // ******************************
 
@@ -375,6 +362,84 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   }
   console.log(result);
+}
+
+// ******************************
+
+function print_contents_diff (in_expected_contents, in_contents) {
+  var expected_contents = (in_expected_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+  var contents = (in_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+
+  var diff_segments_100 = get_diff_segment(expected_contents, contents, 100);
+  if (!diff_segments_100) {
+    return;
+  }
+
+  var diff_segments_1 = get_diff_segment(diff_segments_100.diff1, diff_segments_100.diff2, 1);
+  if (!diff_segments_1) {
+    return;
+  }
+
+  var padding = 150;
+
+  var diff_idx = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
+  var beginning_section = expected_contents.substr(Math.max(0, diff_idx - padding), diff_idx - Math.max(0, diff_idx - padding));
+  var correct_section = expected_contents.substr(diff_idx, 1);
+
+  var incorrect_section = contents.substr(diff_idx, 1);
+  if (incorrect_section === ' ') {
+    incorrect_section = '☐';
+  }
+  else if (correct_section === ' ') {
+    incorrect_section = '☒';
+    diff_idx--;
+  }
+
+  var remaining_section = contents.substr(diff_idx + 1, padding);
+
+  console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
+}
+
+// ******************************
+
+function get_diff_segment (in_contents1, in_contents2, in_segment_size) {
+  var result = {};
+
+  var segment_size = in_segment_size;
+
+  var contents1 = in_contents1 || '';
+  var contents1_segment_bound_start = 0;
+  var contents1_segment_bound_end = segment_size;
+
+  var contents2 = in_contents2 || '';
+  var contents2_segment_bound_start = 0;
+  var contents2_segment_bound_end = segment_size;
+
+  do {
+    var contents1_segment = contents1.substr(contents1_segment_bound_start, segment_size);
+    var contents2_segment = contents2.substr(contents2_segment_bound_start, segment_size);
+    if (contents1_segment !== contents2_segment) {
+      result = {
+        diff1: contents1_segment,
+        diff1_start: contents1_segment_bound_start,
+        diff2: contents2_segment,
+        diff2_start: contents2_segment_bound_start,
+      };
+      break;
+    }
+
+    contents1_segment_bound_start += segment_size;
+    if (contents1_segment_bound_start >= contents1.length) {
+      break;
+    }
+
+    contents2_segment_bound_start += segment_size;
+    if (contents2_segment_bound_start >= contents2.length)
+      break;
+  }
+  while (true);
+
+  return result;
 }
 
 // ******************************
@@ -1876,5 +1941,19 @@ function is_numeric (n) {
 function str_repeat (s, n) {
   return Array(n+1).join(s);
 }
+
+// ******************************
+// Exports:
+// ******************************
+
+module.exports['k_VERSION'] = k_VERSION;
+module.exports['k_DEFINITION_TYPE_SCSS'] = parser.k_DEFINITION_TYPE_SCSS;
+module.exports['k_DEFINITION_TYPE_HTML'] = parser.k_DEFINITION_TYPE_HTML;
+module.exports['format_html_file'] = format_html_contents;
+module.exports['format_html_contents'] = format_html_contents;
+module.exports['print_sass_contents'] = print_sass_contents;
+module.exports['print_contents_diff'] = print_contents_diff;
+module.exports['format_sass_contents'] = format_sass_contents;
+module.exports['setup'] = setup;
 
 // ******************************

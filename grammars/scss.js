@@ -97,7 +97,11 @@ var DEFINITION = {
   },
   keyframesEntryProperty: {
     OPERATOR: '&&',
-    SEGMENTS: ['identifier', 'colonValues']
+    SEGMENTS: ['identifier', 'keyframesEntryPropertyValues']
+  },
+  keyframesEntryPropertyValues: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COLON', 'values']
   },
   keyframesEntryBlockEnd: {
     OPERATOR: '&&',
@@ -373,15 +377,23 @@ var DEFINITION = {
   },
   block: {
     OPERATOR: '&&',
-    SEGMENTS: ['BlockStart', 'blockProperty*', 'property?', 'BlockEnd']
+    SEGMENTS: ['BlockStart', 'blockProperty*', 'BlockEnd']
   },
   blockProperty: {
     OPERATOR: '||',
-    SEGMENTS: ['blockPropertySemi', 'statement']
+    SEGMENTS: ['blockPropertySemi', 'blockPropertyNoSemi', 'statement']
   },
   blockPropertySemi: {
     OPERATOR: '&&',
     SEGMENTS: ['property', 'IMPORTANT?', 'SEMI+']
+  },
+  blockPropertyNoSemi: {
+    OPERATOR: '&&',
+    SEGMENTS: ['property', 'IMPORTANT?', 'NOSEMI']
+  },
+  NOSEMI: {
+    OPERATOR: '&&',
+    SEGMENTS: ['EMPTY']
   },
   selectors: {
     OPERATOR: '&&',

@@ -33,6 +33,14 @@ tm-homepage-categories {
 .homepage__categories__button--marketplace > a {
     &:active {
         &:focus {
+
+            > :first-child {
+                padding-top: ($unit);
+            }
+
+                > :last-child {
+                    padding-bottom: 0;
+                }
         }
     }
 }
@@ -99,6 +107,7 @@ a[ui-sref="tm.property.home"]:visited {
 }
 
 @for $i from 1 through 4 {
+    $c: nth($profile-image-placeholder-colors, $i);
     .#{refiner__option--level}-#{$i} {
       padding-left: $unit * ($i+1) / 4;
     }
