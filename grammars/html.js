@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // JS: ES5
 
 // ******************************
 //
@@ -12,6 +12,7 @@
 // Requires:
 // ******************************
 
+var utils = require('./utils');
 var GRAMMAR_CORE = require('./core');
 var GRAMMAR_SCSS = require('./scss');
 
@@ -19,15 +20,15 @@ var GRAMMAR_SCSS = require('./scss');
 // Exposing Functions:
 // ******************************
 
-var r_A = GRAMMAR_CORE.r_A;
-var r_AG = GRAMMAR_CORE.r_AG;
-var r_W = GRAMMAR_CORE.r_W;
-var r_S = GRAMMAR_CORE.r_S;
-var r_w = GRAMMAR_CORE.r_w;
-var r_g = GRAMMAR_CORE.r_g;
-var r_v = GRAMMAR_CORE.r_v;
-var r_dq = GRAMMAR_CORE.r_dq;
-var r_sq = GRAMMAR_CORE.r_sq;
+var r_A = utils.r_A;
+var r_AG = utils.r_AG;
+var r_W = utils.r_W;
+var r_S = utils.r_S;
+var r_w = utils.r_w;
+var r_g = utils.r_g;
+var r_v = utils.r_v;
+var r_dq = utils.r_dq;
+var r_sq = utils.r_sq;
 
 // ******************************
 // Definition:
@@ -189,13 +190,13 @@ var DEFINITION = {
 // Exports:
 // ******************************
 
-[GRAMMAR_CORE, GRAMMAR_SCSS].forEach((objectToExpose) => {
-  Object.keys(objectToExpose).forEach((key) => {
+[GRAMMAR_CORE, GRAMMAR_SCSS].forEach(function (objectToExpose) {
+  Object.keys(objectToExpose).forEach(function (key) {
     module.exports[key] = objectToExpose[key];
   })
 });
 
-Object.keys(DEFINITION).forEach((key) => {
+Object.keys(DEFINITION).forEach(function (key) {
   var definition = DEFINITION[key];
   definition.key = key;
   module.exports[key] = definition;

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // JS: ES5
 
 // ******************************
 //
@@ -303,7 +303,7 @@ var DEFINITION = {
 // Exports:
 // ******************************
 
-Object.keys(DEFINITION).forEach((key) => {
+Object.keys(DEFINITION).forEach(function (key) {
   var definition = DEFINITION[key];
   definition.key = key;
   module.exports[key] = definition;

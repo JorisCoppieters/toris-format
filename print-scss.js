@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // JS: ES5
 
 var torisFormat = require('./index.js');
 var path = require('path');

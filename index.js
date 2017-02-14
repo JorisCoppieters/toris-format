@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // JS: ES5
 
 // ******************************
 //
@@ -54,10 +54,10 @@
 // Requires:
 // ******************************
 
-let parser = require('./src/parser');
-let utils = require('./src/utils');
-let cprint = require('color-print');
-let fsp = require('fs-process');
+var parser = require('./src/parser');
+var utils = require('./src/utils');
+var cprint = require('color-print');
+var fsp = require('fs-process');
 
 // ******************************
 // Constants:
@@ -106,10 +106,10 @@ module.exports['setup'] = setup;
 // RegEx Shorthand:
 // ******************************
 
-let r_A = '[\\s\\S]*?'; // RegEx: Any (Not Greedy)
-let r_AG = '[\\s\\S]*'; // RegEx: Any (Greedy)
-let r_W = '[\\s]*'; // RegEx: Optional Whitepsace
-let r_S = '[\\s]+'; // RegEx: Whitepsace
+var r_A = '[\\s\\S]*?'; // RegEx: Any (Not Greedy)
+var r_AG = '[\\s\\S]*'; // RegEx: Any (Greedy)
+var r_W = '[\\s]*'; // RegEx: Optional Whitepsace
+var r_S = '[\\s]+'; // RegEx: Whitepsace
 
 // ******************************
 
@@ -146,65 +146,65 @@ function r_sq (in_re) { // RegEx: Single Quote
 // ******************************
 
 // State:
-let g_ELEMENT_STACK = [];
-let g_CURRENT_ELEMENT = '';
-let g_CURRENT_ELEMENT_ATTRIBUTES = [];
-let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
-let g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
-let g_CURRENT_ELEMENT_CLASSES = [];
-let g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
-let g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
+var g_ELEMENT_STACK = [];
+var g_CURRENT_ELEMENT = '';
+var g_CURRENT_ELEMENT_ATTRIBUTES = [];
+var g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
+var g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
+var g_CURRENT_ELEMENT_CLASSES = [];
+var g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
+var g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
 
-let g_HTML_CONTENT = '';
-let g_HTML_INVALID = '';
-let g_HTML_LINE_NUMBER = 1;
+var g_HTML_CONTENT = '';
+var g_HTML_INVALID = '';
+var g_HTML_LINE_NUMBER = 1;
 
 // Config - Base:
-let g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
-let g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
-let g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
-let g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+var g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+var g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+var g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
+var g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
 // Config - General:
-let g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
-let g_DEBUG = false;
+var g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
+var g_DEBUG = false;
 
 // Config - Indenting:
-let g_INDENT_COUNT = 0;
-let g_INDENT = '    ';
+var g_INDENT_COUNT = 0;
+var g_INDENT = '    ';
 
 // Config - HTML:
-let g_ALLOW_EMPTY_FILES = false;
-let g_ANGULAR_VERSION = 1;
-let g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
-let g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
-let g_FORCE_INLINE_WHITESPACE_FORMATTING = false;
-let g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = -1;
-let g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
-let g_MULTI_CLASSES_ORDER = [];
-let g_NG_ATTRIBUTES_ORDER = [];
-let g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-let g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
-let g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
-let g_REMOVE_CSS = false;
-let g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
+var g_ALLOW_EMPTY_FILES = false;
+var g_ANGULAR_VERSION = 1;
+var g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
+var g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
+var g_FORCE_INLINE_WHITESPACE_FORMATTING = false;
+var g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = -1;
+var g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
+var g_MULTI_CLASSES_ORDER = [];
+var g_NG_ATTRIBUTES_ORDER = [];
+var g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+var g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
+var g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
+var g_REMOVE_CSS = false;
+var g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
 
 // Config - Deprecated
-let g__DEPRECATED__NG1_ATTRIBUTES_ORDER = [];
-let g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-let g__DEPRECATED__NG2_ATTRIBUTES_ORDER = [];
-let g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+var g__DEPRECATED__NG1_ATTRIBUTES_ORDER = [];
+var g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+var g__DEPRECATED__NG2_ATTRIBUTES_ORDER = [];
+var g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
 
 // RegEx:
-let t_NL = '\n';
-let g_NL = '\r\n';
-let g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
-let g_REGEX_HTML_STYLE = '<style' + r_A + '>' + r_v(r_A) + '<\/style>';
-let g_REGEX_HTML_COMMENT = '<!--' + r_W + r_v(r_A) + r_W + '-->';
-let g_REGEX_HTML_CONTENT = '[^<]+?';
-let g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
-let g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_-]+';
-let g_REGEX_HTML_ATTRIBUTE_VALUE = r_A;
+var t_NL = '\n';
+var g_NL = '\r\n';
+var g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
+var g_REGEX_HTML_STYLE = '<style' + r_A + '>' + r_v(r_A) + '<\/style>';
+var g_REGEX_HTML_COMMENT = '<!--' + r_W + r_v(r_A) + r_W + '-->';
+var g_REGEX_HTML_CONTENT = '[^<]+?';
+var g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
+var g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_-]+';
+var g_REGEX_HTML_ATTRIBUTE_VALUE = r_A;
 
 // ******************************
 // Setup Functions:
@@ -255,7 +255,7 @@ function setup_attribute_ordering(in_config) {
     return;
   }
 
-  let has_old_attributes_order_configs = false;
+  var has_old_attributes_order_configs = false;
 
   if (utils.get_setup_property(in_config, "ng1_attributes_order", false)) {
     has_old_attributes_order_configs = true;
@@ -293,10 +293,10 @@ function setup_attribute_ordering(in_config) {
   g__DEPRECATED__NG2_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
   g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
 
-  let ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-  let ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-  let ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-  let ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+  var ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  var ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  var ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  var ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
 
   if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
     g_NG_ATTRIBUTES_ORDER = ng2_attributes_order;
@@ -312,7 +312,7 @@ function setup_attribute_ordering(in_config) {
 // ******************************
 
 function format_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
-  let contents = in_contents || '';
+  var contents = in_contents || '';
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
@@ -322,18 +322,18 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-  let tree = parser.parse_contents(contents);
+  var tree = parser.parse_contents(contents);
   if (tree === '') {
     return '';
   }
 
-  let tree_output = parser.output_tree(tree);
+  var tree_output = parser.output_tree(tree);
   if (!tree_output.output) {
-    let failed_output = get_failed_output(tree, contents);
+    var failed_output = get_failed_output(tree, contents);
     throw 'Failed to parse:\n' + failed_output;
   }
 
-  let result = tree_output.output;
+  var result = tree_output.output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   }
@@ -343,7 +343,7 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
 // ******************************
 
 function print_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
-  let contents = in_contents || '';
+  var contents = in_contents || '';
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
@@ -353,15 +353,15 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-  let tree = parser.parse_contents(in_contents);
+  var tree = parser.parse_contents(in_contents);
   if (tree === '') {
     console.log('Empty Contents');
   }
 
-  let tree_output = parser.output_tree(tree);
+  var tree_output = parser.output_tree(tree);
 
   if (!tree_output.output) {
-    let failed_output = get_failed_output(tree, contents, true);
+    var failed_output = get_failed_output(tree, contents, true);
     cprint.red('Failed to parse:');
     console.log(failed_output);
     return;
@@ -370,7 +370,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
   if (g_DEBUG) {
     fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
-  let result = tree_output.color_output;
+  var result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   }
@@ -380,12 +380,12 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
 // ******************************
 
 function get_failed_output (in_tree, in_contents) {
-  let tree_output_failed = parser.output_tree_failed(in_tree);
-  let recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-  let unrecognised_contents_length = 10;
+  var tree_output_failed = parser.output_tree_failed(in_tree);
+  var recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
+  var unrecognised_contents_length = 10;
 
-  let recognised_contents = in_contents.substr(0, recognised_contents_length);
-  let unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+  var recognised_contents = in_contents.substr(0, recognised_contents_length);
+  var unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
   while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
     unrecognised_contents_length += 10;
     unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
@@ -400,7 +400,7 @@ function get_failed_output (in_tree, in_contents) {
   }
 
   unrecognised_contents += '...';
-  let result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+  var result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
   if (g_DEBUG) {
     result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
   }
@@ -412,10 +412,10 @@ function get_failed_output (in_tree, in_contents) {
 // ******************************
 
 function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) {
-  let result = false;
+  var result = false;
 
   do {
-    let html_content = in_contents || '';
+    var html_content = in_contents || '';
     if (html_content.trim().length === 0) {
       if (g_ALLOW_EMPTY_FILES) {
         return '';
@@ -440,7 +440,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
     }
 
     while(g_ELEMENT_STACK.length) {
-      let top_element = g_ELEMENT_STACK.pop();
+      var top_element = g_ELEMENT_STACK.pop();
       if (top_element === k_COMMENT_TOKEN) {
         continue;
       }
@@ -472,11 +472,11 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
 // ******************************
 
 function parse_html (in_html_content) {
-  let result = false;
+  var result = false;
 
-  let html_content = in_html_content || '';
+  var html_content = in_html_content || '';
 
-  let functions = [
+  var functions = [
     parse_style,
     parse_html_open_element,
     parse_html_close_element,
@@ -484,12 +484,12 @@ function parse_html (in_html_content) {
     parse_content,
   ];
 
-  let parse_run = 0;
-  let max_parse_runs = 5000;
+  var parse_run = 0;
+  var max_parse_runs = 5000;
 
   try {
 
-    let parsed = true;
+    var parsed = true;
     while (parsed) {
       parsed = false;
       parse_run++;
@@ -504,7 +504,7 @@ function parse_html (in_html_content) {
           return;
         }
 
-        let remaining = fn(html_content);
+        var remaining = fn(html_content);
         if (remaining !== false) {
           g_HTML_LINE_NUMBER += num_lines(html_content) - num_lines(remaining);
           html_content = remaining;
@@ -528,11 +528,11 @@ function parse_html (in_html_content) {
 // ******************************
 
 function parse_html_open_element (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let html_content = in_html_content;
-    let remaining = parse_html_open_element_start(html_content);
+    var html_content = in_html_content;
+    var remaining = parse_html_open_element_start(html_content);
     if (remaining === false) {
       g_HTML_INVALID = html_content;
       result = false;
@@ -572,18 +572,18 @@ function parse_html_open_element (in_html_content) {
 // ******************************
 
 function parse_html_open_element_start (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + '<' + r_W + r_v(g_REGEX_HTML_ELEMENT) + r_v(r_AG) + '$', 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + '<' + r_W + r_v(g_REGEX_HTML_ELEMENT) + r_v(r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = matches.shift() || '';
-    let element = (matches.shift() || '').trim();
-    let remaining = matches.shift() || '';
+    var whitespace_before = matches.shift() || '';
+    var element = (matches.shift() || '').trim();
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+element+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -601,11 +601,11 @@ function parse_html_open_element_start (in_html_content) {
 // ******************************
 
 function parse_html_open_element_attributes (in_html_content) {
-  let result = false;
+  var result = false;
 
-  let html_content = in_html_content || '';
+  var html_content = in_html_content || '';
 
-  let functions = [
+  var functions = [
     function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
     function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
     function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY); },
@@ -641,7 +641,7 @@ function parse_html_open_element_attributes (in_html_content) {
     ]);
   }
 
-  let parsed = true;
+  var parsed = true;
   while (parsed) {
     parsed = false;
 
@@ -655,7 +655,7 @@ function parse_html_open_element_attributes (in_html_content) {
         return;
       }
 
-      let remaining = fn(html_content);
+      var remaining = fn(html_content);
       if (remaining !== false) {
         html_content = remaining;
         parsed = true;
@@ -671,11 +671,11 @@ function parse_html_open_element_attributes (in_html_content) {
 // ******************************
 
 function parse_attribute (in_html_content, in_attribute_type) {
-  let result = false;
+  var result = false;
 
   do {
 
-    let regExpString = '^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY);
+    var regExpString = '^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY);
 
     switch (in_attribute_type)
     {
@@ -697,15 +697,15 @@ function parse_attribute (in_html_content, in_attribute_type) {
 
     regExpString += r_v(r_AG) + '$';
 
-    let matches = in_html_content.match(new RegExp(regExpString, 'i'));
+    var matches = in_html_content.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let key = matches.shift() || '';
-    let val;
-    let already_one_time_bound;
+    var key = matches.shift() || '';
+    var val;
+    var already_one_time_bound;
 
     switch (in_attribute_type)
     {
@@ -714,9 +714,9 @@ function parse_attribute (in_html_content, in_attribute_type) {
         already_one_time_bound = matches.shift() === '::';
         val = matches.shift() || '';
 
-        let should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
-        let should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
-        let binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
+        var should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
+        var should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
+        var binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
 
         if (val === '"true"' || val === '\'true\'' || val === 'true') {
           val = binding + 'true';
@@ -741,7 +741,7 @@ function parse_attribute (in_html_content, in_attribute_type) {
     }
 
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
-    let remaining = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+regExpString+'~~~'+key+'~~~'+already_one_time_bound+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -755,10 +755,10 @@ function parse_attribute (in_html_content, in_attribute_type) {
 // ******************************
 
 function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding_type) {
-  let result = false;
+  var result = false;
 
   do {
-    let regExpString = '^' + r_W;
+    var regExpString = '^' + r_W;
 
     switch (in_ng2_binding_type)
     {
@@ -804,14 +804,14 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
     regExpString += r_v(r_AG) + '$';
 
-    let matches = in_html_content.match(new RegExp(regExpString, 'i'));
+    var matches = in_html_content.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let key = matches.shift() || '';
-    let val;
+    var key = matches.shift() || '';
+    var val;
 
     switch (in_attribute_type)
     {
@@ -837,7 +837,7 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
     }
 
     g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
-    let remaining = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+key+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -851,24 +851,24 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 // ******************************
 
 function parse_html_open_element_end (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_W + r_v('/') + '?>' + r_v(r_AG) + '$', 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_W + r_v('/') + '?>' + r_v(r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let self_closing_tag = matches.shift() === '/';
-    let remaining = matches.shift() || '';
+    var self_closing_tag = matches.shift() === '/';
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+self_closing_tag+'~~~'+remaining.substr(0,100)+'|------\n');
 
-    let error = false;
-    let output = '';
-    let indent = '';
-    let space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE.length;
+    var error = false;
+    var output = '';
+    var indent = '';
+    var space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE.length;
 
     if (self_closing_tag) {
       if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
@@ -883,7 +883,7 @@ function parse_html_open_element_end (in_html_content) {
       indent = t_NL + get_indent();
 
     } else {
-      let top_element_info = get_top_element_info();
+      var top_element_info = get_top_element_info();
 
       output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
 
@@ -930,30 +930,30 @@ function parse_html_open_element_end (in_html_content) {
 // ******************************
 
 function sort_attributes (in_attributes) {
-  let result = '';
+  var result = '';
 
   do {
     if (!in_attributes) {
       break;
     }
 
-    let attribute_keys = Object.keys(in_attributes);
+    var attribute_keys = Object.keys(in_attributes);
     attribute_keys.sort();
 
-    let attributes_order_pre_native = [];
-    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach((attribute) => {
+    var attributes_order_pre_native = [];
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach(function (attribute) {
       attributes_order_pre_native.push('^' + attribute + '$');
     })
 
-    let attributes_order_post_native = [];
-    g_NG_ATTRIBUTES_ORDER.forEach((attribute) => {
+    var attributes_order_post_native = [];
+    g_NG_ATTRIBUTES_ORDER.forEach(function (attribute) {
       attributes_order_post_native.push('^' + attribute + '$');
     })
 
-    let sorted_attribute_keys = [];
+    var sorted_attribute_keys = [];
 
-    attributes_order_pre_native.forEach((special_order) => {
-      attribute_keys.forEach((key) => {
+    attributes_order_pre_native.forEach(function (special_order) {
+      attribute_keys.forEach(function (key) {
         if (!key.match(new RegExp(special_order))) {
           return;
         }
@@ -966,9 +966,9 @@ function sort_attributes (in_attributes) {
       });
     });
 
-    attribute_keys.forEach((key) => {
-      let special_order_match = attributes_order_post_native.filter((special_order) => {
-        let matches = key.match(new RegExp(special_order));
+    attribute_keys.forEach(function (key) {
+      var special_order_match = attributes_order_post_native.filter(function (special_order) {
+        var matches = key.match(new RegExp(special_order));
         return matches && matches.length;
       });
 
@@ -983,8 +983,8 @@ function sort_attributes (in_attributes) {
       sorted_attribute_keys.push(key);
     });
 
-    attributes_order_post_native.forEach((special_order) => {
-      attribute_keys.forEach((key) => {
+    attributes_order_post_native.forEach(function (special_order) {
+      attribute_keys.forEach(function (key) {
         if (!key.match(new RegExp(special_order))) {
           return;
         }
@@ -997,11 +997,11 @@ function sort_attributes (in_attributes) {
       });
     });
 
-    let indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
+    var indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
 
-    sorted_attribute_keys.forEach((key) => {
+    sorted_attribute_keys.forEach(function (key) {
 
-      let val = in_attributes[key];
+      var val = in_attributes[key];
       val = val.replace(/[\s]+/, ' ');
 
       if (val === k_NO_VALUE_TOKEN) {
@@ -1009,29 +1009,29 @@ function sort_attributes (in_attributes) {
         return;
       }
 
-      let inline_variable = val.match(new RegExp('^(\:\:)?\{\{' + r_v(r_A) + '\}\}$', 'i'));
+      var inline_variable = val.match(new RegExp('^(\:\:)?\{\{' + r_v(r_A) + '\}\}$', 'i'));
       if (!inline_variable) {
 
-        let inline_block = val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i'));
+        var inline_block = val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i'));
         if (inline_block) {
-          let attribute_block_object_parse_result = parse_attribute_block_content(val);
-          let binding = attribute_block_object_parse_result.binding;
-          let attribute_block_object = attribute_block_object_parse_result.object;
+          var attribute_block_object_parse_result = parse_attribute_block_content(val);
+          var binding = attribute_block_object_parse_result.binding;
+          var attribute_block_object = attribute_block_object_parse_result.object;
           val = attribute_block_object_to_string(binding, attribute_block_object);
         }
       }
 
       if (key === k_ATTRIBUTE_NAME_CLASS) {
-        let val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
+        var val_indent = str_repeat(g_INDENT, g_INDENT_COUNT + 2);
 
         if (g_MULTI_CLASSES_ORDER && g_MULTI_CLASSES_ORDER.length) {
-          let classes = parse_classes_content(val);
+          var classes = parse_classes_content(val);
           classes = sort_classes(classes);
 
           if (g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST >= 0 && classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
-            val = t_NL + val_indent + classes.filter((val) => {return val.trim().length}).join(t_NL + val_indent);
+            val = t_NL + val_indent + classes.filter(function (val) {return val.trim().length}).join(t_NL + val_indent);
           } else {
-            val = classes.filter((val) => {return val.trim().length}).join(' ');
+            val = classes.filter(function (val) {return val.trim().length}).join(' ');
           }
         }
       }
@@ -1047,17 +1047,17 @@ function sort_attributes (in_attributes) {
 // ******************************
 
 function parse_classes_content (in_classes_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let classes_content = in_classes_content || '';
-    let classes_content_remaining = classes_content;
+    var classes_content = in_classes_content || '';
+    var classes_content_remaining = classes_content;
 
     g_CURRENT_ELEMENT_CLASSES = [];
     g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
 
     while (true) {
-      let remaining = parse_classes_content_class_name(classes_content_remaining);
+      var remaining = parse_classes_content_class_name(classes_content_remaining);
       if (remaining === false) {
         break;
       }
@@ -1086,18 +1086,18 @@ function parse_classes_content (in_classes_content) {
 // ******************************
 
 function parse_classes_content_space (in_classes_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let classes_content = in_classes_content || '';
+    var classes_content = in_classes_content || '';
 
-    let matches;
+    var matches;
     if (!(matches = classes_content.match(new RegExp('^' + r_S + r_v(r_AG) + '$', 'i')))) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let remaining = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     // console.log('[SPACE]"'+classes_content.substr(0,100)+'" => ~~~'+' '+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -1111,22 +1111,22 @@ function parse_classes_content_space (in_classes_content) {
 // ******************************
 
 function parse_classes_content_class_name (in_classes_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let classes_content = in_classes_content || '';
+    var classes_content = in_classes_content || '';
 
-    let functions = [
+    var functions = [
       function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_BINDING); },
       function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_NORMAL); },
     ];
 
-    let matched_value = false;
+    var matched_value = false;
     functions.forEach(function(fn) {
       if (matched_value) {
         return;
       }
-      let remaining = fn(classes_content);
+      var remaining = fn(classes_content);
       if (remaining !== false) {
         classes_content = remaining;
         matched_value = true;
@@ -1148,10 +1148,10 @@ function parse_classes_content_class_name (in_classes_content) {
 // ******************************
 
 function parse_classes_content_class_name_type (in_classes_content, in_class_name_type) {
-  let result = false;
+  var result = false;
 
   do {
-    let regExpString = '^';
+    var regExpString = '^';
 
     switch (in_class_name_type)
     {
@@ -1166,14 +1166,14 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
 
     regExpString += r_v(r_AG) + '$';
 
-    let matches = in_classes_content.match(new RegExp(regExpString, 'i'));
+    var matches = in_classes_content.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let class_name = matches.shift() || '';
-    let remaining = matches.shift() || '';
+    var class_name = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = class_name;
 
@@ -1189,15 +1189,15 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
 // ******************************
 
 function sort_classes (in_class_names) {
-  let result = false;
+  var result = false;
 
   do {
 
-    let class_names = in_class_names.sort();
-    let sorted_class_names = [];
+    var class_names = in_class_names.sort();
+    var sorted_class_names = [];
 
-    g_MULTI_CLASSES_ORDER.forEach((class_order_regexp) => {
-      class_names.forEach((class_name) => {
+    g_MULTI_CLASSES_ORDER.forEach(function (class_order_regexp) {
+      class_names.forEach(function (class_name) {
         if (!class_name.match(new RegExp(class_order_regexp))) {
           return;
         }
@@ -1210,9 +1210,9 @@ function sort_classes (in_class_names) {
       });
     });
 
-    class_names.forEach((class_name) => {
-      let class_order_regexp_match = g_MULTI_CLASSES_ORDER.filter((class_order_regexp) => {
-        let matches = class_name.match(new RegExp(class_order_regexp));
+    class_names.forEach(function (class_name) {
+      var class_order_regexp_match = g_MULTI_CLASSES_ORDER.filter(function (class_order_regexp) {
+        var matches = class_name.match(new RegExp(class_order_regexp));
         return matches && matches.length;
       });
 
@@ -1237,10 +1237,10 @@ function sort_classes (in_class_names) {
 // ******************************
 
 function parse_attribute_block_content (in_attribute_block_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches;
+    var matches;
     if (!(matches = in_attribute_block_content.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i')))) {
       break;
     }
@@ -1249,12 +1249,12 @@ function parse_attribute_block_content (in_attribute_block_content) {
     g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
 
     matches.shift(); // First idx in match is the complete match string
-    let binding = matches.shift() || '';
-    let attribute_block_content = matches.shift() || '';
-    let attribute_block_content_remaining = attribute_block_content;
+    var binding = matches.shift() || '';
+    var attribute_block_content = matches.shift() || '';
+    var attribute_block_content_remaining = attribute_block_content;
 
     while (true) {
-      let remaining = parse_attribute_block_content_entry(attribute_block_content_remaining);
+      var remaining = parse_attribute_block_content_entry(attribute_block_content_remaining);
       if (remaining === false) {
         break;
       }
@@ -1287,18 +1287,18 @@ function parse_attribute_block_content (in_attribute_block_content) {
 // ******************************
 
 function parse_attribute_block_content_comma (in_attribute_block_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let attribute_block_content = in_attribute_block_content || '';
+    var attribute_block_content = in_attribute_block_content || '';
 
-    let matches;
+    var matches;
     if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + ',' + r_W + r_v(r_AG) + '$', 'i')))) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let remaining = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     // console.log('[COMMA]"'+attribute_block_content.substr(0,100)+'" => ~~~'+','+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -1312,19 +1312,19 @@ function parse_attribute_block_content_comma (in_attribute_block_content) {
 // ******************************
 
 function parse_attribute_block_content_entry (in_attribute_block_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let attribute_block_content = in_attribute_block_content || '';
+    var attribute_block_content = in_attribute_block_content || '';
 
-    let matches;
+    var matches;
     if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + r_v('\'?[$A-Za-z0-9 _-]+\'?') + r_W + ':' + r_W + r_v(r_AG) + '$', 'i')))) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let key = matches.shift() || '';
-    let val = matches.shift() || '';
+    var key = matches.shift() || '';
+    var val = matches.shift() || '';
 
     key = key.trim();
 
@@ -1339,13 +1339,13 @@ function parse_attribute_block_content_entry (in_attribute_block_content) {
 // ******************************
 
 function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_aggregate) {
-  let result = false;
+  var result = false;
 
   do {
-    let key = in_attribute_block_content_entry_key || '';
-    let val = in_attribute_block_content_entry_value || '';
+    var key = in_attribute_block_content_entry_key || '';
+    var val = in_attribute_block_content_entry_value || '';
 
-    let functions = [
+    var functions = [
       function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN); },
       function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_NUMERIC); },
       function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
@@ -1354,12 +1354,12 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
       function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK); },
     ];
 
-    let matched_value = false;
+    var matched_value = false;
     functions.forEach(function(fn) {
       if (matched_value) {
         return;
       }
-      let remaining = fn(key, val);
+      var remaining = fn(key, val);
       if (remaining !== false) {
         val = remaining;
         matched_value = true;
@@ -1381,14 +1381,14 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
       break;
     }
 
-    let matches;
+    var matches;
     if (!(matches = result.match(new RegExp('^' + r_W + r_v('[+=!&|<>-]+') + r_W + r_v(r_AG) + '$', 'i')))) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let condition = matches.shift() || '';
-    let remaining = matches.shift() || '';
+    var condition = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     // console.log('[CONDITION]"'+result.substr(0,100)+'" => ~~~'+condition+'~~~'+remaining.substr(0,100)+'|------\n');
 
@@ -1406,10 +1406,10 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
 // ******************************
 
 function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_attribute_type) {
-  let result = false;
+  var result = false;
 
   do {
-    let regExpString = '^';
+    var regExpString = '^';
 
     switch (in_attribute_type)
     {
@@ -1440,22 +1440,22 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
 
     regExpString += r_W + r_v(r_AG) + '$';
 
-    let matches = in_attribute_block_content_entry_value.match(new RegExp(regExpString, 'i'));
+    var matches = in_attribute_block_content_entry_value.match(new RegExp(regExpString, 'i'));
     if (!matches) {
       break;
     }
 
-    let key = in_attribute_block_content_entry_key;
+    var key = in_attribute_block_content_entry_key;
 
     matches.shift(); // First idx in match is the complete match string
-    let val = matches.shift() || '';
-    let remaining = matches.shift() || '';
+    var val = matches.shift() || '';
+    var remaining = matches.shift() || '';
 
     if (in_attribute_type === k_ATTRIBUTE_TYPE_VALUE_BLOCK) {
-      let tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT;
-      let attribute_block_object_parse_result = parse_attribute_block_content(val);
-      let binding = attribute_block_object_parse_result.binding;
-      let attribute_block_object = attribute_block_object_parse_result.object;
+      var tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT;
+      var attribute_block_object_parse_result = parse_attribute_block_content(val);
+      var binding = attribute_block_object_parse_result.binding;
+      var attribute_block_object = attribute_block_object_parse_result.object;
       g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT;
 
       val = attribute_block_object;
@@ -1475,19 +1475,19 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
 // ******************************
 
 function attribute_block_object_to_string (in_binding, in_attribute_block_object) {
-  let result = false;
+  var result = false;
 
   do {
     inc_indent(1);
-    let indent = get_indent();
+    var indent = get_indent();
 
-    let attribute_block_object_formatted = '{';
+    var attribute_block_object_formatted = '{';
 
-    let attribute_block_object_entry_keys = Object.keys(in_attribute_block_object);
+    var attribute_block_object_entry_keys = Object.keys(in_attribute_block_object);
     attribute_block_object_entry_keys.sort();
 
-    attribute_block_object_entry_keys.forEach((attribute_block_object_entry_key) => {
-      let attribute_block_object_entry_value = in_attribute_block_object[attribute_block_object_entry_key];
+    attribute_block_object_entry_keys.forEach(function (attribute_block_object_entry_key) {
+      var attribute_block_object_entry_value = in_attribute_block_object[attribute_block_object_entry_key];
       if (typeof(attribute_block_object_entry_value) === "object") {
         attribute_block_object_entry_value = attribute_block_object_to_string( '', attribute_block_object_entry_value );
       }
@@ -1511,29 +1511,29 @@ function attribute_block_object_to_string (in_binding, in_attribute_block_object
 // ******************************
 
 function parse_html_close_element (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + '</' + r_W + r_v(g_REGEX_HTML_ELEMENT) + r_W + '>' + r_v(r_AG) + '$', 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + '</' + r_W + r_v(g_REGEX_HTML_ELEMENT) + r_W + '>' + r_v(r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = matches.shift() || '';
-    let element = (matches.shift() || '').trim();
-    let remaining = matches.shift() || '';
+    var whitespace_before = matches.shift() || '';
+    var element = (matches.shift() || '').trim();
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+element+'~~~'+remaining.substr(0,100)+'|------\n');
 
-    let space_content = whitespace_before.length;
+    var space_content = whitespace_before.length;
 
-    let output = '';
-    let indent = '';
+    var output = '';
+    var indent = '';
 
     inc_indent(-1);
 
-    let top_element_info = get_top_element_info(true);
+    var top_element_info = get_top_element_info(true);
     if (!top_element_info.top_element) {
       throw('Closing "' + element + '" but there is no matching open element');
     }
@@ -1542,7 +1542,7 @@ function parse_html_close_element (in_html_content) {
       throw('expected "' + top_element_info.top_element + '" but got "' + element + '"');
     }
 
-    let top_element_is_empty = (
+    var top_element_is_empty = (
       !top_element_info.had_content &&
       !top_element_info.had_comment &&
       top_element_info.top_element === g_CURRENT_ELEMENT);
@@ -1589,22 +1589,22 @@ function parse_html_close_element (in_html_content) {
 // ******************************
 
 function parse_content (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + r_v(g_REGEX_HTML_CONTENT) + r_v(r_W + '<' + r_AG) + '$', 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + r_v(g_REGEX_HTML_CONTENT) + r_v(r_W + '<' + r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = matches.shift() || '';
-    let content = (matches.shift() || '').trim();
-    let remaining = matches.shift() || '';
+    var whitespace_before = matches.shift() || '';
+    var content = (matches.shift() || '').trim();
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+content+'~~~'+remaining+'|------\n');
 
-    let space_content = whitespace_before.length;
+    var space_content = whitespace_before.length;
 
     if (!content.trim().length) {
       result = remaining;
@@ -1617,9 +1617,9 @@ function parse_content (in_html_content) {
 
     g_ELEMENT_STACK.push(k_CONTENT_TOKEN);
 
-    let indent = '';
+    var indent = '';
 
-    let top_element_info = get_top_element_info();
+    var top_element_info = get_top_element_info();
     if (space_content) {
       if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
         if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
@@ -1656,26 +1656,26 @@ function parse_content (in_html_content) {
 // ******************************
 
 function parse_comment (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_HTML_COMMENT + r_v(r_AG), 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_HTML_COMMENT + r_v(r_AG), 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = !!(matches.shift() || '').length;
-    let comment = (matches.shift() || '').trim();
-    let remaining = matches.shift() || '';
+    var whitespace_before = !!(matches.shift() || '').length;
+    var comment = (matches.shift() || '').trim();
+    var remaining = matches.shift() || '';
 
-    let multi_line_comment = comment.match(new RegExp('\\n'));
+    var multi_line_comment = comment.match(new RegExp('\\n'));
 
     g_ELEMENT_STACK.push(k_COMMENT_TOKEN);
 
-    let indent = '';
+    var indent = '';
 
-    let top_element_info = get_top_element_info();
+    var top_element_info = get_top_element_info();
     if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (whitespace_before) {
@@ -1695,7 +1695,7 @@ function parse_comment (in_html_content) {
       g_HTML_CONTENT += '<!--';
       g_HTML_CONTENT += t_NL;
 
-      let indented_comment = comment;
+      var indented_comment = comment;
       indented_comment = indented_comment.replace(new RegExp('^ *', 'gm'), get_indent());
       indented_comment = indented_comment.replace(new RegExp('^[\\s]*$', 'gm'), '');
 
@@ -1717,25 +1717,25 @@ function parse_comment (in_html_content) {
 // ******************************
 
 function parse_style (in_html_content) {
-  let result = false;
+  var result = false;
 
   do {
-    let matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_HTML_STYLE + r_v(r_AG) + '$', 'i'));
+    var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_HTML_STYLE + r_v(r_AG) + '$', 'i'));
     if (!matches) {
       break;
     }
 
     matches.shift(); // First idx in match is the complete match string
-    let whitespace_before = !!(matches.shift() || '').length;
-    let css = (matches.shift() || '').trim();
-    let remaining = matches.shift() || '';
+    var whitespace_before = !!(matches.shift() || '').length;
+    var css = (matches.shift() || '').trim();
+    var remaining = matches.shift() || '';
 
     // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+whitespace_before+'~~~'+css+'~~~'+remaining+'|------\n');
 
-    let output = '';
-    let indent = '';
+    var output = '';
+    var indent = '';
 
-    let top_element_info = get_top_element_info();
+    var top_element_info = get_top_element_info();
     if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
       indent = t_NL + get_indent();
     } else if (whitespace_before) {
@@ -1797,16 +1797,16 @@ function reset_html_variables () {
 // ******************************
 
 function get_top_element_info (in_pop) {
-  let result = false;
+  var result = false;
 
   do
   {
-    let had_content = false;
-    let had_comment = false;
-    let top_element_idx = g_ELEMENT_STACK.length - 1;
-    let top_element = '';
+    var had_content = false;
+    var had_comment = false;
+    var top_element_idx = g_ELEMENT_STACK.length - 1;
+    var top_element = '';
 
-    let found_signal_element = true;
+    var found_signal_element = true;
     while (found_signal_element && top_element_idx >= 0) {
       found_signal_element = false;
 

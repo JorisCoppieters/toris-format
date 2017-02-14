@@ -1,22 +1,12 @@
-'use strict';
+'use strict'; // JS: ES5
 
 // ******************************
 //
 //
-// Utilities
+// UTILITIES
 //
 //
 // ******************************
-
-// ******************************
-// Exports:
-// ******************************
-
-module.exports['get_setup_property'] = get_setup_property;
-module.exports['num_lines'] = num_lines;
-module.exports['is_numeric'] = is_numeric;
-module.exports['str_append'] = str_append;
-module.exports['str_repeat'] = str_repeat;
 
 // ******************************
 // Functions:
@@ -79,5 +69,15 @@ function str_append (in_string, in_append, in_delim) {
 function str_repeat (s, n) {
   return Array(n+1).join(s);
 }
+
+// ******************************
+// Exports:
+// ******************************
+
+module.exports['get_setup_property'] = get_setup_property;
+module.exports['num_lines'] = num_lines;
+module.exports['is_numeric'] = is_numeric;
+module.exports['str_append'] = str_append;
+module.exports['str_repeat'] = str_repeat;
 
 // ******************************
