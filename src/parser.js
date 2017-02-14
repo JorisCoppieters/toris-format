@@ -484,7 +484,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   }
 
   let append = definition_value;
-  let color_func = cprint.toBackgroundRed;
+  let color_func = false;
 
   let newline = false;
   let double_newline = false;
@@ -496,6 +496,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   switch (definition_key) {
 
     // Declaration Types:
+    case 'url':
+      state.DECLARATION_TYPE = 'URL';
+      state.VALUE_TYPE = false;
+      break;
     case 'importDeclaration':
       state.DECLARATION_TYPE = 'IMPORT';
       state.VALUE_TYPE = false;
@@ -546,6 +550,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
     case 'variableDeclaration':
       state.DECLARATION_TYPE = 'VARIABLE';
+      state.VALUE_TYPE = false;
+      break;
+    case 'variableDeclarationValues':
+      state.DECLARATION_TYPE = 'VARIABLE_VALUES';
       state.VALUE_TYPE = false;
       break;
     case 'functionCall':
@@ -607,6 +615,18 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'mapEntryValues':
       state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
       state.VALUE_TYPE = false;
+      break;
+
+    case 'expressions3Plus':
+    case 'expressions3PlusInParens':
+      switch (state.DECLARATION_TYPE) {
+        case 'VARIABLE_VALUES':
+          state.DECLARATION_TYPE = 'VARIABLE_VALUES_3PLUS';
+          state.VARIABLE_VALUES_3PLUS = true;
+          state.VARIABLE_VALUES_3PLUS_PAREN_DEPTH = 0;
+          post_indent = 1;
+          break;
+      }
       break;
 
     // Value Types:
@@ -724,10 +744,12 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         case false:
         case 'SELECTOR':
         case 'VARIABLE':
+        case 'VARIABLE_VALUES':
         case 'FUNCTION_END':
         case 'FUNCTION_CALL_ARGUMENTS':
         case 'PROPERTY':
         case 'KEYFRAMES_END':
+        case 'URL':
           newline = true;
           break;
 
@@ -762,6 +784,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         state.MULTI_LINE_FUNCTION_PAREN_DEPTH += 1;
       }
 
+      if (state.VARIABLE_VALUES_3PLUS) {
+        state.VARIABLE_VALUES_3PLUS_PAREN_DEPTH += 1;
+      }
+
       color_func = cprint.toMagenta;
       last_token = '(';
       break;
@@ -783,6 +809,15 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         }
       }
 
+      if (state.VARIABLE_VALUES_3PLUS) {
+        state.VARIABLE_VALUES_3PLUS_PAREN_DEPTH -= 1;
+        if (state.VARIABLE_VALUES_3PLUS_PAREN_DEPTH === 0) {
+          newline = true;
+          state.VARIABLE_VALUES_3PLUS = false;
+          pre_indent = -1;
+        }
+      }
+
       color_func = cprint.toMagenta;
       last_token = ')';
       break;
@@ -790,6 +825,13 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'SEMI':
       if (state.LAST_TOKEN === ';') {
         append = false;
+      }
+
+      if (state.VARIABLE_VALUES_3PLUS) {
+        if (state.VARIABLE_VALUES_3PLUS_PAREN_DEPTH === 0) {
+          state.VARIABLE_VALUES_3PLUS = false;
+          pre_indent = -1;
+        }
       }
 
       space_before = false;
@@ -841,6 +883,9 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
     case 'STRING_SINGLE_QUOTED':
     case 'STRING_DOUBLE_QUOTED':
     case 'UrlVal':
+    case 'UrlStartVal':
+      last_token = 'VALUE';
+
       switch (state.DECLARATION_TYPE) {
 
         case 'PROPERTY':
@@ -850,7 +895,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         case 'HASH_BLOCK_EXPRESSION':
         case 'MAP_ENTRY_VALUES':
         case 'SELECTOR':
-        case 'VARIABLE':
+        case 'VARIABLE_VALUES':
           if (state.LAST_TOKEN === '(' || state.LAST_TOKEN === '=') {
             space_before = false;
           } else if (state.LAST_TOKEN === '-' && (state.VALUE_TYPE === 'MEASUREMENT' || state.SECOND_TO_LAST_TOKEN === ':' || state.SECOND_TO_LAST_TOKEN === '(')) {
@@ -859,9 +904,30 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
           if (definition_value === '0') {
             last_token = '0'
-          } else {
-            last_token = 'VALUE';
           }
+          color_func = cprint.toYellow;
+          break;
+
+        case 'URL':
+          switch (definition_key) {
+            case 'UrlStartVal':
+              last_token = 'URL';
+              space_before = true;
+              color_func = cprint.toLightCyan;
+              break;
+
+            case 'UrlVal':
+            case 'STRING_SINGLE_QUOTED':
+            case 'STRING_DOUBLE_QUOTED':
+              space_before = false;
+              color_func = cprint.toYellow;
+              break;
+          }
+          break;
+
+        case 'VARIABLE_VALUES_3PLUS':
+          newline = (['(', ':', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+          space_before = true;
           color_func = cprint.toYellow;
           break;
 
@@ -930,6 +996,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
             case 'MIXIN':
             case 'FUNCTION':
             case 'VARIABLE':
+            case 'VARIABLE_VALUES':
             case 'FUNCTION_CALL_ARGUMENTS':
             case 'INCLUDE':
               if (definition_key === 'DOLLAR') {
@@ -938,6 +1005,15 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
                 if (state.LAST_TOKEN === '-' || state.LAST_TOKEN === '(') {
                   space_before = false;
                 }
+                last_token = '$';
+              } else {
+                space_before = false;
+              }
+              break;
+
+            case 'VARIABLE_VALUES_3PLUS':
+              if (definition_key === 'DOLLAR') {
+                newline = (['(', ':', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
                 last_token = '$';
               } else {
                 space_before = false;
@@ -1021,6 +1097,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
               color_func = cprint.toCyan;
               break;
 
+            case 'URL':
+              space_before = true;
+              color_func = cprint.toYellow;
+              break;
+
             case 'HASH_BLOCK_EXPRESSION':
               space_before = false;
               color_func = cprint.toYellow;
@@ -1060,6 +1141,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         case 'MULTI_LINE_FUNCTION_END':
         case 'MAP_ENTRY_VALUES':
         case 'VARIABLE':
+        case 'VARIABLE_VALUES':
           space_before = false;
           color_func = cprint.toYellow;
           last_token = 'UNIT';
@@ -1078,478 +1160,6 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
       }
       break;
-
-
-    // case 'colonValues':
-    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
-    //     state.DECLARATION_TYPE = 'MULTI_LINE_PROPERTY_VALUE';
-    //     break;
-    //   }
-
-    //   state.DECLARATION_TYPE = 'PROPERTY_VALUE';
-    //   break;
-
-    // case 'mapExpression':
-    // case 'expressions3Plus':
-    //   if (state.DECLARATION_TYPE === 'VARIABLE_VALUES') {
-    //     post_indent = 1;
-    //     state.MULTI_LINE_VARIABLE_VALUES = true;
-    //     break;
-    //   }
-    //   break;
-
-    // case 'variableName':
-    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
-    //     break;
-    //   }
-
-    //   if (state.DECLARATION_TYPE === 'VARIABLE_DEC') {
-    //     break;
-    //   }
-
-    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
-    //     state.DECLARATION_TYPE = 'MULTI_LINE_VARIABLE';
-    //     break;
-    //   }
-
-    //   state.DECLARATION_TYPE = 'VARIABLE';
-    //   break;
-
-    // case 'functionCall':
-    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
-    //     state.DECLARATION_TYPE = 'HASH_BLOCK_FUNCTION';
-    //     break;
-    //   }
-
-    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
-    //     state.DECLARATION_TYPE = 'MULTI_LINE_FUNCTION';
-    //     break;
-    //   }
-
-    //   state.DECLARATION_TYPE = 'FUNCTION';
-    //   break;
-
-    // case 'functionCallArguments':
-    //   state.DECLARATION_TYPE = 'FUNCTION_CALL_ARGUMENTS';
-    //   break;
-
-    // case 'mapEntry':
-    //   state.DECLARATION_TYPE = 'MAP_ENTRY';
-    //   break;
-
-    // case 'mapEntryValues':
-    //   state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
-    //   break;
-
-    // case 'variableDeclarationValues':
-    //   state.DECLARATION_TYPE = 'VARIABLE_VALUES';
-    //   state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = true;
-    //   state.VARIABLE_VALUES_PAREN_DEPTH = 0;
-    //   break;
-
-
-
-
-    // case 'keyframesEntryProperty':
-    // case 'keyframesEntryBlockEnd':
-    //   state.DECLARATION_TYPE = 'KEYFRAMES_PROPERTY';
-    //   break;
-
-    // case 'hashBlock':
-    //   state.RECORD_HASH_BLOCK_BLOCK_DEPTH = true;
-    //   state.HASH_BLOCK_BLOCK_DEPTH = 0;
-    //   state.DECLARATION_TYPE = 'HASH_BLOCK';
-    //   break;
-
-    // case 'pseudoIdentifier':
-    //   state.DECLARATION_TYPE = 'PSEUDO_IDENTIFIER';
-    //   break;
-
-    // case 'Identifier':
-    //   if (state.DECLARATION_TYPE === 'PROPERTY') {
-    //     newline = (state.LAST_TOKEN !== '(');
-    //     space_before = false;
-    //     color_func = cprint.toGreen;
-    //     last_token = 'PROPERTY';
-
-    //   } else if (state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY') {
-    //     color_func = cprint.toGreen;
-    //     last_token = state.DECLARATION_TYPE;
-
-    //   } else if (['INCLUDE', 'MIXIN', 'FUNCTION_DEC', 'RETURN_DEC', 'EACH', 'MEDIA', 'KEYFRAMES'].indexOf(state.DECLARATION_TYPE) >= 0) {
-    //     color_func = cprint.toCyan;
-    //     last_token = state.DECLARATION_TYPE;
-
-    //   } else if (['VARIABLE', 'VARIABLE_DEC', 'HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0) {
-    //     space_before = false;
-    //     color_func = cprint.toLightBlue;
-    //     last_token = state.DECLARATION_TYPE;
-
-    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
-    //     space_before = false;
-    //     color_func = cprint.toLightBlue;
-    //     last_token = 'MULTI_LINE_VARIABLE';
-
-    //   } else if (state.DECLARATION_TYPE === 'HASH_BLOCK_FUNCTION') {
-    //     space_before = false;
-    //     color_func = cprint.toCyan;
-    //     last_token = 'FUNCTION';
-
-    //   } else if (state.DECLARATION_TYPE === 'FUNCTION') {
-    //     space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(');
-    //     color_func = cprint.toCyan;
-    //     if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
-    //         post_indent = 1;
-    //         state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = true;
-    //         state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = 0;
-    //     }
-    //     last_token = 'FUNCTION';
-
-    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION') {
-    //     newline = true;
-    //     color_func = cprint.toCyan;
-    //     last_token = 'FUNCTION';
-
-    //   } else if (state.DECLARATION_TYPE === 'PROPERTY_VALUE') {
-    //     space_before = (state.LAST_TOKEN !== '$' && state.LAST_TOKEN !== '(' && (state.LAST_TOKEN !== 'VALUE' || state.LAST_TOKEN === '0'));
-    //     color_func = cprint.toYellow;
-    //     last_token = 'PROPERTY_VALUE';
-
-    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
-    //     newline = (state.LAST_TOKEN !== 'PROPERTY_VALUE');
-    //     color_func = cprint.toYellow;
-    //     last_token = 'PROPERTY_VALUE';
-
-    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
-    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{' || state.LAST_TOKEN === ',');
-    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //     space_before = (state.LAST_TOKEN !== '.' && state.LAST_TOKEN !== '#' && state.LAST_TOKEN !== ':' && state.LAST_TOKEN !== '::' && state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== '[');
-
-    //     color_func = cprint.toWhite;
-    //     last_token = 'SELECTOR';
-    //   } else if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS') {
-    //     newline = (state.LAST_TOKEN !== 'FUNCTION_CALL_ARGUMENTS' && state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH);
-    //     space_before = (state.LAST_TOKEN === 'FUNCTION_CALL_ARGUMENTS' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === '0');
-    //     color_func = cprint.toYellow;
-    //     last_token = 'FUNCTION_CALL_ARGUMENTS';
-    //   } else if (state.LAST_TOKEN === 'OPERATOR') {
-    //     color_func = cprint.toYellow;
-    //     last_token = 'OPERATOR';
-    //   }
-    //   break;
-
-    // case 'Unit':
-    //   space_before = false;
-    //   color_func = cprint.toYellow;
-    //   last_token = 'UNIT';
-    //   break;
-
-    // case 'TIMES':
-    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE') {
-    //     color_func = cprint.toMagenta;
-    //     last_token = 'OPERATOR';
-    //   } else if (state.DECLARATION_TYPE === 'SELECTOR') {
-    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
-    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //     color_func = cprint.toWhite;
-    //     last_token = '*';
-    //   }
-    //   break;
-
-    // case 'MINUS':
-    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
-    //     space_before = (state.LAST_TOKEN !== '(');
-    //     color_func = cprint.toMagenta;
-    //     if (state.LAST_TOKEN === ':') {
-    //       last_token = ':MINUS';
-    //     } else {
-    //       last_token = 'MINUS';
-    //     }
-    //   }
-    //   break;
-
-    // case 'DIV':
-    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'HASH_BLOCK') {
-    //     color_func = cprint.toMagenta;
-    //     last_token = 'OPERATOR';
-    //   }
-    //   break;
-
-    // case 'PLUS':
-    //   if (state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'VARIABLE') {
-    //     color_func = cprint.toMagenta;
-    //     last_token = 'OPERATOR';
-    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
-    //     color_func = cprint.toLightCyan;
-    //     last_token = '+';
-    //   }
-    //   break;
-
-    // case 'DOLLAR':
-    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
-    //     space_before = false;
-    //     color_func = cprint.toLightBlue;
-    //   } else if (state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'VARIABLE_DEC') {
-    //     newline = (state.LAST_TOKEN === '' || state.LAST_TOKEN === '{');
-    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //     space_before = (state.LAST_TOKEN !== 'MINUS' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '(');
-    //     color_func = cprint.toLightBlue;
-    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
-    //     newline = (state.LAST_TOKEN === '(' || state.LAST_TOKEN === ':' || state.LAST_TOKEN === ',' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //     color_func = cprint.toLightBlue;
-    //   }
-    //   last_token = '$';
-    //   break;
-
-    // // case 'measurement':
-    // //   if (state.LAST_TOKEN === 'MINUS') {
-    // //     last_token = '-MEASUREMENT';
-    // //   }
-    // //   break;
-
-    // case 'Number':
-    // case 'Color':
-    // case 'RGB_VAL':
-    //   if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS' || state.DECLARATION_TYPE === 'MAP_ENTRY_VALUES' || state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION' || state.DECLARATION_TYPE === 'FUNCTION' || state.DECLARATION_TYPE === 'MEASUREMENT' || state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'PROPERTY_VALUE' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER' || state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'VARIABLE_VALUES') {
-    //     space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
-    //   } else if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
-    //     space_before = (state.LAST_TOKEN !== '(' && state.LAST_TOKEN !== ':MINUS' && state.LAST_TOKEN !== '-MEASUREMENT');
-    //     newline = (state.LAST_TOKEN === ',' && state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 1)
-    //   } else if (state.DECLARATION_TYPE === 'MAP_ENTRY') {
-    //     newline = true;
-    //   } else if (state.DECLARATION_TYPE === 'KEYFRAMES' || state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY') {
-    //     newline = true;
-    //   }
-
-    //   if (definition_key === 'Color' && state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH && state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 1) {
-    //     newline = true;
-    //   }
-
-    //   color_func = cprint.toYellow;
-    //   if (definition_value === '0') {
-    //     last_token = '0';
-    //   } else {
-    //     last_token = 'VALUE';
-    //   }
-    //   break;
-
-    // case 'STRING_SINGLE_QUOTED':
-    // case 'STRING_DOUBLE_QUOTED':
-    // case 'UrlVal':
-    //   if (state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE') {
-    //     newline = true;
-    //     color_func = cprint.toYellow;
-    //   } else if (state.DECLARATION_TYPE === 'STRING_LITERAL') {
-    //     space_before = (state.LAST_TOKEN !== "=");
-    //     color_func = cprint.toYellow;
-    //   } else if (state.DECLARATION_TYPE === 'IMPORT') {
-    //     space_before = (state.DECLARATION_TYPE === 'IMPORT' || state.LAST_TOKEN === ':');
-    //     color_func = cprint.toYellow;
-    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
-    //     space_before = (state.LAST_TOKEN === ':');
-    //     color_func = cprint.toYellow;
-    //   }
-    //   last_token = 'VALUE';
-    //   break;
-
-    // case 'UrlStartVal':
-    //   color_func = cprint.toCyan;
-    //   last_token = 'URL';
-    //   break;
-
-    // // case 'commaExpression':
-    // //   state.DECLARATION_TYPE = 'EXPRESSION';
-    // //   break;
-
-    // case 'COMMA':
-    //   if (state.LAST_TOKEN === 'IGNORE:,') {
-    //     append = false;
-    //     break;
-    //   }
-
-    //   space_before = false;
-
-    //   if (state.DECLARATION_TYPE === 'FUNCTION_CALL_ARGUMENTS' || state.DECLARATION_TYPE === 'MAP_ENTRY_VALUES' || state.DECLARATION_TYPE === 'MATH_CHARACTER' || state.DECLARATION_TYPE === 'PROPERTY_VALUE' || state.DECLARATION_TYPE === 'MULTI_LINE_PROPERTY_VALUE' || state.DECLARATION_TYPE === 'FUNCTION' || state.DECLARATION_TYPE === 'MULTI_LINE_FUNCTION') {
-    //     color_func = cprint.toYellow;
-    //   } else if (state.DECLARATION_TYPE === 'VARIABLE' || state.DECLARATION_TYPE === 'MULTI_LINE_VARIABLE') {
-    //     color_func = cprint.toYellow;
-    //   } else if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
-    //     color_func = cprint.toWhite;
-    //   }
-
-    //   last_token = ',';
-    //   break;
-
-    // case 'GT':
-    //   newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
-    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //   color_func = cprint.toLightCyan;
-    //   last_token = '>';
-    //   break;
-
-    // case 'AND':
-    //   newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
-    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //   color_func = cprint.toLightCyan;
-    //   last_token = '&';
-    //   break;
-
-    // case 'LBRACK':
-    // case 'RBRACK':
-    // case 'DOT':
-    // case 'TIL':
-    // case 'EQ':
-    // case 'HASH':
-    // case 'DASH':
-    // case 'COLON':
-    // case 'COLONCOLON':
-    //   if (state.DECLARATION_TYPE === 'SELECTOR' || state.DECLARATION_TYPE === 'PSEUDO_IDENTIFIER') {
-    //     newline = (state.LAST_TOKEN === ',' || state.LAST_TOKEN === '{');
-    //     double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //   }
-    //   space_before = (whitespace_before && (definition_key === 'DOT' || definition_key === 'HASH' || definition_key === 'TIL'));
-    //   color_func = cprint.toLightCyan;
-    //   last_token = definition_value;
-    //   break;
-
-    // case 'LPAREN':
-    //   if (state.RECORD_VARIABLE_VALUES_PAREN_DEPTH) {
-    //     state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH + 1;
-    //   }
-
-    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
-    //     state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH + 1;
-    //   }
-
-    //   if (['PSEUDO_IDENTIFIER', 'INCLUDE', 'FUNCTION_DEC', 'MIXIN'].indexOf(state.DECLARATION_TYPE) >= 0 || ['URL', 'FUNCTION', ':MINUS', 'MINUS'].indexOf(state.LAST_TOKEN) >= 0) {
-    //     space_before = false;
-    //   }
-
-    //   color_func = cprint.toMagenta;
-    //   last_token = '(';
-    //   break;
-
-    // case 'RPAREN':
-    //   space_before = false;
-
-    //   if (state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH) {
-    //     state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH - 1;
-    //     if (state.MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH === 0) {
-    //       state.RECORD_MULTI_LINE_PROPERTY_VALUE_PAREN_DEPTH = false;
-    //       newline = true;
-    //       pre_indent = -1;
-    //     }
-    //   }
-
-    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
-    //     state.VARIABLE_VALUES_PAREN_DEPTH = state.VARIABLE_VALUES_PAREN_DEPTH - 1;
-    //     if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
-    //       state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
-    //       state.MULTI_LINE_VARIABLE_VALUES = false;
-    //       newline = true;
-    //       pre_indent = -1;
-    //     }
-    //   }
-
-    //   color_func = cprint.toMagenta;
-    //   last_token = ')';
-    //   break;
-
-    // case 'SEMI':
-    //   if (state.LAST_TOKEN === ';') {
-    //     append = false;
-    //   }
-
-    //   if (state.MULTI_LINE_VARIABLE_VALUES) {
-    //     if (state.VARIABLE_VALUES_PAREN_DEPTH === 0) {
-    //       state.RECORD_VARIABLE_VALUES_PAREN_DEPTH = false;
-    //       state.MULTI_LINE_VARIABLE_VALUES = false;
-    //       pre_indent = -1;
-    //     }
-    //   }
-
-    //   space_before = false;
-    //   color_func = cprint.toRed;
-    //   last_token = ';';
-    //   break;
-
-    // case 'COMMENT':
-    //   if (whitespace_before_includes_newline) {
-    //     newline = (state.LAST_TOKEN === '{');
-    //     double_newline = !newline;
-    //   } else if (state.LAST_TOKEN === 'SINGLE_LINE_COMMENT' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT') {
-    //     double_newline = true;
-    //   }
-    //   color_func = cprint.toDarkGrey;
-    //   last_token = 'MULTI_LINE_COMMENT';
-    //   break;
-
-    // case 'SL_COMMENT':
-    //   newline = (whitespace_before_includes_newline || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //   color_func = cprint.toDarkGrey;
-    //   last_token = 'SINGLE_LINE_COMMENT';
-    //   break;
-
-    // case 'IMPORTANT':
-    //   color_func = cprint.toLightRed;
-    //   last_token = 'IMPORTANT';
-    //   break;
-
-    // case 'IMPORT':
-    // case 'INCLUDE':
-    // case 'FUNCTION':
-    // case 'RETURN':
-    // case 'MIXIN':
-    // case 'MEDIA':
-    // case 'KEYFRAMES':
-    // case 'PAGE':
-    // case 'AT_EACH':
-    // case 'AT_FOR':
-    //   newline = true;
-    //   double_newline = (state.LAST_TOKEN === ';' || state.LAST_TOKEN === '}' || state.LAST_TOKEN === 'MULTI_LINE_COMMENT' || state.LAST_TOKEN === 'SINGLE_LINE_COMMENT');
-    //   color_func = cprint.toCyan;
-    //   last_token = definition_value;
-    //   break;
-
-    // case 'FROM':
-    // case 'THROUGH':
-    // case 'IN':
-    //   color_func = cprint.toCyan;
-    //   last_token = definition_value.toUpperCase();
-    //   break;
-
-    // case 'BlockStart':
-    //   if (state.DECLARATION_TYPE === 'HASH_BLOCK') {
-    //     state.HASH_BLOCK_BLOCK_DEPTH += 1;
-    //     space_before = false;
-    //     color_func = cprint.toLightMagenta;
-    //     last_token = '{';
-    //   } else {
-    //     space_before = (state.LAST_TOKEN !== '#');
-    //     color_func = cprint.toWhite;
-    //     last_token = '{';
-    //   }
-    //   post_indent = 1;
-    //   break;
-
-    // case 'BlockEnd':
-    //   if (state.RECORD_HASH_BLOCK_BLOCK_DEPTH) {
-    //     state.HASH_BLOCK_BLOCK_DEPTH -= 1;
-    //     if (state.HASH_BLOCK_BLOCK_DEPTH === 0) {
-    //       state.DECLARATION_TYPE = false;
-    //       state.RECORD_HASH_BLOCK_BLOCK_DEPTH = false;
-    //     }
-    //     space_before = false;
-    //     color_func = cprint.toLightMagenta;
-    //     last_token = '}';
-    //   } else {
-    //     newline = ((state.DECLARATION_TYPE !== 'KEYFRAMES_PROPERTY' || state.LAST_TOKEN === '}'));
-    //     space_before = (state.DECLARATION_TYPE === 'KEYFRAMES_PROPERTY');
-    //     color_func = cprint.toWhite;
-    //     last_token = '}';
-    //   }
-    //   pre_indent = -1;
-    //   break;
   }
 
   if (last_token) {
@@ -1568,6 +1178,11 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
   }
 
   if (append) {
+    if (!color_func) {
+      append = definition_key;
+      color_func = cprint.toBackgroundRed;
+    }
+
     let delim = '';
     if (double_newline) {
       delim = g_NL + g_NL + output_indent;

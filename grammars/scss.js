@@ -172,8 +172,16 @@ var DEFINITION = {
     SEGMENTS: ['expression+', 'commaExpression*']
   },
   expressionsInParens: {
+    OPERATOR: '||',
+    SEGMENTS: ['expressions3PlusInParens', 'expressions3LessInParens']
+  },
+  expressions3PlusInParens: {
     OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'expressions', 'RPAREN']
+    SEGMENTS: ['LPAREN', 'expressions3Plus', 'RPAREN']
+  },
+  expressions3LessInParens: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'expressions3Less', 'RPAREN']
   },
   commaExpression: {
     OPERATOR: '&&',
@@ -193,7 +201,7 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['expressionsInParens', 'mapExpression', 'functionCall', 'url', 'SL_COMMENT', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+    SEGMENTS: ['expressionsInParens', 'mapExpression', 'url', 'functionCall', 'SL_COMMENT', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
   },
   mapExpression: {
     OPERATOR: '&&',
@@ -349,15 +357,7 @@ var DEFINITION = {
   },
   referenceUrl: {
     OPERATOR: '||',
-    SEGMENTS: ['referenceUrlStringLiteral', 'referenceUrlUrl']
-  },
-  referenceUrlStringLiteral: {
-    OPERATOR: '&&',
-    SEGMENTS: ['StringLiteral']
-  },
-  referenceUrlUrl: {
-    OPERATOR: '&&',
-    SEGMENTS: ['UrlStart', 'Url', 'UrlEnd']
+    SEGMENTS: ['StringLiteral', 'url']
   },
   mediaTypes: {
     OPERATOR: '&&',
