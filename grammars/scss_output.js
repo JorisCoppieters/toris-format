@@ -491,6 +491,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         case 'PROPERTY':
           if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
             space_before = false;
+          } else if (['('].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
           }
           color_func = cprint.toYellow;
           break;
