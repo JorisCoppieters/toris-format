@@ -84,3 +84,9 @@ $comment-box-color-map: (
         'color': $tip-top-600
     )
 );
+
+$basic-color-modifiers-with-accents: ( // TODO: mhermon change map used in modal hero to use this map
+    primary: ($tip-top-300, $tip-top-600),
+    danger: ($pohutukawa-500, $pohutukawa-700),
+    success: ($waitomo-500, $waitomo-700)
+);

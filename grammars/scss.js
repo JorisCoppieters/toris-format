@@ -37,7 +37,8 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    // SEGMENTS: ['ifDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'extendDeclaration', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration', 'nested']
   },
   params: {
     OPERATOR: '&&',
@@ -74,6 +75,10 @@ var DEFINITION = {
   pageDeclaration: {
     OPERATOR: '&&',
     SEGMENTS: ['PAGE', 'block']
+  },
+  extendDeclaration: {
+    OPERATOR: '&&',
+    SEGMENTS: ['EXTEND', 'percIdentifier', 'SEMI?']
   },
   includeDeclaration: {
     OPERATOR: '&&',
@@ -273,48 +278,69 @@ var DEFINITION = {
   },
   ifDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_IF', 'conditions', 'block', 'elseIfStatement*', 'elseStatement?' ]
+    SEGMENTS: ['AT_IF', 'conditions', 'block', 'elseIfStatement*', 'elseStatement?']
   },
   elseIfStatement: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_ELSE', 'IF', 'conditions', 'block' ]
+    SEGMENTS: ['AT_ELSE', 'IF', 'conditions', 'block']
   },
   elseStatement: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_ELSE', 'block' ]
+    SEGMENTS: ['AT_ELSE', 'block']
   },
+
   conditions: {
-    OPERATOR: '||',
-    SEGMENTS: ['conditionsNonNull', 'NULL' ]
-  },
-  conditionsNonNull: {
     OPERATOR: '&&',
-    SEGMENTS: ['conditions', 'combineCompareConditions?' ]
-  },
-  combineCompareConditions: {
-    OPERATOR: '&&',
-    SEGMENTS: ['COMBINE_COMPARE', 'conditions' ]
-  },
-  compareOperators: {
-    OPERATOR: '||',
-    SEGMENTS: ['EQEQ', 'LT', 'GT', 'NOTEQ']
-  },
-  conditionsInParen: {
-    OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'conditions', 'RPAREN']
-  },
-  compareOperatorsConditions: {
-    OPERATOR: '&&',
-    SEGMENTS: ['compareOperatorsConditions', 'conditions']
+    SEGMENTS: ['condition']
   },
   condition: {
     OPERATOR: '||',
-    SEGMENTS: ['', 'conditionsInParen']
+    SEGMENTS: ['conditionCombining', 'conditionComparison', 'conditionLeaf']
   },
-  commandStatementCompareOperatorsConditions: {
+
+  conditionCombining: {
     OPERATOR: '&&',
-    SEGMENTS: ['commandStatement', 'compareOperatorsConditions?']
+    SEGMENTS: ['conditionCombiningValue', 'combineConditionCombiningValue+']
   },
+  conditionCombiningValue: {
+    OPERATOR: '||',
+    SEGMENTS: ['conditionComparison', 'conditionLeaf']
+  },
+  combineConditionCombiningValue: {
+    OPERATOR: '&&',
+    SEGMENTS: ['combineOperators', 'conditionCombiningValue']
+  },
+
+  conditionComparison: {
+    OPERATOR: '&&',
+    SEGMENTS: ['conditionLeaf', 'compareConditionValue*']
+  },
+  compareConditionValue: {
+    OPERATOR: '&&',
+    SEGMENTS: ['compareOperators', 'conditionLeaf']
+  },
+
+  conditionLeaf: {
+    OPERATOR: '||',
+    SEGMENTS: ['conditionInParen', 'conditionValue'],
+  },
+  conditionInParen: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'condition', 'RPAREN']
+  },
+  conditionValue: {
+    OPERATOR: '||',
+    SEGMENTS: ['Number', 'variableName', 'Boolean', 'StringLiteral', 'Identifier']
+  },
+  compareOperators: {
+    OPERATOR: '||',
+    SEGMENTS: ['EQEQ', 'LTEQ', 'LT', 'GTEQ', 'GT', 'NOTEQ']
+  },
+  combineOperators: {
+    OPERATOR: '||',
+    SEGMENTS: ['COMBINE_COMPARE_AND', 'COMBINE_COMPARE_OR', 'AND_LITERAL', 'OR_LITERAL']
+  },
+
   variableDeclaration: {
     OPERATOR: '&&',
     SEGMENTS: ['variableDeclarationKey', 'COLON', 'variableDeclarationValues', 'POUND_DEFAULT?', 'SEMI+']
@@ -349,7 +375,7 @@ var DEFINITION = {
   },
   through: {
     OPERATOR: '||',
-    SEGMENTS: ['Number', 'functionCall']
+    SEGMENTS: ['Number', 'functionCall', 'variableName']
   },
   whileDeclaration: {
     OPERATOR: '&&',
@@ -457,7 +483,7 @@ var DEFINITION = {
   },
   element: {
     OPERATOR: '||',
-    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'AND', 'TIMES', 'pseudo', 'elementInBrackets']
+    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'percIdentifier', 'AND', 'TIMES', 'pseudo', 'elementInBrackets']
   },
   elementInBrackets: {
     OPERATOR: '&&',
@@ -470,6 +496,10 @@ var DEFINITION = {
   dotIdentifier: {
     OPERATOR: '&&',
     SEGMENTS: ['DOT', 'identifier']
+  },
+  percIdentifier: {
+    OPERATOR: '&&',
+    SEGMENTS: ['PERC', 'identifier']
   },
   pseudo: {
     OPERATOR: '||',

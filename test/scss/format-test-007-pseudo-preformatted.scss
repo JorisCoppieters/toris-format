@@ -92,3 +92,24 @@
 
 @each $breakpoint-name, $breakpoint-value in map-merge($breakpoints-map, $breakpoints-only-map) {
 }
+
+@mixin make-column(){
+    @extend %column;
+}
+
+%column {
+    position: relative;
+    min-height: 1px;
+    padding-left: ($grid-gutter / 2);
+    padding-right: ($grid-gutter / 2);
+}
+
+@mixin make-column(){
+    @extend %column;
+}
+
+@mixin loop-grid-columns($columns, $class, $type) {
+    @for $i from 0 through $columns {
+        @include calc-grid-column($i, $class, $type);
+    }
+}

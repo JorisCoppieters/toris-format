@@ -35,11 +35,19 @@ var DEFINITION = {
   },
   COMBINE_COMPARE_AND: {
     OPERATOR: '==',
-    VALUE: '&&'
+    VALUE: '[&][&]'
   },
   COMBINE_COMPARE_OR: {
     OPERATOR: '==',
-    VALUE: '||'
+    VALUE: '[|][|]'
+  },
+  AND_LITERAL: {
+    OPERATOR: '==',
+    VALUE: '(?:AND|and)'
+  },
+  OR_LITERAL: {
+    OPERATOR: '==',
+    VALUE: '(?:OR|or)'
   },
   Ellipsis: {
     OPERATOR: '==',
@@ -73,6 +81,10 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '>'
   },
+  GTEQ: {
+    OPERATOR: '==',
+    VALUE: '>='
+  },
   TIL: {
     OPERATOR: '==',
     VALUE: '~'
@@ -80,6 +92,10 @@ var DEFINITION = {
   LT: {
     OPERATOR: '==',
     VALUE: '<'
+  },
+  LTEQ: {
+    OPERATOR: '==',
+    VALUE: '<='
   },
   COLON: {
     OPERATOR: '==',
@@ -237,6 +253,10 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '@page'
   },
+  EXTEND: {
+    OPERATOR: '==',
+    VALUE: '@extend'
+  },
   FROM: {
     OPERATOR: '==',
     VALUE: 'from'
@@ -268,6 +288,18 @@ var DEFINITION = {
   StringLiteral: {
     OPERATOR: '&&',
     SEGMENTS: ['STRING']
+  },
+  True: {
+    OPERATOR: '==',
+    VALUE: '[T]rue'
+  },
+  False: {
+    OPERATOR: '==',
+    VALUE: '[Ff]alse'
+  },
+  Boolean: {
+    OPERATOR: '||',
+    SEGMENTS: ['True', 'False']
   },
   Number: {
     OPERATOR: '==',

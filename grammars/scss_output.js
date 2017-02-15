@@ -69,6 +69,18 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       state.DECLARATION_TYPE = 'IMPORT';
       state.VALUE_TYPE = false;
       break;
+    case 'ifDeclaration':
+      state.DECLARATION_TYPE = 'IF';
+      state.VALUE_TYPE = false;
+      break;
+    case 'elseIfDeclaration':
+      state.DECLARATION_TYPE = 'ELSE_IF';
+      state.VALUE_TYPE = false;
+      break;
+    case 'elseDeclaration':
+      state.DECLARATION_TYPE = 'ELSE';
+      state.VALUE_TYPE = false;
+      break;
     case 'includeDeclaration':
       state.DECLARATION_TYPE = 'INCLUDE';
       state.VALUE_TYPE = false;
@@ -115,6 +127,14 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
     case 'pageDeclaration':
       state.DECLARATION_TYPE = 'PAGE';
+      state.VALUE_TYPE = false;
+      break;
+    case 'extendDeclaration':
+      state.DECLARATION_TYPE = 'EXTEND';
+      state.VALUE_TYPE = false;
+      break;
+    case 'nested':
+      state.DECLARATION_TYPE = 'NESTED';
       state.VALUE_TYPE = false;
       break;
     case 'variableDeclaration':
@@ -181,8 +201,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       state.DECLARATION_TYPE = 'MAP_EXPRESSION_END';
       state.VALUE_TYPE = false;
       break;
-    case 'mapEntry':
-      state.DECLARATION_TYPE = 'MAP_ENTRY';
+    case 'mapEntryKey':
+      state.DECLARATION_TYPE = 'MAP_ENTRY_KEY';
       state.VALUE_TYPE = false;
       break;
     case 'mapEntryValues':
@@ -213,8 +233,12 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     // Value Types:
     case 'selector':
     case 'property':
+    case 'condition':
       state.DECLARATION_TYPE = definition_key.toUpperCase();
       state.VALUE_TYPE = definition_key.toUpperCase();
+      break;
+    case 'conditionValue':
+      state.VALUE_TYPE = 'CONDITION_VALUE';
       break;
     case 'selectorPrefix':
       state.VALUE_TYPE = 'SELECTOR_PREFIX';
@@ -228,6 +252,9 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'StringLiteral':
       state.VALUE_TYPE = 'STRING';
       break;
+    case 'Boolean':
+      state.VALUE_TYPE = 'BOOLEAN';
+      break;
     case 'colonValues':
       state.VALUE_TYPE = 'PROPERTY_VALUE';
       break;
@@ -240,6 +267,12 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'COLONCOLON':
     case 'DASH':
     case 'DOT':
+    case 'COMBINE_COMPARE_AND':
+    case 'COMBINE_COMPARE_OR':
+    case 'LT':
+    case 'LTEQ':
+    case 'GTEQ':
+    case 'PERC':
     case 'EQ':
     case 'STAR_EQ':
     case 'EQEQ':
@@ -259,7 +292,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         space_before = false;
       } else if (['DASH'].indexOf(definition_key) >= 0) {
         space_before = false;
-      } else if (['VARIABLE', 'MAP_ENTRY'].indexOf(state.DECLARATION_TYPE) >= 0) {
+      } else if (['VARIABLE', 'MAP_ENTRY_KEY'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
       } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && [':', 'MINUS'].indexOf(state.LAST_TOKEN) < 0) {
         space_before = false;
@@ -282,12 +315,19 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'AT_EACH':
     case 'AT_FOR':
     case 'FUNCTION':
+    case 'AT_IF':
+    case 'IF':
+    case 'AT_ELSE_IF':
+    case 'AT_ELSE':
+    case 'AND_LITERAL':
+    case 'OR_LITERAL':
     case 'IMPORT':
     case 'INCLUDE':
     case 'KEYFRAMES':
     case 'MEDIA':
     case 'FONT_FACE':
     case 'MIXIN':
+    case 'EXTEND':
     case 'PAGE':
     case 'RETURN':
       double_newline = (whitespace_before_includes_double_newline);
@@ -312,6 +352,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case false:
         case 'SELECTOR':
+        case 'IF':
+        case 'CONDITION':
         case 'FUNCTION_CALL_ARGUMENTS':
         case 'FUNCTION_END':
         case 'HASH_BLOCK_EXPRESSION':
@@ -350,8 +392,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case false:
         case 'SELECTOR':
+        case 'IF':
+        case 'CONDITION':
         case 'INCLUDE':
         case 'MIXIN':
+        case 'EXTEND':
         case 'VARIABLE':
         case 'VARIABLE_VALUES':
         case 'FUNCTION_END':
@@ -392,6 +437,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       }
 
       if (['INCLUDE', 'MEDIA', 'MIXIN', 'PAGE', 'FUNCTION', 'RETURN'].indexOf(state.DECLARATION_TYPE) >= 0) {
+        space_before = false;
+      }
+
+      if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['CONDITION'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
       }
 
@@ -492,6 +541,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'Number':
+    case 'True':
+    case 'False':
     case 'Color':
     case 'RGB_VAL':
     case 'STRING_SINGLE_QUOTED':
@@ -522,6 +573,13 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             last_token = '0'
           }
 
+          color_func = cprint.toYellow;
+          break;
+
+        case 'CONDITION':
+          if (['('].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
+          }
           color_func = cprint.toYellow;
           break;
 
@@ -559,10 +617,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           last_token = 'IMPORT';
           break;
 
-        case 'MAP_ENTRY':
+        case 'MAP_ENTRY_KEY':
           newline = true;
           color_func = cprint.toGreen;
-          last_token = 'MAP_ENTRY';
+          last_token = 'MAP_ENTRY_KEY';
           break;
 
         case 'KEYFRAMES_ENTRY':
@@ -593,6 +651,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'GT':
     case 'AND':
     case 'DOLLAR':
+    case 'CONDITION':
     case 'Identifier':
       last_token = state.VALUE_TYPE;
 
@@ -609,7 +668,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           } else if (definition_key === 'AND') {
             last_token = '&';
           } else {
-            if (['.', '#', ':', '::', '['].indexOf(state.LAST_TOKEN) >= 0) {
+            if (['.', '#', '%', ':', '::', '['].indexOf(state.LAST_TOKEN) >= 0) {
               space_before = false;
             }
             color_func = cprint.toWhite;
@@ -627,6 +686,13 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           color_func = cprint.toYellow;
           break;
 
+        case 'CONDITION_VALUE':
+          if (['('].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
+          }
+          color_func = cprint.toYellow;
+          break;
+
         case 'MEASUREMENT':
           color_func = cprint.toYellow;
           break;
@@ -640,8 +706,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'FUNCTION':
             case 'VARIABLE':
             case 'VARIABLE_VALUES':
-            case 'MAP_ENTRY_VALUES':
-            case 'INCLUDE':
               if (definition_key === 'DOLLAR') {
                 double_newline = (whitespace_before_includes_double_newline || ['}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
                 newline = (whitespace_before_includes_newline || [';', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
@@ -668,7 +732,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               break;
 
             case 'MIXIN':
+            case 'IF':
+            case 'INCLUDE':
+            case 'CONDITION':
             case 'PROPERTY':
+            case 'MAP_ENTRY_VALUES':
             case 'FUNCTION_CALL_ARGUMENTS':
             case 'EACH':
               if (definition_key === 'DOLLAR') {
@@ -758,6 +826,13 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               color_func = cprint.toCyan;
               break;
 
+            case 'EXTEND':
+              if (['%'].indexOf(state.LAST_TOKEN) >= 0) {
+                space_before = false;
+              }
+              color_func = cprint.toCyan;
+              break;
+
             case 'URL':
               space_before = true;
               color_func = cprint.toYellow;
@@ -783,8 +858,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               color_func = cprint.toGreen;
               break;
 
-            case 'MAP_ENTRY':
-              newline = (['', '(', ','].indexOf(state.LAST_TOKEN) >= 0);
+            case 'MAP_ENTRY_KEY':
+              newline = (['', '(', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
               color_func = cprint.toYellow;
               break;
 
