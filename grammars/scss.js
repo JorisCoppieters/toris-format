@@ -249,7 +249,7 @@ var DEFINITION = {
   },
   mapEntryValues: {
     OPERATOR: '&&',
-    SEGMENTS: ['expression']
+    SEGMENTS: ['mathCharacter?', 'expression']
   },
   extraComma: {
     OPERATOR: '&&',
@@ -441,7 +441,7 @@ var DEFINITION = {
   },
   selector: {
     OPERATOR: '&&',
-    SEGMENTS: ['selectorStart*', 'attrib*', 'pseudo*']
+    SEGMENTS: ['selectorStart*', 'attrib*', 'selectorPrefix?', 'pseudo*']
   },
   selectorStart: {
     OPERATOR: '||',
@@ -457,7 +457,11 @@ var DEFINITION = {
   },
   element: {
     OPERATOR: '||',
-    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'AND', 'TIMES', 'pseudo']
+    SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'AND', 'TIMES', 'pseudo', 'elementInBrackets']
+  },
+  elementInBrackets: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LBRACK', 'element', 'RBRACK']
   },
   hashIdentifier: {
     OPERATOR: '&&',
@@ -505,7 +509,7 @@ var DEFINITION = {
   },
   attribRelate: {
     OPERATOR: '||',
-    SEGMENTS: ['EQ', 'PIPE_EQ', 'TILD_EQ']
+    SEGMENTS: ['EQ', 'PIPE_EQ', 'TILD_EQ', 'STAR_EQ']
   },
   identifier: {
     OPERATOR: '&&',

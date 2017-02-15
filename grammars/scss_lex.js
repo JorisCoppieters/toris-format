@@ -163,11 +163,15 @@ var DEFINITION = {
   },
   PIPE_EQ: {
     OPERATOR: '==',
-    VALUE: '|='
+    VALUE: '[|]='
   },
   TILD_EQ: {
     OPERATOR: '==',
     VALUE: '~='
+  },
+  STAR_EQ: {
+    OPERATOR: '==',
+    VALUE: '[*]='
   },
   MIXIN: {
     OPERATOR: '==',

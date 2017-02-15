@@ -43,6 +43,10 @@ tm-homepage-categories {
                 }
         }
     }
+
+    label + [tg-button] {
+        margin-right: -$unit * 0.5;
+    }
 }
 
 a[ui-sref="tm.jobs.home"]:visited,
@@ -154,3 +158,6 @@ tg-rack-item-note {
         padding: 0;
     }
 }
+
+[class*='o-box-'] > :last-child { margin-bottom: 0; }
+[class*='o-box-'] > :first-child { margin-top: 0; }

@@ -42,7 +42,7 @@
 @include breakpoint($md-min) {
 }
 
-@include breakpoint( max-width $lg-min) {
+@include breakpoint(max-width $lg-min) {
     font-size: $pt-native-ad-card-font-small - 1;
 }
 
