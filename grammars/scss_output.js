@@ -559,7 +559,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     // Value Types For Generic Values:
-    case 'TYPE_CONDITION_VALUE':
     case 'MEASUREMENT':
     case 'BOOLEAN':
       state.VALUE_TYPE = definition_key;
@@ -729,7 +728,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
                 }
                 last_token = '$';
               } else {
-                if (state.LAST_TOKEN === '$') {
+                if (state.LAST_TOKEN === '$' || state.LAST_TOKEN === '(') {
                   space_before = false;
                 }
               }
