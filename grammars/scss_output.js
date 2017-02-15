@@ -204,7 +204,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
     case 'selector':
     case 'property':
-    case 'CONDITION':
       state.DECLARATION_TYPE = definition_key.toUpperCase();
       state.VALUE_TYPE = definition_key.toUpperCase();
       break;
@@ -354,7 +353,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         space_before = false;
       }
 
-      if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['CONDITION'].indexOf(state.DECLARATION_TYPE) >= 0) {
+      if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['IF'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
       }
 
@@ -503,7 +502,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           color_func = cprint.toYellow;
           break;
 
-        case 'CONDITION':
+        case 'IF':
           if (['('].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
           }
@@ -560,7 +559,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     // Value Types For Generic Values:
-    case 'CONDITION_VALUE':
+    case 'TYPE_CONDITION_VALUE':
     case 'MEASUREMENT':
     case 'BOOLEAN':
       state.VALUE_TYPE = definition_key;
@@ -597,7 +596,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'PERC':
     case 'AND':
     case 'DOLLAR':
-    case 'CONDITION':
     case 'Identifier':
       last_token = state.VALUE_TYPE;
 
@@ -630,6 +628,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           }
           break;
 
+        case 'TYPE_COMPARE_OPERATORS':
         case 'OPERATOR':
           color_func = cprint.toMagenta;
 
@@ -674,7 +673,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           color_func = cprint.toWhite;
           break;
 
-        case 'CONDITION_VALUE':
+        case 'TYPE_CONDITION_VALUE':
           if (['('].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
           }
@@ -720,7 +719,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'MIXIN':
             case 'IF':
             case 'INCLUDE':
-            case 'CONDITION':
             case 'PROPERTY':
             case 'MAP_ENTRY_VALUES':
             case 'FUNCTION_CALL_ARGUMENTS':
