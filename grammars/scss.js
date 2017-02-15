@@ -38,7 +38,7 @@ var DEFINITION = {
   statement: {
     OPERATOR: '||',
     // SEGMENTS: ['ifDeclaration']
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'extendDeclaration', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration', 'nested']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'DECLARATION_KEYFRAMES', 'pageDeclaration', 'extendDeclaration', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration', 'nested']
   },
   params: {
     OPERATOR: '&&',
@@ -87,34 +87,6 @@ var DEFINITION = {
   includeDeclarationTermination: {
     OPERATOR: '||',
     SEGMENTS: ['SEMI+', 'valuesInParenSemiBlock']
-  },
-  keyframesDeclaration: {
-    OPERATOR: '&&',
-    SEGMENTS: ['KEYFRAMES', 'Identifier', 'BlockStart', 'keyframesEntry*', 'keyframesEntryBlockEnd']
-  },
-  keyframesEntry: {
-    OPERATOR: '&&',
-    SEGMENTS: ['keyframesEntryKey', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryEnd']
-  },
-  keyframesEntryKey: {
-    OPERATOR: '||',
-    SEGMENTS: ['NumberAndText', 'Number']
-  },
-  keyframesEntryEnd: {
-    OPERATOR: '&&',
-    SEGMENTS: ['BlockEnd']
-  },
-  keyframesEntryProperty: {
-    OPERATOR: '&&',
-    SEGMENTS: ['identifier', 'keyframesEntryPropertyValues']
-  },
-  keyframesEntryPropertyValues: {
-    OPERATOR: '&&',
-    SEGMENTS: ['COLON', 'values']
-  },
-  keyframesEntryBlockEnd: {
-    OPERATOR: '&&',
-    SEGMENTS: ['BlockEnd']
   },
   fontFaceDeclaration: {
     OPERATOR: '&&',
@@ -230,11 +202,7 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['expressionsInParens', 'mapExpression', 'url', 'functionCall', 'SL_COMMENT', 'COMMENT', 'mathCharacter', 'NumberAndText', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
-  },
-  NumberAndText: {
-    OPERATOR: '&&',
-    SEGMENTS: ['Number', 'IdentifierOrMathCharacter']
+    SEGMENTS: ['url', 'functionCall', 'expressionsInParens', 'mapExpression', 'SL_COMMENT', 'COMMENT', 'mathCharacter', 'MEASUREMENT', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
   },
   IdentifierOrMathCharacter: {
     OPERATOR: '||',
@@ -290,67 +258,15 @@ var DEFINITION = {
   },
   ifDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_IF', 'conditions', 'block', 'elseIfStatement*', 'elseStatement?']
+    SEGMENTS: ['AT_IF', 'CONDITIONS', 'block', 'elseIfStatement*', 'elseStatement?']
   },
   elseIfStatement: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_ELSE', 'IF', 'conditions', 'block']
+    SEGMENTS: ['AT_ELSE', 'IF', 'CONDITIONS', 'block']
   },
   elseStatement: {
     OPERATOR: '&&',
     SEGMENTS: ['AT_ELSE', 'block']
-  },
-
-  conditions: {
-    OPERATOR: '&&',
-    SEGMENTS: ['condition']
-  },
-  condition: {
-    OPERATOR: '||',
-    SEGMENTS: ['conditionCombining', 'conditionComparison', 'conditionLeaf']
-  },
-
-  conditionCombining: {
-    OPERATOR: '&&',
-    SEGMENTS: ['conditionCombiningValue', 'combineConditionCombiningValue+']
-  },
-  conditionCombiningValue: {
-    OPERATOR: '||',
-    SEGMENTS: ['conditionComparison', 'conditionLeaf']
-  },
-  combineConditionCombiningValue: {
-    OPERATOR: '&&',
-    SEGMENTS: ['combineOperators', 'conditionCombiningValue']
-  },
-
-  conditionComparison: {
-    OPERATOR: '&&',
-    SEGMENTS: ['conditionLeaf', 'compareConditionValue*']
-  },
-  compareConditionValue: {
-    OPERATOR: '&&',
-    SEGMENTS: ['compareOperators', 'conditionLeaf']
-  },
-
-  conditionLeaf: {
-    OPERATOR: '||',
-    SEGMENTS: ['conditionInParen', 'conditionValue'],
-  },
-  conditionInParen: {
-    OPERATOR: '&&',
-    SEGMENTS: ['LPAREN', 'condition', 'RPAREN']
-  },
-  conditionValue: {
-    OPERATOR: '||',
-    SEGMENTS: ['Number', 'variableName', 'Boolean', 'StringLiteral', 'Identifier']
-  },
-  compareOperators: {
-    OPERATOR: '||',
-    SEGMENTS: ['EQEQ', 'LTEQ', 'LT', 'GTEQ', 'GT', 'NOTEQ']
-  },
-  combineOperators: {
-    OPERATOR: '||',
-    SEGMENTS: ['COMBINE_COMPARE_AND', 'COMBINE_COMPARE_OR', 'AND_LITERAL', 'OR_LITERAL']
   },
 
   variableDeclaration: {
@@ -391,7 +307,7 @@ var DEFINITION = {
   },
   whileDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['AT_WHILE', 'conditions', 'block']
+    SEGMENTS: ['AT_WHILE', 'CONDITIONS', 'block']
   },
   eachDeclaration: {
     OPERATOR: '&&',
@@ -624,6 +540,96 @@ var DEFINITION = {
   functionCallArguments: {
     OPERATOR: '&&',
     SEGMENTS: ['commandStatement']
+  },
+
+  // Key Frames
+  DECLARATION_KEYFRAMES: {
+    OPERATOR: '&&',
+    SEGMENTS: ['VAL_KEYFRAMES', 'TYPE_KEYFRAMES_IDENTIFIER', 'BlockStart', '_KEYFRAMES_ENTRY*', 'TYPE_KEYFRAMES_END']
+  },
+  TYPE_KEYFRAMES_IDENTIFIER: {
+    OPERATOR: '&&',
+    SEGMENTS: ['Identifier']
+  },
+  _KEYFRAMES_ENTRY: {
+    OPERATOR: '&&',
+    SEGMENTS: ['TYPE_KEYFRAMES_ENTRY_KEY', 'BlockStart', 'TYPE_KEYFRAMES_ENTRY_PROPERTY', 'COLON', 'values', 'SEMI?', 'TYPE_KEYFRAMES_ENTRY_END']
+  },
+  TYPE_KEYFRAMES_ENTRY_KEY: {
+    OPERATOR: '||',
+    SEGMENTS: ['VAL_MEASUREMENT', 'Number']
+  },
+  TYPE_KEYFRAMES_ENTRY_PROPERTY: {
+    OPERATOR: '&&',
+    SEGMENTS: ['values']
+  },
+  TYPE_KEYFRAMES_ENTRY_END: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
+  },
+  TYPE_KEYFRAMES_END: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
+  },
+
+  // Conditions
+  CONDITIONS: {
+    OPERATOR: '&&',
+    SEGMENTS: ['CONDITION']
+  },
+  CONDITION: {
+    OPERATOR: '||',
+    SEGMENTS: ['CONDITION_COMBINING', 'CONDITION_COMPARISON', 'CONDITION_LEAF']
+  },
+  CONDITION_COMBINING: {
+    OPERATOR: '&&',
+    SEGMENTS: ['CONDITION_COMBINING_VALUE', 'COMBINE_CONDITION_COMBINING_VALUE+']
+  },
+  CONDITION_COMBINING_VALUE: {
+    OPERATOR: '||',
+    SEGMENTS: ['CONDITION_COMPARISON', 'CONDITION_LEAF']
+  },
+  COMBINE_CONDITION_COMBINING_VALUE: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMBINE_OPERATORS', 'CONDITION_COMBINING_VALUE']
+  },
+  CONDITION_COMPARISON: {
+    OPERATOR: '&&',
+    SEGMENTS: ['CONDITION_LEAF', 'COMPARE_CONDITION_VALUE*']
+  },
+  COMPARE_CONDITION_VALUE: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMPARE_OPERATORS', 'CONDITION_LEAF']
+  },
+  CONDITION_LEAF: {
+    OPERATOR: '||',
+    SEGMENTS: ['CONDITION_IN_PAREN', 'CONDITION_VALUE'],
+  },
+  CONDITION_IN_PAREN: {
+    OPERATOR: '&&',
+    SEGMENTS: ['LPAREN', 'CONDITION', 'RPAREN']
+  },
+  CONDITION_VALUE: {
+    OPERATOR: '||',
+    SEGMENTS: ['Number', 'variableName', 'BOOLEAN', 'StringLiteral', 'Identifier']
+  },
+  COMPARE_OPERATORS: {
+    OPERATOR: '||',
+    SEGMENTS: ['EQEQ', 'LTEQ', 'LT', 'GTEQ', 'GT', 'NOTEQ']
+  },
+  COMBINE_OPERATORS: {
+    OPERATOR: '||',
+    SEGMENTS: ['COMBINE_COMPARE_AND', 'COMBINE_COMPARE_OR', 'AND_LITERAL', 'OR_LITERAL']
+  },
+
+  // Other:
+  BOOLEAN: {
+    OPERATOR: '||',
+    SEGMENTS: ['True', 'False']
+  },
+  MEASUREMENT: {
+    OPERATOR: '&&',
+    SEGMENTS: ['VAL_MEASUREMENT']
   }
 };
 

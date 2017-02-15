@@ -13,6 +13,15 @@
 // ******************************
 
 var DEFINITION = {
+  VAL_KEYFRAMES: {
+    OPERATOR: '==',
+    VALUE: '@keyframes'
+  },
+  VAL_MEASUREMENT: {
+    OPERATOR: '==',
+    VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)'
+  },
+
   EMPTY: {
     OPERATOR: '==',
     VALUE: ''
@@ -241,10 +250,6 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '@font-face'
   },
-  KEYFRAMES: {
-    OPERATOR: '==',
-    VALUE: '@keyframes'
-  },
   MEDIA: {
     OPERATOR: '==',
     VALUE: '@media'
@@ -296,10 +301,6 @@ var DEFINITION = {
   False: {
     OPERATOR: '==',
     VALUE: '[Ff]alse'
-  },
-  Boolean: {
-    OPERATOR: '||',
-    SEGMENTS: ['True', 'False']
   },
   Number: {
     OPERATOR: '==',
