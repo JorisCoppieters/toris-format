@@ -1,0 +1,321 @@
+// Font imports
+// =============================================================================
+
+// hello.myfonts.net @import is included in index.html before this, otherwise CSS will not work
+@import 'assets/fonts/museo-sans';
+
+// Variables & grid
+// =============================================================================
+
+@import 'tools/env';
+
+// Reset (Normalize+)
+// =============================================================================
+
+@import 'tools/reset';
+
+// Grid framework
+// =============================================================================
+@import 'tans/grid/grid-framework';
+
+// Mini Grid
+// =============================================================================
+@import 'tans/mini-grid/mini-grid';
+// '../../_old/src/tans/cards/card.component';
+
+// Wrappers >>> unresolved grouping for bleed wrapper
+// =============================================================================
+
+@import 'tans/wrappers/bleed-wrapper';
+
+// Typography
+// =============================================================================
+@import 'tans/typography/base',
+'tans/typography/address-block/address-block',
+'tans/typography/blockquote/blockquote',
+'tans/typography/breaks/breaks',
+'tans/typography/headings/headings',
+'tans/typography/inline-font-styles/inline-font-styles',
+'tans/typography/paragraphs/paragraphs',
+'tans/typography/restricted-text/restricted-text',
+'tans/typography/subtitles/subtitles',
+'tans/typography/super-titles/super-titles';
+
+// Links
+// =============================================================================
+@import 'tans/links/basic-links/link';
+
+// Icons
+// =============================================================================
+@import 'tans/icons/icon/icon.component';
+
+// Lists
+// =============================================================================
+@import 'tans/lists/bullet-list/list-bullet',
+'tans/lists/flat-list/list-flat',
+'tans/lists/icon-list/list-icon',
+'tans/lists/inline-description-list/inline-description-list/list-description-inline',
+'tans/lists/list/list/list-float',
+'tans/lists/list/list/list-hover',
+'tans/lists/list/list/nested-lists',
+'tans/lists/ordered-list/list-ordered',
+'tans/lists/piped/list-piped',
+'tans/lists/ruled-list/list-ruled';
+
+// Boxes
+// =============================================================================
+
+// The last child inside boxes should not have a margin bottom
+// TODO:
+// This was a "temp tech 180 fix". We should fix it.
+[class*='o-box-'] > :last-child { margin-bottom: 0; }
+[class*='o-box-'] > :first-child { margin-top: 0; }
+
+@import 'tans/boxes/box/box.component',
+'tans/boxes/comment-box/comment-box.component',
+'tans/boxes/info-box/info-box.component',
+'tans/boxes/sticky-box/sticky-box.component',
+'tans/boxes/toaster/toaster.component';
+
+// Headers
+// =============================================================================
+//@import 'tans/headers/header-hero/header-hero.component',
+@import 'tans/headers/header-section/header-section.component';
+
+// Modals
+// =============================================================================
+@import 'tans/overlays/dropdown-box/dropdown-box.component';
+//@import '../../_old/src/tans/overlays/modal/modal',
+//'../../_old/src/tans/overlays/overlay/overlay.component',
+//'../../_old/src/tans/overlays/modal/modal-header-hero',
+//'../../_old/src/tans/overlays/modal/modal-header-rack',
+@import 'tans/overlays/drawers/infinite-drawers/infinite-drawers';
+
+// Navigation
+// =============================================================================
+@import 'tans/navigation/breadcrumbs/breadcrumbs.component';
+@import 'tans/navigation/nav-top/nav-top';
+//'../../_old/src/tans/overlays/dropdown-box/dropdown-box.component',
+@import 'tans/navigation/pips/pips';
+
+// Badges
+// =============================================================================
+@import './tans/badges/badge/badge.component';
+
+// Buttons
+// =============================================================================
+@import './tans/buttons/button/button.component';
+@import './tans/buttons/button-group/button-group.component';
+@import './tans/buttons/tile-button/tile-button.component';
+@import 'tans/forms/toggle/toggle.component';
+//'../../_old/src/tans/buttons/button-group/button-group.component',
+
+// Colors
+// =============================================================================
+@import 'tans/colors/color-stamp/color-stamp.component';
+@import 'tans/colors/color-picker/color-picker.component';
+
+// Forms
+// =============================================================================
+@import "tans/scrollable-container/scrollable-container.component";
+@import 'tans/forms/controls/checkbox/checkbox.component';
+@import 'tans/forms/inputs/input-container/input-container.component';
+@import 'tans/forms/inputs/textarea/textarea.directive';
+@import 'tans/forms/radio/radio.component';
+//@import "../../_old/src/tans/forms/label/label",
+//"../../_old/src/tans/forms/inputs/text",
+//"../../_old/src/tans/forms/inputs/text-area/text-area",
+//"../../_old/src/tans/forms/inputs/number/number",
+//"../../_old/src/tans/forms/inputs/inline/inline",
+//"../../_old/src/tans/forms/inputs/clearable/clearable",
+//"../../_old/src/tans/forms/inputs/search/search",
+//'../../_old/src/tans/forms/controls/select/select.component',
+//"../../_old/src/tans/forms/controls/radio/radio",
+//"../../_old/src/tans/forms/controls/switch/switch.component",
+//"../../_old/src/tans/scrollable-container/scrollable-container.component",
+//"../../_old/src/tans/forms/validation",
+//"../../_old/src/tans/forms/fieldset/fieldset",
+//"../../_old/src/tans/forms/fieldset/legend",
+//"../../_old/src/tans/forms/controls/file-uploader/file-uploader.component";
+
+// Tables
+// =============================================================================
+@import 'tans/tables/tables';
+
+// Accordion
+// =============================================================================
+@import 'tans/accordion/accordion.component';
+
+// Accordion
+// =============================================================================
+//@import '../../_old/src/tans/show-more/show-more.component';
+
+// Carousel
+// =============================================================================
+@import 'tans/carousel/carousel.component';
+
+// Image Viewer
+// =============================================================================
+@import 'tans/image-viewer/image-viewer.component';
+
+// Rack Item - temp name
+// =============================================================================
+@import 'tans/rack/rack.component';
+
+// Indicators
+// =============================================================================
+@import 'tans/indicators/flag/flag.component';
+@import 'tans/indicators/tag/tag.component';
+// '../../_old/src/tans/indicators/tag/tag.component';
+
+// Images
+// =============================================================================
+// @import 'tools/mixins/images/aspect-ratio',
+// 'tools/mixins/images/selected-image-border',
+@import 'tans/images/aspect-ratio/_aspect-ratio.component';
+@import 'tans/images/expanding-image/_expanding-image.component';
+
+// Thumbnail gallery images
+// =============================================================================
+@import "tans/images/thumbnail-gallery/thumbnail-gallery.component";
+
+// loaders
+// =============================================================================
+@import 'tans/loaders/loaders';
+
+// step indicator
+// =============================================================================
+@import 'tans/step-indicator/step-indicator.component';
+
+// Helpers
+// =============================================================================
+//'../../_old/src/tans/helpers/positioning/stickers/sticker-positioner',
+@import 'tans/helpers/accessibility/visually-hidden';
+@import 'tans/helpers/clearfix/clearfix';
+@import 'tans/helpers/visible/visible';
+@import 'tans/helpers/content-columns/content-columns';
+@import 'tans/helpers/width-modifiers/width-modifiers';
+@import 'tans/helpers/flex/flex';
+@import 'tans/helpers/hacks/hacks';
+@import 'tans/helpers/links/links';
+@import 'tans/helpers/media-block/media-block.component';
+@import 'tans/helpers/pull/pull';
+@import 'tans/helpers/scroll-lock/scroll-lock';
+@import 'tans/helpers/spacing/spacing';
+@import 'tans/helpers/tab-trap/tab-trap';
+@import 'tans/helpers/text/text';
+//    //Demo styles == styles for demo-ing invisible elements etc
+//'../../_old/src/tans/helpers/demo-styles';
+
+// Tabs
+// =============================================================================
+@import 'tans/tabs/tabs/tabs';
+
+// Content styles
+// =============================================================================
+@import './tans/scopes/content/content';
+
+// hacks ============================================================================= <<<<<<<<<<<<<<< padding while testing
+.sh-pad {
+    padding: $unit * 2;
+}
+
+// test styles temp - remove when done
+// =================
+.test-has-issue,
+.test-has-fix {
+    &:before {
+        position: absolute;
+        height: 30px;
+        width: 10px;
+        content: '';
+        border-left: 5px solid tomato;
+        margin-left: -$unit;
+        opacity: .5;
+    }
+}
+
+.test-has-fix {
+    &:before {
+        border-right: 5px solid springgreen;
+    }
+}
+
+// Fed Ex temp fix //TODO: mhermon remove after FedEx
+// =============================================================================
+.o-header-hero {
+    margin-bottom: $unit;
+}
+
+//this could be required but putting as temp fix for now
+.o-nav-sub-menu__item {
+    .o-accordion {
+        margin-top: $unit / 2;
+    }
+}
+
+.sh-h-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+// this has been requested so just adding here for now, can talk about it post fedEx
+$breakpointsMap: (
+    sm: $sm-min,
+    md: $md-min,
+    lg: $lg-min,
+    xl: $xl-min,
+    sd: $sd-min,
+    mg: $mg-min,
+    ll: $ll-min
+);
+
+$breakpointsOnlyMap: (
+    sm-only: $sm-only,
+    md-only: $md-only,
+    lg-only: $lg-only,
+    sd-only: $sd-only,
+    mg-only: $mg-only,
+    ll-only: $ll-only
+);
+
+// Talk to Elwyn & Pablo to see if this is still needed for now, if not, we can add back later
+
+.l-col--transition {
+    transition: width 0.5s ease-in-out;
+}
+
+.l-col--collapsed {
+    transition: width 0.5s ease-in-out;
+    width: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+@each $breakpointName, $breakpointVar in $breakpointsMap {
+    @if ($breakpointName != sm ) {
+        @include breakpoint($breakpointVar) {
+            .l-col--collapsed-#{$breakpointName} {
+                transition: width 0.5s ease-in-out;
+                width: 0 !important;
+                padding: 0 !important;
+                overflow: hidden;
+            }
+        }
+    }
+}
+
+@each $breakpointOnlyName, $breakpointOnlyVar in $breakpointsOnlyMap {
+    @include breakpoint($breakpointOnlyVar) {
+        .l-col--collapsed-#{$breakpointOnlyName} {
+            transition: width 0.5s ease-in-out;
+            width: 0 !important;
+            padding: 0 !important;
+            overflow: hidden;
+        }
+    }
+}
+
+.scaffold {
+    border: 1px solid red;
+}
