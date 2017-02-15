@@ -41,3 +41,15 @@
     val1: -($unit);
     val1: ($unit);
 }
+
+.o-color-stamp--multi-color {
+    background: linear-gradient(
+        $waitomo-300 0%,
+        rgba(255, 255, 255, 0), // random comment
+        to right, /* and another one */
+        $white,
+        $tasman-600 100%,
+    );
+    color: $silver-fern-50;
+    transform: rotate(-50deg) translateZ(0);
+}

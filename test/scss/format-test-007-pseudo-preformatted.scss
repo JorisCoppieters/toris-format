@@ -80,6 +80,10 @@
     font-family: 'Museo Sans';
     font-weight: normal;
     font-style: normal;
+    src: url('//trademe.tmcdn.co.nz/tm/fonts/2DEDE4_1_0.eot?#iefix') format('embedded-opentype'),
+         url('//trademe.tmcdn.co.nz/tm/fonts/2DEDE4_1_0.woff2') format('woff2'),
+         url('//trademe.tmcdn.co.nz/tm/fonts/2DEDE4_1_0.woff') format('woff'),
+         url('//trademe.tmcdn.co.nz/tm/fonts/2DEDE4_1_0.ttf') format('truetype');
 }
 
 @mixin create-pointer($size: $pointer-size-default, $color: $tip-top-300, $direction: 'up') {

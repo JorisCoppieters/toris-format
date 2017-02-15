@@ -92,15 +92,20 @@
 @if ($abc > 0) && ("b" < 3) || (false == 2) {
 }
 @if (($abc > 0 && "b" < 3) || false == 2) && d {
-}
-
-@else if (($abc > 0 && "b" < 3) || false == 2) && d {
-}
-@else {
+} @else if (($abc > 0 && "b" < 3) || false == 2) && d {
+} @else {
 }
 
 @if (($spacing-property == 'padding' and $unit-multiplier < 0) == false) {
 }
 
 @if ($spacing-property == 'padding' and $unit-multiplier < 0) == false {
+}
+
+@if $breakpoint-name == 'sm' {
+} @else {
+    @include breakpoint($breakpoint-value) {
+        $breakpoint-classname-partial: '-#{$breakpoint-name}';
+        @include generateSpacingHelpers($breakpoint-classname-partial);
+    }
 }

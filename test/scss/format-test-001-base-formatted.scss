@@ -80,6 +80,8 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
         top: calc(50% - 6px);
         top: calc(100% - #{$unit * 0.75});
         margin: $unit (-0.5 * $unit) 0 (-0.5 * $unit);
+        border-top: 0 solid transparent;
+        transition-property: background-color, border-color, box-shadow, color;
         background: linear-gradient(to left, rgba(247, 247, 247, 0.5), rgba(247, 247, 247, 0.9) 40%, #f7f7f7);
         margin-top: $unit * -1;
         padding: $unit / 2 $unit;

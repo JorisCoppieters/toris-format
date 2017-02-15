@@ -94,7 +94,11 @@ var DEFINITION = {
   },
   keyframesEntry: {
     OPERATOR: '&&',
-    SEGMENTS: ['measurement', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryEnd']
+    SEGMENTS: ['keyframesEntryKey', 'BlockStart', 'keyframesEntryProperty', 'SEMI?', 'keyframesEntryEnd']
+  },
+  keyframesEntryKey: {
+    OPERATOR: '||',
+    SEGMENTS: ['NumberAndText', 'Number']
   },
   keyframesEntryEnd: {
     OPERATOR: '&&',
@@ -190,11 +194,11 @@ var DEFINITION = {
   },
   expressions3Plus: {
     OPERATOR: '&&',
-    SEGMENTS: ['expression+', 'commaExpression', 'commaExpression+']
+    SEGMENTS: ['expression+', 'commaExpression', 'commaExpression+', 'extraComma?']
   },
   expressions3Less: {
     OPERATOR: '&&',
-    SEGMENTS: ['expression+', 'commaExpression*']
+    SEGMENTS: ['expression+', 'commaExpression*', 'extraComma?']
   },
   expressionsInParens: {
     OPERATOR: '||',
@@ -226,7 +230,15 @@ var DEFINITION = {
   },
   expression: {
     OPERATOR: '||',
-    SEGMENTS: ['expressionsInParens', 'mapExpression', 'url', 'functionCall', 'SL_COMMENT', 'mathCharacter', 'measurement', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+    SEGMENTS: ['expressionsInParens', 'mapExpression', 'url', 'functionCall', 'SL_COMMENT', 'COMMENT', 'mathCharacter', 'NumberAndText', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName']
+  },
+  NumberAndText: {
+    OPERATOR: '&&',
+    SEGMENTS: ['Number', 'IdentifierOrMathCharacter']
+  },
+  IdentifierOrMathCharacter: {
+    OPERATOR: '||',
+    SEGMENTS: ['Identifier', 'PERC']
   },
   mapExpression: {
     OPERATOR: '&&',
@@ -431,11 +443,11 @@ var DEFINITION = {
   },
   block: {
     OPERATOR: '&&',
-    SEGMENTS: ['BlockStart', 'blockProperty*', 'BlockEnd']
+    SEGMENTS: ['BlockStart', 'blockProperty*', 'blockPropertyNoSemi?', 'BlockEnd']
   },
   blockProperty: {
     OPERATOR: '||',
-    SEGMENTS: ['blockPropertySemi', 'blockPropertyNoSemi', 'statement']
+    SEGMENTS: ['blockPropertySemi', 'statement']
   },
   blockPropertySemi: {
     OPERATOR: '&&',
@@ -596,10 +608,6 @@ var DEFINITION = {
   url: {
     OPERATOR: '&&',
     SEGMENTS: ['UrlStart', 'Url', 'UrlEnd']
-  },
-  measurement: {
-    OPERATOR: '&&',
-    SEGMENTS: ['Number', 'Unit']
   },
   functionCall: {
     OPERATOR: '&&',

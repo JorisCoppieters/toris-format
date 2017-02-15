@@ -61,3 +61,10 @@
 @if ($spacing-property == 'padding' and $unit-multiplier < 0) == false {
 }
 
+    @if $breakpoint-name == 'sm' {
+    } @else {
+        @include breakpoint($breakpoint-value) {
+            $breakpoint-classname-partial: '-#{$breakpoint-name}';
+            @include generateSpacingHelpers($breakpoint-classname-partial);
+        }
+    }

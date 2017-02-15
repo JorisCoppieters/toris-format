@@ -170,3 +170,14 @@ tg-rack-item-note {
 [class*='o-box-'] >:first-child {
     margin-top: 0;
 }
+
+.o-button--icon-on-left-and-right {
+    tg-icon:first-of-type .icon,
+    tg-icon-will-change:first-of-type .icon {
+        margin-right: $unit / 4;
+    }
+}
+
+.h-#{$spacing-property}#{$unit-variation-classname-partial}#{$breakpoint-classname-partial} {
+    #{$spacing-property}: $unit * $unit-multiplier !important;
+}
