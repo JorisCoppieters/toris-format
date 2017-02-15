@@ -46,7 +46,10 @@ function formatTests (fileExtension, fileType, formatFunction) {
             var preformattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-preformatted.' + fileExtension), 'utf8');
             var formattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-formatted.' + fileExtension), 'utf8');
             var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
-            loadConfigFile(configFile);
+            var config = loadConfigFile(configFile);
+            if (config.ignore) {
+                return;
+            }
             formatTestFiles(fileExtension + '-' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
         })
     });
@@ -75,7 +78,10 @@ function printTests (fileExtension, fileType, formatFunction) {
             var testName = matches[2];
             var sassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '.' + fileExtension), 'utf8');
             var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
-            loadConfigFile(configFile);
+            var config = loadConfigFile(configFile);
+            if (config.ignore) {
+                return;
+            }
             printTestContents(fileExtension + '-' + testName, fileType, formatFunction, sassContents);
         })
     });
@@ -87,7 +93,9 @@ function loadConfigFile (configFile) {
     if (fs.existsSync(configFile)) {
         var config = require(configFile);
         torisFormat.setup(config);
+        return config;
     }
+    return {};
 }
 
 // ******************************
