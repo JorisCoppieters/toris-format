@@ -1,0 +1,49 @@
+// comment
+// comment
+
+// comment1
+
+/* comment */
+/* comment */
+
+/* comment1 */
+
+/* multi
+   line */
+/* multi
+   line */
+
+/* multi
+   line */
+
+// Comment just before
+$col: $someval;
+
+/* Multi line comment just before */
+$col: $someval;
+
+// Comment and extra newline before
+
+$col: $someval;
+
+/* Multi line comment and extra newline before */
+
+$col: $someval;
+
+// Comment and double extra newline before
+
+$col: $someval;
+
+/* Multi line comment and double extra newline before */
+
+$col: $someval;
+
+$col: $someval; // Comment after
+$col: $someval; /* Multi line comment after */
+
+.class {
+    // comment
+    /* comment */
+    .class {
+    }
+}

@@ -243,8 +243,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       last_token = definition_value;
 
       if (['SELECTOR'].indexOf(state.VALUE_TYPE) >= 0) {
-        newline = ([',', '{'].indexOf(state.LAST_TOKEN) >= 0);
-        double_newline = ([';', '}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+        double_newline = whitespace_before_includes_double_newline;
+        newline = (whitespace_before_includes_newline || [',', '{', ';', '}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
         color_func = cprint.toLightCyan;
       }
 
@@ -260,7 +260,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         space_before = false;
       } else if (['MAP_ENTRY_KEY'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
-      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && [':', 'MINUS'].indexOf(state.LAST_TOKEN) < 0) {
+      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['OPERATOR', ':', 'MINUS'].indexOf(state.LAST_TOKEN) < 0) {
         space_before = false;
       } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON', 'EQ', 'RBRACK'].indexOf(definition_key) >= 0) {
         space_before = false;
@@ -287,7 +287,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'EXTEND':
     case 'PAGE':
     case 'RETURN':
-      double_newline = (whitespace_before_includes_double_newline);
+      double_newline = whitespace_before_includes_double_newline;
       newline = (whitespace_before_includes_newline || [';', '{', ',', '}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       color_func = cprint.toCyan;
       last_token = definition_value;
@@ -437,14 +437,14 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'COMMENT':
-      double_newline = (whitespace_before_includes_double_newline || ['SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-      newline = (whitespace_before_includes_newline);
+      double_newline = whitespace_before_includes_double_newline;
+      newline = (whitespace_before_includes_newline || ['SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       color_func = cprint.toDarkGrey;
       last_token = 'MULTI_LINE_COMMENT';
       break;
     case 'SL_COMMENT':
-      double_newline = (whitespace_before_includes_double_newline || ['MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-      newline = (whitespace_before_includes_newline || ['SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+      double_newline = whitespace_before_includes_double_newline;
+      newline = (whitespace_before_includes_newline || ['SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       color_func = cprint.toDarkGrey;
       last_token = 'SINGLE_LINE_COMMENT';
       break;
@@ -607,7 +607,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'TYPE_KEYFRAMES_ENTRY_KEY':
-          newline = [';', '}', '{', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0;
+          double_newline = whitespace_before_includes_double_newline;
+          newline = (whitespace_before_includes_newline || [';', '}', '{', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
           color_func = cprint.toGreen;
           break;
 
@@ -646,8 +647,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case 'SELECTOR':
         case 'SELECTOR_PREFIX':
-          double_newline = (whitespace_before_includes_double_newline || [';', '}', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-          newline = (whitespace_before_includes_newline || ['', ';', '{', ',', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+          double_newline = whitespace_before_includes_double_newline;
+          newline = (whitespace_before_includes_newline || ['', ';', '{', ',', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
           color_func = cprint.toLightCyan;
 
           if (definition_key === 'GT') {
@@ -666,7 +667,9 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case 'PROPERTY':
           newline = (state.LAST_TOKEN !== '(');
-          space_before = false;
+          if (['('].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
+          }
           color_func = cprint.toGreen;
           break;
 
@@ -687,72 +690,46 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
           switch (state.DECLARATION_TYPE) {
 
+            case 'FUNCTION':
             case 'HASH_BLOCK_AFTER':
             case 'HASH_BLOCK_END':
-            case 'FUNCTION':
-            case 'VARIABLE':
-            case 'VARIABLE_VALUES':
-              if (definition_key === 'DOLLAR') {
-                double_newline = (whitespace_before_includes_double_newline || ['}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-                newline = (whitespace_before_includes_newline || [';', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
-                if (state.LAST_TOKEN === 'MINUS' || state.LAST_TOKEN === '(') {
-                  space_before = false;
-                }
-                last_token = '$';
-              } else {
-                if (state.LAST_TOKEN === '$') {
-                  space_before = false;
-                }
-              }
-              break;
-
-            case 'VARIABLE_VALUES_3PLUS':
-              if (definition_key === 'DOLLAR') {
-                newline = (['(', ':', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-                last_token = '$';
-              } else {
-                if (state.LAST_TOKEN === '$') {
-                  space_before = false;
-                }
-              }
-              break;
-
-            case 'MIXIN':
-            case 'IF':
-            case 'INCLUDE':
-            case 'PROPERTY':
-            case 'MAP_ENTRY_VALUES':
-            case 'FUNCTION_CALL_ARGUMENTS':
-            case 'EACH':
-              if (definition_key === 'DOLLAR') {
-                if (state.LAST_TOKEN === 'MINUS' || state.LAST_TOKEN === '(') {
-                  space_before = false;
-                }
-                last_token = '$';
-              } else {
-                if (state.LAST_TOKEN === '$' || state.LAST_TOKEN === '(') {
-                  space_before = false;
-                }
-              }
-              break;
-
             case 'MULTI_LINE_FUNCTION_CALL_ARGUMENTS':
             case 'MULTI_LINE_FUNCTION_END':
-              newline = (['', '(', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+            case 'VARIABLE':
+            case 'VARIABLE_VALUES':
+            case 'VARIABLE_VALUES_3PLUS':
               if (definition_key === 'DOLLAR') {
-                if (state.LAST_TOKEN === 'MINUS' || state.LAST_TOKEN === '(') {
+                double_newline = whitespace_before_includes_double_newline;
+                newline = (whitespace_before_includes_newline || [';', '{', '}', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+                if (['{', 'MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
                   space_before = false;
                 }
                 last_token = '$';
               } else {
-                if (state.LAST_TOKEN === '$') {
+                if (['$', '('].indexOf(state.LAST_TOKEN) >= 0) {
                   space_before = false;
                 }
               }
               break;
 
+            case 'EACH':
+            case 'FUNCTION_CALL_ARGUMENTS':
             case 'HASH_BLOCK_EXPRESSION':
-              space_before = false;
+            case 'IF':
+            case 'INCLUDE':
+            case 'MAP_ENTRY_VALUES':
+            case 'MIXIN':
+            case 'PROPERTY':
+              if (definition_key === 'DOLLAR') {
+                if (['{', 'MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
+                  space_before = false;
+                }
+                last_token = '$';
+              } else {
+                if (['$', '('].indexOf(state.LAST_TOKEN) >= 0) {
+                  space_before = false;
+                }
+              }
               break;
 
             default:
@@ -784,7 +761,9 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'STRING':
-          space_before = false;
+          if ([':'].indexOf(state.LAST_TOKEN) >= 0) {
+            space_before = false;
+          }
           color_func = cprint.toYellow;
           break;
 
@@ -828,12 +807,16 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               break;
 
             case 'HASH_BLOCK_EXPRESSION':
-              space_before = false;
+              if (['{'].indexOf(state.LAST_TOKEN) >= 0) {
+                space_before = false;
+              }
               color_func = cprint.toYellow;
               break;
 
             case 'HASH_BLOCK_AFTER':
-              space_before = false;
+              if (['-', '}'].indexOf(state.LAST_TOKEN) >= 0) {
+                space_before = false;
+              }
               color_func = cprint.toYellow;
               break;
 

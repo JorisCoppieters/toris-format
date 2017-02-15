@@ -78,11 +78,9 @@ a[ui-sref="tm.property.home"]:visited {
     ::-webkit-input-placeholder {
         color: #fff;
     }
-
     :-moz-placeholder {
         color: #fff;
     }
-
     #something {
         color: #fff;
     }
@@ -114,7 +112,6 @@ a[ui-sref="tm.property.home"]:visited {
 
 @for $i from 1 through 4 {
     $c: nth($profile-image-placeholder-colors, $i);
-
     .#{refiner__option--level}-#{$i} {
         padding-left: $unit * ($i + 1) / 4;
     }
@@ -136,7 +133,6 @@ tg-rack ~ .refine-height-filler-helper {
 
 .banner-image__placeholder--color-#{$i - 1} {
 }
-
 .banner-image__placeholder--color-#{$i-1} {
 }
 
@@ -166,7 +162,6 @@ tg-rack-item-note {
 [class*='o-box-'] >:last-child {
     margin-bottom: 0;
 }
-
 [class*='o-box-'] >:first-child {
     margin-top: 0;
 }

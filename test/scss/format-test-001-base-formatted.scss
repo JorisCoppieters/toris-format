@@ -44,7 +44,7 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 .o-image-viewer:hover,
 .o-image-viewer__button:hover {
     background-color: $silver-fern-20;
-    margin-left: -$unit;
+    margin-left: calc(#{$motors-image-viewer-button-width} + #{$unit / 4});
 }
 
 .a-class {
@@ -70,7 +70,6 @@ $box-shadow-fix-to-bottom: 0 10px 20px 5px;
 
 .mobile-header__logo {
     $logo-no-tagline-max-width: 174px;
-
     img {
         max-width: $logo-no-tagline-max-width;
         margin-top: 12px;
