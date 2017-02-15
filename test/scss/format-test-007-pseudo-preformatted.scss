@@ -117,3 +117,14 @@
         @include calc-grid-column($i, $class, $type);
     }
 }
+
+.o-input__body {
+@include span(6);
+flex: 0 0 auto;
+@include breakpoint($md-min) {
+    @include span(4);
+}
+@include breakpoint($lg-min) {
+    @include span(3);
+}
+}

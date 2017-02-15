@@ -179,5 +179,6 @@ tg-rack-item-note {
 }
 
 .h-#{$spacing-property}#{$unit-variation-classname-partial}#{$breakpoint-classname-partial} {
-    #{$spacing-property}: $unit * $unit-multiplier !important;
+    #{$spacing-property}-left: $unit * $unit-multiplier !important;
+    #{$spacing-property}-right: $unit * $unit-multiplier !important;
 }
