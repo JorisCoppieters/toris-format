@@ -37,7 +37,7 @@ var DEFINITION = {
   },
   statement: {
     OPERATOR: '||',
-    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
+    SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'keyframesDeclaration', 'pageDeclaration', 'nested', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration']
   },
   params: {
     OPERATOR: '&&',
@@ -57,7 +57,7 @@ var DEFINITION = {
   },
   paramOptionalValue: {
     OPERATOR: '&&',
-    SEGMENTS: ['COLON', 'expressions']
+    SEGMENTS: ['COLON', 'expression']
   },
   paramsInParen: {
     OPERATOR: '&&',
@@ -104,6 +104,22 @@ var DEFINITION = {
     SEGMENTS: ['COLON', 'values']
   },
   keyframesEntryBlockEnd: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockEnd']
+  },
+  fontFaceDeclaration: {
+    OPERATOR: '&&',
+    SEGMENTS: ['FONT_FACE', 'fontFaceDeclarationStart', 'fontFaceDeclarationValues', 'fontFaceDeclarationEnd']
+  },
+  fontFaceDeclarationStart: {
+    OPERATOR: '&&',
+    SEGMENTS: ['BlockStart']
+  },
+  fontFaceDeclarationValues: {
+    OPERATOR: '&&',
+    SEGMENTS: ['blockProperty*']
+  },
+  fontFaceDeclarationEnd: {
     OPERATOR: '&&',
     SEGMENTS: ['BlockEnd']
   },
@@ -209,7 +225,7 @@ var DEFINITION = {
   },
   mapExpression: {
     OPERATOR: '&&',
-    SEGMENTS: ['mapExpressionStart', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'mapExpressionEnd']
+    SEGMENTS: ['mapExpressionStart', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'comment?', 'mapExpressionEnd']
   },
   mapExpressionStart: {
     OPERATOR: '&&',
@@ -221,7 +237,15 @@ var DEFINITION = {
   },
   mapEntry: {
     OPERATOR: '&&',
-    SEGMENTS: ['Number', 'COLON', 'mapEntryValues']
+    SEGMENTS: ['comment?', 'mapEntryKeyValue', 'comment?']
+  },
+  mapEntryKeyValue: {
+    OPERATOR: '&&',
+    SEGMENTS: ['mapEntryKey', 'COLON', 'mapEntryValues']
+  },
+  mapEntryKey: {
+    OPERATOR: '||',
+    SEGMENTS: ['Number', 'StringLiteral', 'Identifier']
   },
   mapEntryValues: {
     OPERATOR: '&&',
@@ -293,7 +317,11 @@ var DEFINITION = {
   },
   variableDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['variableName', 'COLON', 'variableDeclarationValues', 'POUND_DEFAULT?', 'SEMI+']
+    SEGMENTS: ['variableDeclarationKey', 'COLON', 'variableDeclarationValues', 'POUND_DEFAULT?', 'SEMI+']
+  },
+  variableDeclarationKey: {
+    OPERATOR: '||',
+    SEGMENTS: ['StringLiteral', 'variableName']
   },
   variableDeclarationValues: {
     OPERATOR: '&&',
@@ -310,10 +338,6 @@ var DEFINITION = {
   colonValues: {
     OPERATOR: '&&',
     SEGMENTS: ['COLON', 'values']
-  },
-  commaSelector: {
-    OPERATOR: '&&',
-    SEGMENTS: ['COMMA', 'selector']
   },
   forDeclaration: {
     OPERATOR: '&&',
@@ -341,7 +365,7 @@ var DEFINITION = {
   },
   eachValueListEntry: {
     OPERATOR: '||',
-    SEGMENTS: ['eachValueListInParen', 'Identifier', 'identifierValue', 'variableName']
+    SEGMENTS: ['eachValueListInParen', 'functionCall', 'Identifier', 'identifierValue', 'variableName']
   },
   commaEachValueListEntry: {
     OPERATOR: '&&',
@@ -357,11 +381,15 @@ var DEFINITION = {
   },
   importDeclaration: {
     OPERATOR: '&&',
-    SEGMENTS: ['IMPORT', 'referenceUrl', 'mediaTypes?', 'SEMI+']
+    SEGMENTS: ['IMPORT', 'referenceUrl', 'commaReferenceUrl*', 'mediaTypes?', 'SEMI+']
   },
   referenceUrl: {
     OPERATOR: '||',
     SEGMENTS: ['StringLiteral', 'url']
+  },
+  commaReferenceUrl: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'referenceUrl']
   },
   mediaTypes: {
     OPERATOR: '&&',
@@ -397,7 +425,19 @@ var DEFINITION = {
   },
   selectors: {
     OPERATOR: '&&',
-    SEGMENTS: ['selector', 'commaSelector*']
+    SEGMENTS: ['selectorWithComment', 'commaSelectorWithComment*']
+  },
+  commaSelectorWithComment: {
+    OPERATOR: '&&',
+    SEGMENTS: ['COMMA', 'selectorWithComment']
+  },
+  selectorWithComment: {
+    OPERATOR: '&&',
+    SEGMENTS: ['comment?', 'selector', 'comment?']
+  },
+  comment: {
+    OPERATOR: '||',
+    SEGMENTS: ['SL_COMMENT', 'COMMENT']
   },
   selector: {
     OPERATOR: '&&',
@@ -437,7 +477,7 @@ var DEFINITION = {
   },
   pseudoValue: {
     OPERATOR: '||',
-    SEGMENTS: ['pseudo', 'attrib', 'Number', 'hashBlock']
+    SEGMENTS: ['pseudo', 'attrib', 'Number', 'hashBlock', 'selector']
   },
   pseudoIdentifier: {
     OPERATOR: '&&',

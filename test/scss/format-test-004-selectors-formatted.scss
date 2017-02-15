@@ -33,6 +33,7 @@ tm-homepage-categories {
 .homepage__categories__button--marketplace > a {
     &:active {
         &:focus {
+
             >:first-child {
                 padding-top: ($unit);
             }
@@ -145,4 +146,15 @@ tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
 }
 
 tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
+}
+
+tg-rack-item-primary,
+.o-rack-item__primary, // remove
+tg-rack-item-note {
+}
+
+.o-sticky-box:not(.s-is-active) {
+    .l-container {
+        padding: 0;
+    }
 }

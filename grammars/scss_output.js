@@ -81,6 +81,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       state.DECLARATION_TYPE = 'RETURN';
       state.VALUE_TYPE = false;
       break;
+    case 'fontFaceDeclaration':
+      state.DECLARATION_TYPE = 'FONT_FACE';
+      state.VALUE_TYPE = false;
+      break;
     case 'mixinDeclaration':
       state.DECLARATION_TYPE = 'MIXIN';
       state.VALUE_TYPE = false;
@@ -272,6 +276,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'INCLUDE':
     case 'KEYFRAMES':
     case 'MEDIA':
+    case 'FONT_FACE':
     case 'MIXIN':
     case 'PAGE':
     case 'RETURN':
@@ -298,9 +303,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         case false:
         case 'SELECTOR':
         case 'FUNCTION_CALL_ARGUMENTS':
+        case 'FUNCTION_END':
         case 'HASH_BLOCK_EXPRESSION':
         case 'PROPERTY':
         case 'KEYFRAMES':
+        case 'FONT_FACE':
         case 'FUNCTION':
         case 'MEDIA':
         case 'PAGE':
@@ -488,7 +495,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       switch (state.DECLARATION_TYPE) {
 
         case 'PROPERTY':
-        case 'IMPORT':
+        case 'MIXIN':
         case 'FUNCTION_CALL_ARGUMENTS':
         case 'FUNCTION_END':
         case 'HASH_BLOCK_EXPRESSION':
@@ -538,7 +545,18 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           color_func = cprint.toYellow;
           break;
 
+        case 'IMPORT':
+          newline = (state.LAST_TOKEN !== '@import');
+          color_func = cprint.toYellow;
+          last_token = 'IMPORT';
+          break;
+
         case 'MAP_ENTRY':
+          newline = true;
+          color_func = cprint.toGreen;
+          last_token = 'MAP_ENTRY';
+          break;
+
         case 'KEYFRAMES_ENTRY':
           newline = true;
           color_func = cprint.toGreen;
@@ -552,7 +570,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         default:
           if (options.DEBUG) {
-            append = state.DECLARATION_TYPE + ':' + definition_key;
+            append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
             color_func = cprint.toBackgroundYellow;
           }
           break;
@@ -573,8 +591,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       switch (state.VALUE_TYPE) {
 
         case 'SELECTOR':
-          newline = (['', '{', ','].indexOf(state.LAST_TOKEN) >= 0);
-          double_newline = ([';', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+          double_newline = (whitespace_before_includes_double_newline || [';', '}', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
+          newline = (whitespace_before_includes_newline || ['', ';', '{', ',', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
           color_func = cprint.toLightCyan;
 
           if (definition_key === 'GT') {
@@ -611,6 +629,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'FUNCTION':
             case 'VARIABLE':
             case 'VARIABLE_VALUES':
+            case 'MAP_ENTRY_VALUES':
             case 'INCLUDE':
               if (definition_key === 'DOLLAR') {
                 double_newline = (whitespace_before_includes_double_newline || ['}', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
@@ -659,7 +678,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
             default:
               if (options.DEBUG) {
-                append = state.DECLARATION_TYPE + ':' + definition_key;
+                append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
                 color_func = cprint.toBackgroundYellow;
               }
               break;
@@ -707,7 +726,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         default:
           if (state.VALUE_TYPE) {
             if (options.DEBUG) {
-              append = state.VALUE_TYPE + ':' + definition_key;
+              append = '[NO DECLARATION_TYPE]:' + state.VALUE_TYPE + ':' + definition_key;
               color_func = cprint.toBackgroundRed;
             }
             break;
@@ -750,6 +769,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
               color_func = cprint.toGreen;
               break;
 
+            case 'MAP_ENTRY':
+              newline = (['', '(', ','].indexOf(state.LAST_TOKEN) >= 0);
+              color_func = cprint.toYellow;
+              break;
+
             default:
               if (options.DEBUG) {
                 append = state.DECLARATION_TYPE + ':' + definition_key;
@@ -766,6 +790,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         case 'PROPERTY':
         case 'IMPORT':
+        case 'MIXIN':
         case 'FUNCTION_END':
         case 'FUNCTION_CALL_ARGUMENTS':
         case 'MULTI_LINE_FUNCTION_END':
@@ -785,7 +810,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 
         default:
           if (options.DEBUG) {
-            append = state.DECLARATION_TYPE + ':' + definition_key;
+            append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
             color_func = cprint.toBackgroundYellow;
           }
           break;

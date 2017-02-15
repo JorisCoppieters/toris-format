@@ -125,6 +125,8 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
     } catch (err) {
         console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
         cprint.red(err);
+        g_TEST_FAILED = true;
+        return false;
     }
 
     testIdentifier = cprint.toWhite(' : ') + cprint.toCyan(testName) + cprint.toWhite(' : ') + cprint.toMagenta('Formatting already formatted ' + fileType + ' still outputs to formatted ' + fileType);
@@ -153,6 +155,8 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
     } catch (err) {
         console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
         cprint.red(err);
+        g_TEST_FAILED = true;
+        return false;
     }
 
     return true;

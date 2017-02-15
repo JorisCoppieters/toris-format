@@ -382,28 +382,51 @@ function print_contents_diff (in_expected_contents, in_contents) {
 
   var padding = 150;
 
-  var diff_idx = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
-  var beginning_section = expected_contents.substr(Math.max(0, diff_idx - padding), diff_idx - Math.max(0, diff_idx - padding));
-  var correct_section = expected_contents.substr(diff_idx, 1);
+  var diff_idx1 = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
+  var diff_idx2 = diff_segments_100.diff2_start + diff_segments_1.diff2_start;
 
-  var incorrect_section = contents.substr(diff_idx, 1);
-  if (incorrect_section === ' ') {
-    incorrect_section = '☐';
+  if (isNaN(diff_idx1)) {
+    diff_idx2++;
+    var beginning_section_start = Math.max(0, diff_idx2 - padding);
+    var beginning_section_length = diff_idx2 - beginning_section_start;
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var remaining_section = contents.substr(diff_idx2);
+    console.log(cprint.toWhite(beginning_section) + cprint.toCyan(remaining_section));
+  } else if (isNaN(diff_idx2)) {
+    diff_idx1++;
+    var beginning_section_start = Math.max(0, diff_idx1 - padding);
+    var beginning_section_length = diff_idx1 - beginning_section_start;
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var removed_section = expected_contents.substr(diff_idx1);
+    console.log(cprint.toWhite(beginning_section) + cprint.toMagenta(removed_section));
+  } else {
+    var beginning_section_start = Math.max(0, diff_idx1 - padding);
+    var beginning_section_length = diff_idx1 - beginning_section_start;
+
+    var remaining_section_start = diff_idx1 + 1;
+    var remaining_section_length = Math.min(contents.length - remaining_section_start, padding);
+
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var correct_section = expected_contents.substr(diff_idx1, 1);
+
+    var incorrect_section = contents.substr(diff_idx1, 1);
+    if (incorrect_section === ' ') {
+      incorrect_section = '☐';
+    }
+    else if (correct_section === ' ') {
+      incorrect_section = '☒';
+      diff_idx1--;
+    }
+
+    var remaining_section = contents.substr(remaining_section_start, remaining_section_length);
+    console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
   }
-  else if (correct_section === ' ') {
-    incorrect_section = '☒';
-    diff_idx--;
-  }
-
-  var remaining_section = contents.substr(diff_idx + 1, padding);
-
-  console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
 }
 
 // ******************************
 
 function get_diff_segment (in_contents1, in_contents2, in_segment_size) {
-  var result = {};
+  var result = false;
 
   var segment_size = in_segment_size;
 
@@ -428,14 +451,28 @@ function get_diff_segment (in_contents1, in_contents2, in_segment_size) {
       break;
     }
 
-    contents1_segment_bound_start += segment_size;
-    if (contents1_segment_bound_start >= contents1.length) {
+    if (contents1_segment_bound_start + segment_size >= contents1.length) {
+      result = {
+        diff1: '',
+        diff1_start: NaN,
+        diff2: contents2_segment,
+        diff2_start: contents2_segment_bound_start,
+      };
       break;
     }
 
-    contents2_segment_bound_start += segment_size;
-    if (contents2_segment_bound_start >= contents2.length)
+    if (contents2_segment_bound_start + segment_size >= contents2.length) {
+      result = {
+        diff1: contents1_segment,
+        diff1_start: contents1_segment_bound_start,
+        diff2: '',
+        diff2_start: NaN,
+      };
       break;
+    }
+
+    contents1_segment_bound_start += segment_size;
+    contents2_segment_bound_start += segment_size;
   }
   while (true);
 
@@ -447,7 +484,7 @@ function get_diff_segment (in_contents1, in_contents2, in_segment_size) {
 function get_failed_output (in_tree, in_contents) {
   var tree_output_failed = parser.output_tree_failed(in_tree);
   var recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-  var unrecognised_contents_length = 10;
+  var unrecognised_contents_length = 100;
 
   var recognised_contents = in_contents.substr(0, recognised_contents_length);
   var unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
@@ -461,7 +498,7 @@ function get_failed_output (in_tree, in_contents) {
   }
 
   if (g_DEBUG) {
-    fsp.write('./_debug_ast_failed_structure.txt', tree_output.values);
+    fsp.write('./_debug_ast_failed_structure.txt', tree_output_failed.values);
   }
 
   unrecognised_contents += '...';

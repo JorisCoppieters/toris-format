@@ -217,6 +217,10 @@ var DEFINITION = {
     OPERATOR: '==',
     VALUE: '@return'
   },
+  FONT_FACE: {
+    OPERATOR: '==',
+    VALUE: '@font-face'
+  },
   KEYFRAMES: {
     OPERATOR: '==',
     VALUE: '@keyframes'

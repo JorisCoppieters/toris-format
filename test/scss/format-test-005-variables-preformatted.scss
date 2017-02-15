@@ -67,3 +67,19 @@ $ping-brand-base-colour: $pinot-500;
 
 $ping-brand-base-colour: $pinot-500;$ping-brand-base-colour: $pinot-500;
 $ping-brand-base-colour: $pinot-500;
+
+$unit-variations: ( // className-partial : multiplier
+        'single': 1,
+        'quarter' : 0.25,
+        'half': 0.5,
+        'double': 2,
+        'remove': 0
+        );
+
+
+$comment-box-color-map: (
+    alt: (
+        'background': $tip-top-30,
+        'color': $tip-top-600
+    )
+);
