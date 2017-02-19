@@ -1,6 +1,6 @@
 {
   "name": "toris-format",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Formatting tool for HTML",
   "main": "index.js",
   "scripts": {
@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
   "dependencies": {
-    "color-print": "^1.0.0",
-    "fs-process": "^1.0.0"
+    "color-print": "^1.0.2",
+    "fs-process": "^1.0.1"
   },
   "devDependencies": {
     "minimist": "^1.2.0"

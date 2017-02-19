@@ -1,6 +1,6 @@
 # toris-format
 
-toris-format is a Node utility for formatting HTML to the Angular 1 and Angular 2 standard
+toris-format is a Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML
 
 ### Installation
 
