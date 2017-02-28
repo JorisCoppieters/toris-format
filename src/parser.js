@@ -49,6 +49,9 @@ const k_DEFINITION_TYPE_TANGRAM_API = 'TANGRAM_API';
 // ******************************
 
 var g_DEBUG = false;
+var g_DEBUG_TREE = false;
+var g_RUN_CHECKS = false;
+
 var g_NL = '\n';
 
 // Config - General:
@@ -74,6 +77,8 @@ function setup (in_config) {
   // General:
   g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
   g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
+  g_DEBUG_TREE = utils.get_setup_property(in_config, "debug_tree", g_DEBUG_TREE);
+  g_RUN_CHECKS = utils.get_setup_property(in_config, "run_checks", g_RUN_CHECKS);
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
   g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
   g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT);
@@ -128,12 +133,15 @@ function parse_contents (in_contents) {
       throw_error(fn, 'Definition doesn\'t have starting element: ' + g_DEFINITION_TYPE);
     }
 
-    if (g_DEBUG) {
+    if (g_RUN_CHECKS) {
       try {
         checks.check_grammar(definition);
       } catch (err) {
         throw_error(fn, err);
       }
+    }
+
+    if (g_DEBUG_TREE) {
       definition[grammar.k_DEFINITION_KEY_START].DEBUG = grammar.k_DEBUG_MATCH_VAL;
     }
 

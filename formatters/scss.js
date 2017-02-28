@@ -222,23 +222,23 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     // Specific Values:
     case 'COLON':
     case 'COLONCOLON':
-    case 'DASH':
-    case 'DOT':
     case 'COMBINE_COMPARE_AND':
     case 'COMBINE_COMPARE_OR':
-    case 'LT':
-    case 'LTEQ':
-    case 'GTEQ':
-    case 'EQ':
-    case 'STAR_EQ':
-    case 'EQEQ':
-    case 'NOTEQ':
     case 'PIPE_EQ':
+    case 'STAR_EQ':
     case 'TILD_EQ':
-    case 'HASH':
-    case 'LBRACK':
-    case 'RBRACK':
-    case 'TIL':
+    case 'VAL__DASH':
+    case 'VAL__DOT':
+    case 'VAL__EQ':
+    case 'VAL__EQEQ':
+    case 'VAL__GTEQ':
+    case 'VAL__HASH':
+    case 'VAL__LT':
+    case 'VAL__LTEQ':
+    case 'VAL__NOTEQ':
+    case 'VAL__SQBRAC_L':
+    case 'VAL__SQBRAC_R':
+    case 'VAL__TIL':
       color_func = cprint.toLightCyan;
       last_token = definition_value;
 
@@ -248,23 +248,23 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         color_func = cprint.toLightCyan;
       }
 
-      if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['HASH'].indexOf(definition_key) >= 0) {
+      if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['VAL__HASH'].indexOf(definition_key) >= 0) {
         newline = (['{', ';', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       }
 
       if (['PROPERTY', 'TYPE_KEYFRAMES_ENTRY_PROPERTY'].indexOf(state.LAST_TOKEN) >= 0) {
         space_before = false;
-      } else if (['DASH'].indexOf(definition_key) >= 0) {
+      } else if (['VAL__DASH'].indexOf(definition_key) >= 0) {
         space_before = false;
       } else if (['VARIABLE', 'PROPERTY_VALUE'].indexOf(state.VALUE_TYPE) >= 0 && ['COLON'].indexOf(definition_key) >= 0) {
         space_before = false;
       } else if (['MAP_ENTRY_KEY'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
-      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['OPERATOR', ':', 'MINUS'].indexOf(state.LAST_TOKEN) < 0) {
+      } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['OPERATOR', ':', 'VAL__MINUS'].indexOf(state.LAST_TOKEN) < 0) {
         space_before = false;
-      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON', 'EQ', 'RBRACK'].indexOf(definition_key) >= 0) {
+      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON', 'VAL__EQ', 'VAL__SQBRAC_R'].indexOf(definition_key) >= 0) {
         space_before = false;
-      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['LBRACK'].indexOf(definition_key) >= 0 && state.VALUE_TYPE !== 'SELECTOR_PREFIX') {
+      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['VAL__SQBRAC_L'].indexOf(definition_key) >= 0 && state.VALUE_TYPE !== 'SELECTOR_PREFIX') {
         space_before = false;
       } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && !whitespace_before) {
         space_before = false;
@@ -344,8 +344,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       }
       break;
 
-    case 'LPAREN':
-      if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
+    case 'VAL__PAREN_L':
+      if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'VAL__MINUS', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
         space_before = false;
       }
 
@@ -372,7 +372,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       color_func = cprint.toMagenta;
       last_token = '(';
       break;
-    case 'RPAREN':
+    case 'VAL__PAREN_R':
       space_before = false;
 
       if (state.DECLARATION_TYPE === 'MAP_EXPRESSION_END') {
@@ -403,7 +403,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       break;
 
     case 'NOSEMI':
-    case 'SEMI':
+    case 'VAL__SEMI':
       append = ';';
       if (state.LAST_TOKEN === ';') {
         append = false;
@@ -477,7 +477,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         case 'VARIABLE_VALUES':
           if (['(', '=', '==', '!=', '|=', '*=', '~='].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
-          } else if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
+          } else if (['VAL__MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
             space_before = false;
           }
 
@@ -489,7 +489,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'PROPERTY':
-          if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
+          if (['VAL__MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
             space_before = false;
           } else if (['('].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
@@ -589,14 +589,14 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     // Generic Values:
     case 'VAL_MEASUREMENT':
 
-    case 'PLUS':
-    case 'MINUS':
-    case 'DIV':
-    case 'TIMES':
-    case 'GT':
-    case 'PERC':
-    case 'AND':
-    case 'DOLLAR':
+    case 'VAL__AMP':
+    case 'VAL__DIVIDE':
+    case 'VAL__DOLLAR':
+    case 'VAL__GT':
+    case 'VAL__MINUS':
+    case 'VAL__PERC':
+    case 'VAL__PLUS':
+    case 'VAL__TIMES':
     case 'Identifier':
       last_token = state.VALUE_TYPE;
 
@@ -620,12 +620,12 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           color_func = cprint.toLightGray;
 
           if (['FUNCTION_CALL_ARGUMENTS'].indexOf(state.DECLARATION_TYPE) >= 0) {
-            if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
+            if (['VAL__MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
               space_before = false;
             } else if (['(', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0) {
               space_before = false;
             }
-          } else if (['(', 'MINUS', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0) {
+          } else if (['(', 'VAL__MINUS', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
           }
           break;
@@ -639,9 +639,9 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             space_before = false;
           }
 
-          if (definition_key === 'MINUS') {
+          if (definition_key === 'VAL__MINUS') {
             space_before = (state.LAST_TOKEN !== '(');
-            last_token = 'MINUS';
+            last_token = 'VAL__MINUS';
           }
           break;
 
@@ -651,11 +651,11 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           newline = (whitespace_before_includes_newline || ['', ';', '{', ',', '}', 'MULTI_LINE_COMMENT', 'SINGLE_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
           color_func = cprint.toLightCyan;
 
-          if (definition_key === 'GT') {
+          if (definition_key === 'VAL__GT') {
             last_token = '>';
-          } else if (definition_key === 'AND') {
+          } else if (definition_key === 'VAL__AND') {
             last_token = '&';
-          } else if (definition_key === 'PERC') {
+          } else if (definition_key === 'VAL__PERC') {
             last_token = '%';
           } else {
             if (['.', '#', '%', ':', '::', '[', '%'].indexOf(state.LAST_TOKEN) >= 0) {
@@ -698,10 +698,10 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'VARIABLE':
             case 'VARIABLE_VALUES':
             case 'VARIABLE_VALUES_3PLUS':
-              if (definition_key === 'DOLLAR') {
+              if (definition_key === 'VAL__DOLLAR') {
                 double_newline = whitespace_before_includes_double_newline;
                 newline = (whitespace_before_includes_newline || [';', '{', '}', ',', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
-                if (['{', 'MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
+                if (['{', 'VAL__MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
                   space_before = false;
                 }
                 last_token = '$';
@@ -720,8 +720,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
             case 'MAP_ENTRY_VALUES':
             case 'MIXIN':
             case 'PROPERTY':
-              if (definition_key === 'DOLLAR') {
-                if (['{', 'MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
+              if (definition_key === 'VAL__DOLLAR') {
+                if (['{', 'VAL__MINUS', '('].indexOf(state.LAST_TOKEN) >= 0) {
                   space_before = false;
                 }
                 last_token = '$';
