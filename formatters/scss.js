@@ -12,22 +12,22 @@
 // Requires:
 // ******************************
 
-var utils = require('./utils');
 var cprint = require('color-print');
+var regexp_shorthand = require('../regexp/shorthand');
 
 // ******************************
 // Exposing Functions:
 // ******************************
 
-var r_A = utils.r_A;
-var r_AG = utils.r_AG;
-var r_W = utils.r_W;
-var r_S = utils.r_S;
-var r_w = utils.r_w;
-var r_g = utils.r_g;
-var r_v = utils.r_v;
-var r_dq = utils.r_dq;
-var r_sq = utils.r_sq;
+var r_A = regexp_shorthand.r_A;
+var r_AG = regexp_shorthand.r_AG;
+var r_W = regexp_shorthand.r_W;
+var r_S = regexp_shorthand.r_S;
+var r_w = regexp_shorthand.r_w;
+var r_g = regexp_shorthand.r_g;
+var r_v = regexp_shorthand.r_v;
+var r_dq = regexp_shorthand.r_dq;
+var r_sq = regexp_shorthand.r_sq;
 
 // ******************************
 // Output:

@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.6.0
+// TORIS FORMAT v1.6.1
 //
 // Version History:
 //
@@ -63,7 +63,7 @@ var fsp = require('fs-process');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.6.0';
+const k_VERSION = '1.6.1';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
@@ -226,72 +226,12 @@ function setup (in_config) {
     g_SELF_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
 
     // DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
-    setup_attribute_ordering(in_config);
+    _setup_attribute_ordering(in_config);
   } else if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_SCSS) {
     // SASS:
   }
 
   parser.setup(in_config);
-}
-
-// ******************************
-// DEPRECATE: OLD ATTRIBUTE ORDERING CONFIG
-// ******************************
-function setup_attribute_ordering(in_config) {
-  if (!in_config) {
-    return;
-  }
-
-  var has_old_attributes_order_configs = false;
-
-  if (utils.get_setup_property(in_config, "ng1_attributes_order", false)) {
-    has_old_attributes_order_configs = true;
-    console.warn('Using old config key "ng1_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
-  }
-
-  if (utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
-    has_old_attributes_order_configs = true;
-    console.warn('Using old config key "ng1_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
-  }
-
-  if (utils.get_setup_property(in_config, "ng2_attributes_order", false)) {
-    has_old_attributes_order_configs = true;
-    console.warn('Using old config key "ng2_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
-  }
-
-  if (utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
-    has_old_attributes_order_configs = true;
-    console.warn('Using old config key "ng2_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
-  }
-
-  if (g__DEPRECATED__NG1_ATTRIBUTES_ORDER
-      || g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE
-      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER
-      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE) {
-    has_old_attributes_order_configs = true;
-  }
-
-  if (!has_old_attributes_order_configs) {
-    return;
-  }
-
-  g__DEPRECATED__NG1_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-  g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-  g__DEPRECATED__NG2_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-  g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
-
-  var ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-  var ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-  var ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-  var ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
-
-  if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
-    g_NG_ATTRIBUTES_ORDER = ng2_attributes_order;
-    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng2_attributes_order_pre_native;
-  } else if (g_ANGULAR_VERSION < 2.0) {
-    g_NG_ATTRIBUTES_ORDER = ng1_attributes_order;
-    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng1_attributes_order_pre_native;
-  }
 }
 
 // ******************************
@@ -309,7 +249,14 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-  var tree = parser.parse_contents(contents);
+  var tree;
+  try {
+    tree = parser.parse_contents(in_contents);
+  } catch (err) {
+    throw 'Failed to parse:\n' + err;
+    return;
+  }
+
   if (tree === '') {
     return '';
   }
@@ -340,9 +287,19 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-  var tree = parser.parse_contents(in_contents);
+
+  var tree;
+  try {
+    tree = parser.parse_contents(in_contents);
+  } catch (err) {
+    cprint.red('Failed to parse:');
+    cprint.red(err);
+    return;
+  }
+
   if (tree === '') {
-    console.log('Empty Contents');
+    cprint.yellow('Empty Contents');
+    return;
   }
 
   var tree_output = parser.output_tree(tree);
@@ -350,7 +307,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
   if (!tree_output.output) {
     var failed_output = get_failed_output(tree, contents, true);
     cprint.red('Failed to parse:');
-    console.log(failed_output);
+    cprint.red(failed_output);
     return;
   }
 
@@ -1980,6 +1937,67 @@ function str_repeat (s, n) {
 }
 
 // ******************************
+// Deprecated Functions
+// ******************************
+
+function _setup_attribute_ordering(in_config) {
+  if (!in_config) {
+    return;
+  }
+
+  var has_old_attributes_order_configs = false;
+
+  if (utils.get_setup_property(in_config, "ng1_attributes_order", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng1_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
+  }
+
+  if (utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng1_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
+  }
+
+  if (utils.get_setup_property(in_config, "ng2_attributes_order", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng2_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
+  }
+
+  if (utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
+    has_old_attributes_order_configs = true;
+    console.warn('Using old config key "ng2_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
+  }
+
+  if (g__DEPRECATED__NG1_ATTRIBUTES_ORDER
+      || g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE
+      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER
+      || g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE) {
+    has_old_attributes_order_configs = true;
+  }
+
+  if (!has_old_attributes_order_configs) {
+    return;
+  }
+
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+
+  var ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
+  var ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
+  var ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
+  var ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
+
+  if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
+    g_NG_ATTRIBUTES_ORDER = ng2_attributes_order;
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng2_attributes_order_pre_native;
+  } else if (g_ANGULAR_VERSION < 2.0) {
+    g_NG_ATTRIBUTES_ORDER = ng1_attributes_order;
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng1_attributes_order_pre_native;
+  }
+}
+
+// ******************************
 // Exports:
 // ******************************
 
@@ -1991,6 +2009,7 @@ module.exports['format_html_contents'] = format_html_contents;
 module.exports['print_sass_contents'] = print_sass_contents;
 module.exports['print_contents_diff'] = print_contents_diff;
 module.exports['format_sass_contents'] = format_sass_contents;
+module.exports['parser'] = parser;
 module.exports['setup'] = setup;
 
 // ******************************
