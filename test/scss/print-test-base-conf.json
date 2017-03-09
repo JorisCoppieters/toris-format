@@ -1,0 +1,8 @@
+{
+    "inputFile": "print-test-base.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n"
+    },
+    "testName": "base"
+}

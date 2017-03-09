@@ -1,10 +1,11 @@
 'use strict'; // JS: ES5
 
-var torisFormat = require('./index.js');
-var path = require('path');
 var cprint = require('color-print');
 var fs = require('fs');
 var fsp = require('fs-process');
+var path = require('path');
+var torisFormat = require('./index.js');
+var utils = require('./src/utils.js');
 
 // ******************************
 
@@ -17,16 +18,19 @@ runTests();
 // ******************************
 
 function runTests () {
-    formatTests('scss', 'Sass', function (contents) { return torisFormat.format_sass_contents(contents, 0, true); });
-    formatTests('html', 'HTML', torisFormat.format_html_contents);
-    printTests('scss', 'Sass', function (contents) { return torisFormat.print_sass_contents(contents, 0, true); });
+    // formatTests('scss', 'Sass', function (contents) { return torisFormat.format_sass_contents(contents, 0, true); });
+    // printTests('scss', 'Sass', function (contents) { return torisFormat.print_sass_contents(contents, 0, true); });
+
+    // formatTests('html', 'HTML', torisFormat.format_html_contents);
+
+    formatTests('tangram_api', 'TypeScript', function (contents) { return torisFormat.format_tangram_api_contents(contents); });
 }
 
 // ******************************
 
-function formatTests (fileExtension, fileType, formatFunction) {
-    var filter = 'format-test-.*-preformatted\\.' + fileExtension;
-    fsp.list('./test/' + fileExtension, filter).then(function (files) {
+function formatTests (testFolder, fileType, formatFunction) {
+    var filter = 'format-test-.*\\-conf.json';
+    fsp.list('./test/' + testFolder, filter).then(function (files) {
         files.sort();
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
@@ -34,32 +38,27 @@ function formatTests (fileExtension, fileType, formatFunction) {
             }
 
             var dirname = path.dirname(file);
-            var basename = path.basename(file);
 
-            var matches = basename.match(new RegExp('(format-test-(.*))-preformatted.' + fileExtension));
-            if (!matches) {
-                return;
-            }
-
-            var basenamePrefix = matches[1];
-            var testName = matches[2];
-            var preformattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-preformatted.' + fileExtension), 'utf8');
-            var formattedSassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '-formatted.' + fileExtension), 'utf8');
-            var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
+            var configFile = file;
             var config = loadConfigFile(configFile);
             if (config.ignore) {
                 return;
             }
-            formatTestFiles(fileExtension + '-' + testName, fileType, formatFunction, preformattedSassContents, formattedSassContents);
+
+            var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
+            var outputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.outputFile), 'utf8');
+            var testName = config.testName;
+
+            formatTestFiles(testFolder + '-' + testName, fileType, formatFunction, inputContents, outputContents);
         })
     });
 }
 
 // ******************************
 
-function printTests (fileExtension, fileType, formatFunction) {
-    var filter = 'print-test-.*\\.' + fileExtension;
-    fsp.list('./test/' + fileExtension, filter).then(function (files) {
+function printTests (testFolder, fileType, formatFunction) {
+    var filter = 'print-test-.*\\-conf.json';
+    fsp.list('./test/' + testFolder, filter).then(function (files) {
         files.sort();
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
@@ -67,22 +66,17 @@ function printTests (fileExtension, fileType, formatFunction) {
             }
 
             var dirname = path.dirname(file);
-            var basename = path.basename(file);
 
-            var matches = basename.match(new RegExp('(print-test-(.*)).' + fileExtension));
-            if (!matches) {
-                return;
-            }
-
-            var basenamePrefix = matches[1];
-            var testName = matches[2];
-            var sassContents = fs.readFileSync(path.resolve(__dirname, dirname, basenamePrefix + '.' + fileExtension), 'utf8');
-            var configFile = path.resolve(__dirname, dirname, basenamePrefix + '-conf.json');
+            var configFile = file;
             var config = loadConfigFile(configFile);
             if (config.ignore) {
                 return;
             }
-            printTestContents(fileExtension + '-' + testName, fileType, formatFunction, sassContents);
+
+            var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
+            var testName = config.testName;
+
+            printTestContents(testFolder + '-' + testName, fileType, formatFunction, inputContents);
         })
     });
 }
@@ -92,7 +86,7 @@ function printTests (fileExtension, fileType, formatFunction) {
 function loadConfigFile (configFile) {
     if (fs.existsSync(configFile)) {
         var config = require(configFile);
-        torisFormat.setup(config);
+        torisFormat.setup(config.setup || {});
         return config;
     }
     return {};
@@ -136,37 +130,6 @@ function formatTestFiles (testName, fileType, formatFunction, preformattedConten
         g_TEST_FAILED = true;
         return false;
     }
-
-    testIdentifier = cprint.toWhite(' : ') + cprint.toCyan(testName) + cprint.toWhite(' : ') + cprint.toMagenta('Formatting already formatted ' + fileType + ' still outputs to formatted ' + fileType);
-    try {
-
-        var input = formattedContents;
-        var expectedOutput = formattedContents;
-
-        var test2_expectedOutputFile = '_formatTest_alreadyFormatted_' + testName + '_expectedOutput.txt';
-        var test2_outputFile = '_formatTest_alreadyFormatted_' + testName + '_output.txt';
-
-        var output = formatFunction(input);
-        if (output && expectedOutput && output.trim() == expectedOutput.trim()) {
-            console.log(cprint.toGreen('✔ Test') + testIdentifier);
-            fs.exists(test2_expectedOutputFile, function (exists) { if (exists) { fsp.remove(test2_expectedOutputFile); } } );
-            fs.exists(test2_outputFile, function (exists) { if (exists) { fsp.remove(test2_outputFile); } } );
-        } else if (output) {
-            console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Unexpected ' + fileType));
-            torisFormat.print_contents_diff(expectedOutput, output);
-            fsp.write(test2_expectedOutputFile, expectedOutput);
-            fsp.write(test2_outputFile, output);
-            g_TEST_FAILED = true;
-            return false;
-        }
-
-    } catch (err) {
-        console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + fileType + '\n'));
-        cprint.red(err);
-        g_TEST_FAILED = true;
-        return false;
-    }
-
     return true;
 }
 

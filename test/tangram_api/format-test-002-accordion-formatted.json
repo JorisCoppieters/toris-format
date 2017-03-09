@@ -1,0 +1,33 @@
+"swagman": {
+    "api": {
+        "bindings": [{
+            "name": "ngModel",
+            "type": "any",
+            "isInput": true,
+            "isOutput": true,
+        }, {
+            "name": "name",
+            "type": "string",
+            "isInput": true,
+            "isOutput": false,
+        }, {
+            "name": "disabled",
+            "type": "boolean",
+            "isInput": true,
+            "isOutput": false,
+        }, {
+            "name": "change",
+            "type": "SwitchChange",
+            "isInput": false,
+            "isOutput": true,
+        }, {
+            "name": "selected",
+            "type": "boolean",
+            "isInput": true,
+            "isOutput": true,
+        }],
+        "context": [{
+            "name": "NgForm"
+        }]
+    }
+}

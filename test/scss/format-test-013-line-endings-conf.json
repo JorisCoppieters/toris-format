@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-013-line-endings-preformatted.scss",
+    "outputFile": "format-test-013-line-endings-formatted.scss",
+    "testName": "013-line-endings",
+    "setup": {
+        "line_ending": "\r"
+    }
+}

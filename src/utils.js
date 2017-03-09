@@ -40,6 +40,18 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 
 // ******************************
 
+function get_file_extension (file) {
+    try {
+        var file_parts = file.match(/.*\.(.*)$/);
+        var file_extension = file_parts[1].trim().toLowerCase();
+        return file_extension;
+    } catch (err) {
+        return '';
+    }
+}
+
+// ******************************
+
 function num_lines(in_content) {
   if (!in_content) {
     return 0;
@@ -75,9 +87,17 @@ function str_repeat (s, n) {
 // ******************************
 
 module.exports['get_setup_property'] = get_setup_property;
+module.exports['get_file_extension'] = get_file_extension;
 module.exports['num_lines'] = num_lines;
 module.exports['is_numeric'] = is_numeric;
 module.exports['str_append'] = str_append;
 module.exports['str_repeat'] = str_repeat;
+
+module.exports['getSetupProperty'] = get_setup_property;
+module.exports['getFileExtension'] = get_file_extension;
+module.exports['numLines'] = num_lines;
+module.exports['isNumeric'] = is_numeric;
+module.exports['strAppend'] = str_append;
+module.exports['strRepeat'] = str_repeat;
 
 // ******************************

@@ -1,0 +1,6 @@
+{
+  "testName": "simple",
+  "inputFile": "format-test-001-simple-preformatted.ts",
+  "outputFile": "format-test-001-simple-formatted.json",
+  "setup": {}
+}

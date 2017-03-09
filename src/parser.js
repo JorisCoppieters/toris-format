@@ -15,6 +15,7 @@
 var checks = require('./checks');
 var cprint = require('color-print');
 var FORMATTER_SCSS = require('../formatters/scss');
+var FORMATTER_TANGRAM_API = require('../formatters/tangram_api');
 var grammar  = require('../grammars/_core');
 var GRAMMAR_HTML = require('../grammars/html');
 var GRAMMAR_SCSS = require('../grammars/scss');
@@ -76,7 +77,7 @@ function setup (in_config) {
   g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
   g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
-  g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT);
+  g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT_COUNT);
 
   if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
     // HTML:
@@ -174,10 +175,11 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
 
     var is_start = (definition_key === grammar.k_DEFINITION_KEY_START);
     if (is_start) {
+      tree.INPUT = original_contents;
       contents = contents.replace(new RegExp(r_g('\\r\\n|\\r|\\n'), 'g'), g_NL);
     }
 
-    log_debug_match_val(debug, cprint.toWhite(indent + definition_key));
+    log_debug_match(debug, cprint.toWhite(indent + definition_key));
 
     switch (definition_value.OPERATOR) {
       case '||':
@@ -205,8 +207,12 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         break;
     }
 
-    if (!tree.VALUE && !tree.CHILDREN)
+    if (!tree.VALUE && !tree.CHILDREN) {
+      if (is_start) {
+        tree.FAILED = true;
+      }
       break;
+    }
 
     tree.DEFINITION_KEY = definition_key;
 
@@ -265,7 +271,7 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
     out_tree.CHILDREN = [matched_sub_tree];
 
     if (matched) {
-      log_debug_match(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
+      log_debug_match_val(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
     }
 
     result = remaining;
@@ -324,7 +330,7 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
     out_tree.CHILDREN = sub_tree_children;
 
     if (matched) {
-      log_debug_match(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
+      log_debug_match_val(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
     }
 
     result = remaining;
@@ -391,7 +397,7 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
     out_tree.CHILDREN = sub_tree_children;
 
     if (matched_any) {
-      log_debug_match(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
+      log_debug_match_val(in_debug, cprint.toCyan(in_indent + in_definition_key + ' [MATCHED]'));
     }
 
     result = contents;
@@ -448,7 +454,7 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
     log_debug_match_val(in_debug, cprint.toWhite('-----------------------'));
     log_debug_match_val(in_debug, cprint.toGreen(value) + cprint.toWhite(remaining.substr(0, 50) + '...'));
     log_debug_match_val(in_debug, cprint.toWhite('-----------------------'));
-    log_debug_match(in_debug, cprint.toGreen(in_indent + in_definition_key + ' [MATCHED]'));
+    log_debug_match_val(in_debug, cprint.toGreen(in_indent + in_definition_key + ' [MATCHED]'));
 
     out_tree.REMAINING_LENGTH = remaining.length;
 
@@ -461,11 +467,24 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 
 // ******************************
 
-function output_tree (in_tree, in_state, in_tree_output, in_indent) {
-  var fn = 'output_tree';
-  var state = in_state || { LAST_TOKEN: '' };
-  var tree_output = in_tree_output || {};
-  var indent = in_indent || '';
+function get_tree_output (in_tree) {
+  var state = { LAST_TOKEN: '' };
+  var tree_output = {};
+  var indent = '';
+
+  _populate_tree_output(in_tree, state, tree_output, indent);
+
+  return tree_output;
+}
+
+// ******************************
+
+function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent) {
+  var fn = '_populate_tree_output';
+
+  var state = in_state;
+  var tree_output = in_tree_output;
+  var indent = in_indent;
 
   if (in_tree.FAILED) {
     return tree_output;
@@ -482,7 +501,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
       break;
 
     case k_DEFINITION_TYPE_TANGRAM_API:
-      throw_error(fn, 'Tangram API outputting not supported yet...');
+      output = {};
       break;
 
     case k_DEFINITION_TYPE_SCSS:
@@ -490,7 +509,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         DEBUG: g_DEBUG,
         FORMAT_PROPERTY_VALUES_ON_NEWLINES: g_FORMAT_PROPERTY_VALUES_ON_NEWLINES,
       }
-      output = FORMATTER_SCSS.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
+      output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
       break;
 
     default:
@@ -548,16 +567,26 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   if (in_tree.CHILDREN) {
     in_tree.CHILDREN.forEach(function (child) {
-      output_tree(child, state, tree_output, indent + '  ');
+      _populate_tree_output(child, state, tree_output, indent + '  ');
     });
   }
+}
+
+// ******************************
+
+function get_failed_tree_output (in_tree) {
+  var tree_output = {};
+  var tree_path = '';
+  var indent = '';
+
+  _populate_tree_failed_output(in_tree, tree_output, tree_path, indent);
 
   return tree_output;
 }
 
 // ******************************
 
-function output_tree_failed (in_tree, in_tree_output, in_tree_path, in_indent) {
+function _populate_tree_failed_output (in_tree, in_tree_output, in_tree_path, in_indent) {
   var tree_output = in_tree_output || {};
   var tree_path = in_tree_path || '';
   var indent = in_indent || '';
@@ -577,11 +606,122 @@ function output_tree_failed (in_tree, in_tree_output, in_tree_path, in_indent) {
 
   if (in_tree.ALL_CHILDREN) {
     in_tree.ALL_CHILDREN.forEach(function (child) {
-      output_tree_failed(child, tree_output, tree_path + g_NL + indent + definition_key_value, indent + '  ');
+      _populate_tree_failed_output(child, tree_output, tree_path + g_NL + indent + definition_key_value, indent + '  ');
     });
   }
+}
 
-  return tree_output;
+// ******************************
+
+function get_tree_output_structure (in_tree) {
+  var structure;
+  switch(g_DEFINITION_TYPE) {
+    case k_DEFINITION_TYPE_HTML:
+      throw_error(fn, 'HTML structure not supported yet...');
+      break;
+
+    case k_DEFINITION_TYPE_TANGRAM_API:
+      var options = {
+        DEBUG: g_DEBUG
+      }
+      structure = FORMATTER_TANGRAM_API.get_tree_output_structure(in_tree, options);
+      break;
+
+    case k_DEFINITION_TYPE_SCSS:
+      throw_error(fn, 'SCSS structure not supported yet...');
+      break;
+
+    default:
+      throw_error(fn, 'Unhandled definition type: ' + g_DEFINITION_TYPE);
+  }
+
+  return structure;
+}
+
+// ******************************
+
+function print_tree (in_tree) {
+  _print_node(in_tree, '');
+}
+
+// ******************************
+
+function _print_node (in_node, in_indent) {
+  if (!in_node.DEFINITION_KEY)
+    return;
+
+  in_indent = in_indent || '';
+  var definitionKey = in_node.DEFINITION_KEY;
+  var definitionVal = (in_node.VALUE || '').trim();
+
+  if (definitionVal && definitionVal.length > 50)
+    cprint.yellow(in_indent + definitionKey + '===>' + definitionVal.substr(0, 50) + '...');
+  else if (definitionVal)
+    cprint.green(in_indent + definitionKey + '===>' + definitionVal);
+  else
+    cprint.cyan(in_indent + definitionKey);
+
+  (in_node.CHILDREN || []).forEach(function (child) { _print_node(child, in_indent + '  '); });
+}
+
+// ******************************
+
+function print_recognized_chunk (in_tree) {
+  if (in_tree.FAILED) {
+    console.log(get_recognized_chunk(in_tree));
+    return;
+  }
+  cprint.green('Everything was recognized!');
+}
+
+// ******************************
+
+function get_recognized_chunk (in_tree) {
+  if (in_tree.FAILED) {
+    var failed_tree_output = get_failed_tree_output(in_tree);
+    var recognised_contents = _get_recognized_contents(failed_tree_output, in_tree.INPUT);
+    var unrecognised_contents = _get_unrecognized_contents(failed_tree_output, in_tree.INPUT);
+
+    if (recognised_contents.length > 100) {
+      recognised_contents = '...' + recognised_contents.substr(recognised_contents.length - 100, 100);
+    }
+
+    if (unrecognised_contents.length > 100) {
+      unrecognised_contents = unrecognised_contents.substr(0, 100) + '...';
+    }
+
+    return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+  }
+
+  return false;
+}
+
+// ******************************
+
+function _get_recognized_contents (in_failed_tree_output, in_contents) {
+  var recognised_contents_length = Math.max(0, in_contents.length - in_failed_tree_output.least_remaining);
+
+  var recognised_contents = in_contents.substr(0, recognised_contents_length);
+  if (recognised_contents.length > 100) {
+    recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
+  }
+
+  return recognised_contents;
+}
+
+// ******************************
+
+function _get_unrecognized_contents (in_failed_tree_output, in_contents) {
+  var recognised_contents_length = Math.max(0, in_contents.length - in_failed_tree_output.least_remaining);
+  var unrecognised_contents_length = 100;
+
+  var unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+  while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
+    unrecognised_contents_length += 10;
+    unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+  }
+
+  return unrecognised_contents;
 }
 
 // ******************************
@@ -593,7 +733,7 @@ function get_indent (in_inc) {
 // ******************************
 
 function inc_indent (in_inc) {
-  g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + in_inc);
+  g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + (in_inc || 0));
 }
 
 // ******************************
@@ -654,7 +794,19 @@ module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
 module.exports['k_DEFINITION_TYPE_TANGRAM_API'] = k_DEFINITION_TYPE_TANGRAM_API;
 module.exports['setup'] = setup;
 module.exports['parse_contents'] = parse_contents;
-module.exports['output_tree'] = output_tree;
-module.exports['output_tree_failed'] = output_tree_failed;
+module.exports['print_tree'] = print_tree;
+module.exports['print_recognized_chunk'] = print_recognized_chunk;
+module.exports['get_recognized_chunk'] = get_recognized_chunk;
+module.exports['get_tree_output'] = get_tree_output;
+module.exports['get_failed_tree_output'] = get_failed_tree_output;
+module.exports['get_tree_output_structure'] = get_tree_output_structure;
+
+module.exports['parseContents'] = parse_contents;
+module.exports['printTree'] = print_tree;
+module.exports['printRecognizedChunk'] = print_recognized_chunk;
+module.exports['getRecognizedChunk'] = get_recognized_chunk;
+module.exports['getTreeOutput'] = get_tree_output;
+module.exports['getFailedTreeOutput'] = get_failed_tree_output;
+module.exports['getTreeOutputStructure'] = get_tree_output_structure;
 
 // ******************************

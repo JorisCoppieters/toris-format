@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-012-reformat-preformatted.scss",
+    "outputFile": "format-test-012-reformat-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS"
+    },
+    "testName": "012-reformat"
+}

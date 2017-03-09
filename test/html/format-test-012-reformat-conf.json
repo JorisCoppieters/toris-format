@@ -1,0 +1,18 @@
+{
+    "inputFile": "format-test-012-reformat-preformatted.html",
+    "outputFile": "format-test-012-reformat-formatted.html",
+    "setup": {
+        "force_block_whitespace_formatting": false,
+        "force_inline_whitespace_formatting": false,
+        "remove_css": false,
+        "ng_attributes_order": [
+            "my-z-.*",
+            "my-a-.*",
+            "my-.*"
+        ],
+        "ng_attributes_order_pre_native": [
+        ],
+        "ng_version": 1.5
+    },
+    "testName": "reformat"
+}

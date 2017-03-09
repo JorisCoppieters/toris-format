@@ -1,11 +1,16 @@
 {
-    "block_elements": [
-        "force-block"
-    ],
-    "force_block_whitespace_formatting": true,
-    "force_inline_whitespace_formatting": true,
-    "inline_elements": [
-        "whitespace",
-        "force-inline"
-    ]
+    "inputFile": "format-test-005-block-inline-formatting-preformatted.html",
+    "outputFile": "format-test-005-block-inline-formatting-formatted.html",
+    "setup": {
+        "block_elements": [
+            "force-block"
+        ],
+        "force_block_whitespace_formatting": true,
+        "force_inline_whitespace_formatting": true,
+        "inline_elements": [
+            "whitespace",
+            "force-inline"
+        ]
+    },
+    "testName": "block-inline-formatting"
 }

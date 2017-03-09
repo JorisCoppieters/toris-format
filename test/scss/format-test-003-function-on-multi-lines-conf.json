@@ -1,6 +1,11 @@
 {
-    "line_ending": "\r\n",
-    "format_property_values_on_newlines": [
-      "linear-gradient"
-    ]
+    "inputFile": "format-test-003-function-on-multi-lines-preformatted.scss",
+    "outputFile": "format-test-003-function-on-multi-lines-formatted.scss",
+    "setup": {
+        "format_property_values_on_newlines": [
+            "linear-gradient"
+        ],
+        "line_ending": "\r\n"
+    },
+    "testName": "003-function-on-multi-lines"
 }

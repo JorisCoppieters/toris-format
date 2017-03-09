@@ -205,6 +205,7 @@ function setup (in_config) {
   // General:
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
   g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
+  g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
 
   if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
     // HTML:
@@ -219,7 +220,6 @@ function setup (in_config) {
     g_MULTI_CLASSES_ORDER = utils.get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
     g_NG_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
     g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
-    g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
     g_NONE_ONE_TIME_BOUND_ELEMENTS = utils.get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
     g_ONE_TIME_BOUND_ELEMENT_PREFIXES = utils.get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
     g_REMOVE_CSS = utils.get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
@@ -232,6 +232,32 @@ function setup (in_config) {
   }
 
   parser.setup(in_config);
+}
+
+// ******************************
+// Tangram API Functions:
+// ******************************
+
+function format_tangram_api_contents (in_contents) {
+  var contents = in_contents || '';
+  var debug = false;
+
+  parser.setup({
+    indent_count: 0,
+    definition_type: parser.k_DEFINITION_TYPE_TANGRAM_API,
+    debug
+  });
+
+  var tree;
+  try {
+    tree = parser.parse_contents(in_contents);
+  } catch (err) {
+    throw 'Failed to parse:\n' + err;
+    return;
+  }
+
+  var structure = parser.get_tree_output_structure(tree);
+  return JSON.stringify(structure, null, 4);
 }
 
 // ******************************
@@ -261,7 +287,7 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     return '';
   }
 
-  var tree_output = parser.output_tree(tree);
+  var tree_output = parser.get_tree_output(tree);
   if (!tree_output.output) {
     var failed_output = get_failed_output(tree, contents);
     throw 'Failed to parse:\n' + failed_output;
@@ -302,7 +328,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     return;
   }
 
-  var tree_output = parser.output_tree(tree);
+  var tree_output = parser.get_tree_output(tree);
 
   if (!tree_output.output) {
     var failed_output = get_failed_output(tree, contents, true);
@@ -319,151 +345,6 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
   }
   console.log(result);
-}
-
-// ******************************
-
-function print_contents_diff (in_expected_contents, in_contents) {
-  var expected_contents = (in_expected_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
-  var contents = (in_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
-
-  var diff_segments_100 = get_diff_segment(expected_contents, contents, 100);
-  if (!diff_segments_100) {
-    return;
-  }
-
-  var diff_segments_1 = get_diff_segment(diff_segments_100.diff1, diff_segments_100.diff2, 1);
-  if (!diff_segments_1) {
-    return;
-  }
-
-  var padding = 150;
-
-  var diff_idx1 = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
-  var diff_idx2 = diff_segments_100.diff2_start + diff_segments_1.diff2_start;
-
-  if (isNaN(diff_idx1)) {
-    diff_idx2++;
-    var beginning_section_start = Math.max(0, diff_idx2 - padding);
-    var beginning_section_length = diff_idx2 - beginning_section_start;
-    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
-    var remaining_section = contents.substr(diff_idx2);
-    console.log(cprint.toWhite(beginning_section) + cprint.toCyan(remaining_section));
-  } else if (isNaN(diff_idx2)) {
-    diff_idx1++;
-    var beginning_section_start = Math.max(0, diff_idx1 - padding);
-    var beginning_section_length = diff_idx1 - beginning_section_start;
-    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
-    var removed_section = expected_contents.substr(diff_idx1);
-    console.log(cprint.toWhite(beginning_section) + cprint.toMagenta(removed_section));
-  } else {
-    var beginning_section_start = Math.max(0, diff_idx1 - padding);
-    var beginning_section_length = diff_idx1 - beginning_section_start;
-
-    var remaining_section_start = diff_idx1 + 1;
-    var remaining_section_length = Math.min(contents.length - remaining_section_start, padding);
-
-    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
-    var correct_section = expected_contents.substr(diff_idx1, 1);
-
-    var incorrect_section = contents.substr(diff_idx1, 1);
-    if (incorrect_section === ' ') {
-      incorrect_section = '☐';
-    }
-    else if (correct_section === ' ') {
-      incorrect_section = '☒';
-      diff_idx1--;
-    }
-
-    var remaining_section = contents.substr(remaining_section_start, remaining_section_length);
-    console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
-  }
-}
-
-// ******************************
-
-function get_diff_segment (in_contents1, in_contents2, in_segment_size) {
-  var result = false;
-
-  var segment_size = in_segment_size;
-
-  var contents1 = in_contents1 || '';
-  var contents1_segment_bound_start = 0;
-  var contents1_segment_bound_end = segment_size;
-
-  var contents2 = in_contents2 || '';
-  var contents2_segment_bound_start = 0;
-  var contents2_segment_bound_end = segment_size;
-
-  do {
-    var contents1_segment = contents1.substr(contents1_segment_bound_start, segment_size);
-    var contents2_segment = contents2.substr(contents2_segment_bound_start, segment_size);
-    if (contents1_segment !== contents2_segment) {
-      result = {
-        diff1: contents1_segment,
-        diff1_start: contents1_segment_bound_start,
-        diff2: contents2_segment,
-        diff2_start: contents2_segment_bound_start,
-      };
-      break;
-    }
-
-    if (contents1_segment_bound_start + segment_size >= contents1.length) {
-      result = {
-        diff1: '',
-        diff1_start: NaN,
-        diff2: contents2_segment,
-        diff2_start: contents2_segment_bound_start,
-      };
-      break;
-    }
-
-    if (contents2_segment_bound_start + segment_size >= contents2.length) {
-      result = {
-        diff1: contents1_segment,
-        diff1_start: contents1_segment_bound_start,
-        diff2: '',
-        diff2_start: NaN,
-      };
-      break;
-    }
-
-    contents1_segment_bound_start += segment_size;
-    contents2_segment_bound_start += segment_size;
-  }
-  while (true);
-
-  return result;
-}
-
-// ******************************
-
-function get_failed_output (in_tree, in_contents) {
-  var tree_output_failed = parser.output_tree_failed(in_tree);
-  var recognised_contents_length = Math.max(0, in_contents.length - tree_output_failed.least_remaining);
-  var unrecognised_contents_length = 100;
-
-  var recognised_contents = in_contents.substr(0, recognised_contents_length);
-  var unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-  while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
-    unrecognised_contents_length += 10;
-    unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-  }
-
-  if (recognised_contents.length > 100) {
-    recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
-  }
-
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_failed_structure.txt', tree_output_failed.values);
-  }
-
-  unrecognised_contents += '...';
-  var result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
-  if (g_DEBUG) {
-    result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
-  }
-  return result;
 }
 
 // ******************************
@@ -1904,6 +1785,144 @@ function get_top_element_info (in_pop) {
 }
 
 // ******************************
+// Tree Functions
+// ******************************
+
+function get_failed_output (in_tree, in_contents) {
+  var failed_tree_output = parser.get_failed_tree_output(in_tree);
+
+  if (g_DEBUG) {
+    fsp.write('./_debug_ast_failed_structure.txt', failed_tree_output.values);
+  }
+
+  var result = parser.get_recognized_chunk(in_tree);
+  if (g_DEBUG) {
+    result += '\n' + cprint.toYellow('Best Path:\n' + failed_tree_output.best_path);
+  }
+
+  return result;
+}
+
+// ******************************
+// Diff Functions
+// ******************************
+
+function print_contents_diff (in_expected_contents, in_contents) {
+  var expected_contents = (in_expected_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+  var contents = (in_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+
+  var diff_segments_100 = _get_diff_segment(expected_contents, contents, 100);
+  if (!diff_segments_100) {
+    return;
+  }
+
+  var diff_segments_1 = _get_diff_segment(diff_segments_100.diff1, diff_segments_100.diff2, 1);
+  if (!diff_segments_1) {
+    return;
+  }
+
+  var padding = 150;
+
+  var diff_idx1 = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
+  var diff_idx2 = diff_segments_100.diff2_start + diff_segments_1.diff2_start;
+
+  if (isNaN(diff_idx1)) {
+    diff_idx2++;
+    var beginning_section_start = Math.max(0, diff_idx2 - padding);
+    var beginning_section_length = diff_idx2 - beginning_section_start;
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var remaining_section = contents.substr(diff_idx2);
+    console.log(cprint.toWhite(beginning_section) + cprint.toCyan(remaining_section));
+  } else if (isNaN(diff_idx2)) {
+    diff_idx1++;
+    var beginning_section_start = Math.max(0, diff_idx1 - padding);
+    var beginning_section_length = diff_idx1 - beginning_section_start;
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var removed_section = expected_contents.substr(diff_idx1);
+    console.log(cprint.toWhite(beginning_section) + cprint.toMagenta(removed_section));
+  } else {
+    var beginning_section_start = Math.max(0, diff_idx1 - padding);
+    var beginning_section_length = diff_idx1 - beginning_section_start;
+
+    var remaining_section_start = diff_idx1 + 1;
+    var remaining_section_length = Math.min(contents.length - remaining_section_start, padding);
+
+    var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+    var correct_section = expected_contents.substr(diff_idx1, 1);
+
+    var incorrect_section = contents.substr(diff_idx1, 1);
+    if (incorrect_section === ' ') {
+      incorrect_section = '☐';
+    }
+    else if (correct_section === ' ') {
+      incorrect_section = '☒';
+      diff_idx1--;
+    }
+
+    var remaining_section = contents.substr(remaining_section_start, remaining_section_length);
+    console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
+  }
+}
+
+// ******************************
+
+function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
+  var result = false;
+
+  var segment_size = in_segment_size;
+
+  var contents1 = in_contents1 || '';
+  var contents1_segment_bound_start = 0;
+  var contents1_segment_bound_end = segment_size;
+
+  var contents2 = in_contents2 || '';
+  var contents2_segment_bound_start = 0;
+  var contents2_segment_bound_end = segment_size;
+
+  do {
+    var contents1_segment = contents1.substr(contents1_segment_bound_start, segment_size);
+    var contents2_segment = contents2.substr(contents2_segment_bound_start, segment_size);
+    if (contents1_segment !== contents2_segment) {
+      result = {
+        diff1: contents1_segment,
+        diff1_start: contents1_segment_bound_start,
+        diff2: contents2_segment,
+        diff2_start: contents2_segment_bound_start,
+      };
+      break;
+    }
+
+    if (contents1_segment_bound_start + segment_size >= contents1.length) {
+      result = {
+        diff1: '',
+        diff1_start: NaN,
+        diff2: contents2_segment,
+        diff2_start: contents2_segment_bound_start,
+      };
+      break;
+    }
+
+    if (contents2_segment_bound_start + segment_size >= contents2.length) {
+      result = {
+        diff1: contents1_segment,
+        diff1_start: contents1_segment_bound_start,
+        diff2: '',
+        diff2_start: NaN,
+      };
+      break;
+    }
+
+    contents1_segment_bound_start += segment_size;
+    contents2_segment_bound_start += segment_size;
+  }
+  while (true);
+
+  return result;
+}
+
+// ******************************
+// Helper Functions
+// ******************************
 
 function num_lines(in_content) {
   if (!in_content) {
@@ -2006,9 +2025,10 @@ module.exports['k_DEFINITION_TYPE_SCSS'] = parser.k_DEFINITION_TYPE_SCSS;
 module.exports['k_DEFINITION_TYPE_HTML'] = parser.k_DEFINITION_TYPE_HTML;
 module.exports['format_html_file'] = format_html_contents;
 module.exports['format_html_contents'] = format_html_contents;
+module.exports['format_sass_contents'] = format_sass_contents;
+module.exports['format_tangram_api_contents'] = format_tangram_api_contents;
 module.exports['print_sass_contents'] = print_sass_contents;
 module.exports['print_contents_diff'] = print_contents_diff;
-module.exports['format_sass_contents'] = format_sass_contents;
 module.exports['parser'] = parser;
 module.exports['setup'] = setup;
 

@@ -30,6 +30,7 @@ module.exports = grammar.export_grammar({
   VAL__CURLY_R: { OPERATOR: '==', VALUE: '[}]' },
   VAL__DASH: { OPERATOR: '==', VALUE: '[-]' },
   VAL__DIVIDE: { OPERATOR: '==', VALUE: '[/]' },
+  VAL__DOLLAR: { OPERATOR: '==', VALUE: '[$]' },
   VAL__DOT: { OPERATOR: '==', VALUE: '\\.' },
   VAL__DQUOTE: { OPERATOR: '==', VALUE: '["]' },
   VAL__EMPTY: { OPERATOR: '==', VALUE: '' },

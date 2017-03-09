@@ -1,4 +1,9 @@
 {
-    "line_ending": "\r\n",
-    "definition_type": "HTML"
+    "inputFile": "format-test-001-base-preformatted.html",
+    "outputFile": "format-test-001-base-formatted.html",
+    "setup": {
+        "definition_type": "HTML",
+        "line_ending": "\r\n"
+    },
+    "testName": "base"
 }

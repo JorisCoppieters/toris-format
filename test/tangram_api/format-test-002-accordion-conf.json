@@ -1,0 +1,6 @@
+{
+  "testName": "accordion",
+  "inputFile": "format-test-002-accordion-preformatted.ts",
+  "outputFile": "format-test-002-accordion-formatted.json",
+  "setup": {}
+}
