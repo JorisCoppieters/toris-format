@@ -67,7 +67,7 @@ module.exports = grammar.export_grammar({
 
   // Values
   VAL__KEYFRAMES: { OPERATOR: '==', VALUE: '@keyframes' },
-  VAL__MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+  VAL__MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
   VAL__NUMBER: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+' },
   VAL__IDENTIFIER: { OPERATOR: '==', VALUE: '\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*' },
   VAL__STRING_DOUBLE_QUOTED: { OPERATOR: '==', VALUE: '"[^"\\n\\r]*"' },
@@ -190,7 +190,18 @@ module.exports = grammar.export_grammar({
   // selector: { OPERATOR: '&&', SEGMENTS: ['selectorStart*', 'attrib*', 'selectorPrefix?', 'pseudo*'] },
   // selectorStart: { OPERATOR: '||', SEGMENTS: ['element', 'selectorPrefixElement'] },
   // selectorPrefixElement: { OPERATOR: '&&', SEGMENTS: ['selectorPrefix', 'element'] },
-  // selectorPrefix: { OPERATOR: '||', SEGMENTS: ['VAL__GT', 'VAL__PLUS', 'VAL__TIL'] },
+  // selectorPrefix: {
+  //   OPERATOR: '||',
+  //   SEGMENTS: ['GTPrefix', 'PLUS', 'TIL']
+  // },
+  // GTPrefix: {
+  //   OPERATOR: '&&',
+  //   SEGMENTS: ['GT', 'GTGT?']
+  // },
+  // GTGT: {
+  //   OPERATOR: '&&',
+  //   SEGMENTS: ['GT', 'GT']
+  // },
   // element: { OPERATOR: '||', SEGMENTS: ['identifier', 'dotIdentifier', 'percIdentifier', 'VAL__AMP', 'VAL__TIMES', 'pseudo', 'elementInBrackets'] },
   // elementInBrackets: { OPERATOR: '&&', SEGMENTS: ['VAL__SQBRAC_L', 'element', 'VAL__SQBRAC_R'] },
   // // hashIdentifier: { OPERATOR: '&&', SEGMENTS: ['VAL__HASH', 'identifier'] },
@@ -272,7 +283,7 @@ module.exports = grammar.export_grammar({
   // TILD_EQ: { OPERATOR: '==', VALUE: '~=' },
   // TIMES: { OPERATOR: '==', VALUE: '\\*' },
   // True: { OPERATOR: '==', VALUE: '[T]rue' },
-  // Unit: { OPERATOR: '==', VALUE: '(%|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+  // Unit: { OPERATOR: '==', VALUE: '(%|vh|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
   // Url: { OPERATOR: '||', SEGMENTS: ['STRING', 'UrlVal'] },
   // UrlEnd: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_R'] },
   // UrlStart: { OPERATOR: '&&', SEGMENTS: ['UrlStartVal', 'VAL__PAREN_L'] },

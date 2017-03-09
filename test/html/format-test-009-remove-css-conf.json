@@ -1,3 +1,4 @@
 {
-    "remove_css": true
+    "remove_css": true,
+    "line_ending": "\r\n"
 }
