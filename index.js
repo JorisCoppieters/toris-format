@@ -162,6 +162,7 @@ var g_INDENT = '    ';
 
 // Config - HTML:
 var g_ALLOW_EMPTY_FILES = false;
+var g_ADD_NOOPENER_NOREFERRER = false;
 var g_ANGULAR_VERSION = 1;
 var g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
 var g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
@@ -209,6 +210,7 @@ function setup (in_config) {
   if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
     // HTML:
     g_ALLOW_EMPTY_FILES = utils.get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
+    g_ADD_NOOPENER_NOREFERRER = utils.get_setup_property(in_config, "add_noopener_noreferrer", g_ADD_NOOPENER_NOREFERRER);
     g_ANGULAR_VERSION = utils.get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
     g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
     g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
@@ -1031,6 +1033,23 @@ function parse_html_open_element_end (in_html_content) {
 
 // ******************************
 
+function add_attributes (in_attributes) {
+  if (g_CURRENT_ELEMENT === 'a') {
+    if (in_attributes['target'] === '_blank') {
+      var rel = (in_attributes['rel'] || '').replace('noopener', '').replace('noreferrer', '').trim();
+      if (g_ADD_NOOPENER_NOREFERRER) {
+        return {
+          rel: 'noopener noreferrer' + (rel ? ' ' + rel : ''),
+        };
+      }
+    }
+  }
+
+  return {};
+}
+
+// ******************************
+
 function sort_attributes (in_attributes) {
   var result = '';
 
@@ -1039,7 +1058,14 @@ function sort_attributes (in_attributes) {
       break;
     }
 
-    var attribute_keys = Object.keys(in_attributes);
+    var attributes = in_attributes;
+    var added_attributes = add_attributes(in_attributes);
+
+    Object.keys(added_attributes).forEach(function (added_attribute_key) {
+      attributes[added_attribute_key] = added_attributes[added_attribute_key];
+    });
+
+    var attribute_keys = Object.keys(attributes);
     attribute_keys.sort();
 
     var attributes_order_pre_native = [];
@@ -1103,7 +1129,7 @@ function sort_attributes (in_attributes) {
 
     sorted_attribute_keys.forEach(function (key) {
 
-      var val = in_attributes[key];
+      var val = attributes[key];
       val = val.replace(/[\s]+/, ' ');
 
       if (val === k_NO_VALUE_TOKEN) {
