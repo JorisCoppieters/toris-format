@@ -652,6 +652,9 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
           color_func = cprint.toLightCyan;
 
           if (definition_key === 'GT') {
+            if (['>'].indexOf(state.LAST_TOKEN) >= 0) {
+              space_before = false;
+            }
             last_token = '>';
           } else if (definition_key === 'AND') {
             last_token = '&';

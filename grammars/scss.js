@@ -119,7 +119,9 @@ module.exports = grammar.export_grammar({
   selector: { OPERATOR: '&&', SEGMENTS: ['selectorStart*', 'attrib*', 'selectorPrefix?', 'pseudo*'] },
   selectorStart: { OPERATOR: '||', SEGMENTS: ['element', 'selectorPrefixElement'] },
   selectorPrefixElement: { OPERATOR: '&&', SEGMENTS: ['selectorPrefix', 'element'] },
-  selectorPrefix: { OPERATOR: '||', SEGMENTS: ['GT', 'PLUS', 'TIL'] },
+  selectorPrefix: { OPERATOR: '||', SEGMENTS: ['GTPrefix', 'PLUS', 'TIL'] },
+  GTPrefix: { OPERATOR: '&&', SEGMENTS: ['GT', 'GTGT?'] },
+  GTGT: { OPERATOR: '&&', SEGMENTS: ['GT', 'GT'] },
   element: { OPERATOR: '||', SEGMENTS: ['identifier', 'hashIdentifier', 'dotIdentifier', 'percIdentifier', 'AND', 'TIMES', 'pseudo', 'elementInBrackets'] },
   elementInBrackets: { OPERATOR: '&&', SEGMENTS: ['LBRACK', 'element', 'RBRACK'] },
   hashIdentifier: { OPERATOR: '&&', SEGMENTS: ['HASH', 'identifier'] },
@@ -173,7 +175,7 @@ module.exports = grammar.export_grammar({
   TYPE_CONDITION_LEAF: { OPERATOR: '||', SEGMENTS: ['_CONDITION_IN_PAREN', 'TYPE_CONDITION_VALUE'], },
   _CONDITION_IN_PAREN: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'TYPE_CONDITIONS', 'RPAREN'] },
   TYPE_CONDITION_VALUE: { OPERATOR: '||', SEGMENTS: ['Number', 'variableName', 'BOOLEAN', 'StringLiteral', 'Identifier'] },
-  TYPE_COMPARE_OPERATORS: { OPERATOR: '||', SEGMENTS: ['EQEQ', 'LTEQ', 'LT', 'GTEQ', 'GT', 'NOTEQ'] },
+  TYPE_COMPARE_OPERATORS: { OPERATOR: '||', SEGMENTS: ['EQEQ', 'LTEQ', 'LT', 'EQ', 'GT', 'NOTEQ'] },
   TYPE_COMBINE_OPERATORS: { OPERATOR: '||', SEGMENTS: ['COMBINE_COMPARE_AND', 'COMBINE_COMPARE_OR', 'AND_LITERAL', 'OR_LITERAL'] },
 
   // Other:
@@ -252,7 +254,7 @@ module.exports = grammar.export_grammar({
   TILD_EQ: { OPERATOR: '==', VALUE: '~=' },
   TIMES: { OPERATOR: '==', VALUE: '\\*' },
   True: { OPERATOR: '==', VALUE: '[T]rue' },
-  Unit: { OPERATOR: '==', VALUE: '(%|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+  Unit: { OPERATOR: '==', VALUE: '(%|vh|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
   Url: { OPERATOR: '||', SEGMENTS: ['STRING', 'UrlVal'] },
   UrlEnd: { OPERATOR: '&&', SEGMENTS: ['RPAREN'] },
   UrlStart: { OPERATOR: '&&', SEGMENTS: ['UrlStartVal', 'LPAREN'] },
@@ -260,7 +262,7 @@ module.exports = grammar.export_grammar({
   UrlVal: { OPERATOR: '==', VALUE: '[^\)]+' },
   VAL__EMPTY: { OPERATOR: '==', VALUE: '' },
   VAL_KEYFRAMES: { OPERATOR: '==', VALUE: '@keyframes' },
-  VAL_MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+  VAL_MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
 });
 
 // ******************************
