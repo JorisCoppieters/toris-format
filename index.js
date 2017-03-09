@@ -3,9 +3,14 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.6.0
+// TORIS FORMAT v1.6.1
 //
 // Version History:
+//
+// 1.6.1
+// - Added support for vh as a measurement in CSS grammar
+// - Added support for >>> as a selector in CSS grammar
+// - Added option to add noopener noreferrer to <a target="_blank"><a/> links
 //
 // 1.6.0
 // - Started work on refactoring into proper AST with Grammar files
@@ -63,7 +68,7 @@ var fsp = require('fs-process');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.6.0';
+const k_VERSION = '1.6.1';
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
