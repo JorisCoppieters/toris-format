@@ -18,12 +18,12 @@ runTests();
 // ******************************
 
 function runTests () {
-    formatTests('scss', 'Sass', function (contents) { return torisFormat.format_sass_contents(contents, 0, true); });
-    printTests('scss', 'Sass', function (contents) { return torisFormat.print_sass_contents(contents, 0, true); });
+    // formatTests('scss', 'Sass', function (contents) { return torisFormat.format_sass_contents(contents, 0, true); });
+    // printTests('scss', 'Sass', function (contents) { return torisFormat.print_sass_contents(contents, 0, true); });
 
-    formatTests('html', 'HTML', torisFormat.format_html_contents);
+    // formatTests('html', 'HTML', torisFormat.format_html_contents);
 
-    // formatTests('tangram_api', 'TypeScript', function (contents) { return torisFormat.format_tangram_api_contents(contents); });
+    formatTests('tangram_api', 'TypeScript', function (contents) { return torisFormat.format_tangram_api_contents(contents); });
 }
 
 // ******************************
