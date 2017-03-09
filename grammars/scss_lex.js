@@ -19,7 +19,7 @@ var DEFINITION = {
   },
   VAL_MEASUREMENT: {
     OPERATOR: '==',
-    VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)'
+    VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)'
   },
 
   EMPTY: {

@@ -407,7 +407,15 @@ var DEFINITION = {
   },
   selectorPrefix: {
     OPERATOR: '||',
-    SEGMENTS: ['GT', 'PLUS', 'TIL']
+    SEGMENTS: ['GTPrefix', 'PLUS', 'TIL']
+  },
+  GTPrefix: {
+    OPERATOR: '&&',
+    SEGMENTS: ['GT', 'GTGT?']
+  },
+  GTGT: {
+    OPERATOR: '&&',
+    SEGMENTS: ['GT', 'GT']
   },
   element: {
     OPERATOR: '||',
