@@ -19,6 +19,7 @@ var grammar_utils = require('../grammars/utils');
 var GRAMMAR_SCSS = require('../grammars/scss');
 var GRAMMAR_SCSS_OUTPUT = require('../grammars/scss_output');
 var GRAMMAR_HTML = require('../grammars/html');
+var GRAMMAR_HTML_OUTPUT = require('../grammars/html_output');
 
 // ******************************
 // Exposing Functions:
@@ -61,6 +62,29 @@ var g_DEFINITION_TYPE = k_DEFINITION_TYPE_HTML;
 var g_INDENT_COUNT = 0;
 var g_INDENT = '    ';
 
+// Config - HTML (Base):
+var g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
+var g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+var g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
+var g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+// Config - HTML:
+var g_ALLOW_EMPTY_FILES = false;
+var g_ADD_NOOPENER_NOREFERRER = false;
+var g_ANGULAR_VERSION = 1;
+var g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
+var g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
+var g_FORCE_INLINE_WHITESPACE_FORMATTING = false;
+var g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = -1;
+var g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
+var g_MULTI_CLASSES_ORDER = [];
+var g_NG_ATTRIBUTES_ORDER = [];
+var g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
+var g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
+var g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
+var g_REMOVE_CSS = false;
+var g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
+
 // Config - SASS:
 var g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = [];
 
@@ -82,10 +106,25 @@ function setup (in_config) {
 
   if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
     // HTML:
+    g_ADD_NOOPENER_NOREFERRER = utils.get_setup_property(in_config, "add_noopener_noreferrer", g_ADD_NOOPENER_NOREFERRER);
+    g_ANGULAR_VERSION = utils.get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
+    g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
+    g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
+    g_FORCE_INLINE_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_inline_whitespace_formatting", g_FORCE_INLINE_WHITESPACE_FORMATTING);
+    g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = utils.get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
+    g_INLINE_ELEMENTS = utils.get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
+    g_MULTI_CLASSES_ORDER = utils.get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
+    g_NG_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
+    g_NONE_ONE_TIME_BOUND_ELEMENTS = utils.get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
+    g_ONE_TIME_BOUND_ELEMENT_PREFIXES = utils.get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
+    g_REMOVE_CSS = utils.get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
+    g_SELF_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
 
   } else if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_SCSS) {
     // SASS:
     g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = utils.get_setup_property(in_config, "format_property_values_on_newlines", g_FORMAT_PROPERTY_VALUES_ON_NEWLINES);
+
   }
 }
 
@@ -110,8 +149,7 @@ function parse_contents (in_contents) {
 
     switch(g_DEFINITION_TYPE) {
       case k_DEFINITION_TYPE_HTML:
-        throw_error(fn, 'HTML parsing not supported yet...');
-        // definition = GRAMMAR_HTML;
+        definition = GRAMMAR_HTML;
         break;
 
       case k_DEFINITION_TYPE_SCSS:
@@ -474,7 +512,10 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
 
   switch(g_DEFINITION_TYPE) {
     case k_DEFINITION_TYPE_HTML:
-      throw_error(fn, 'HTML outputting not supported yet...');
+      var options = {
+        DEBUG: g_DEBUG
+      }
+      output = GRAMMAR_HTML_OUTPUT.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
       break;
 
     case k_DEFINITION_TYPE_SCSS:
