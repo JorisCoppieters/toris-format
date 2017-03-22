@@ -59,15 +59,212 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
   var last_token = false;
 
   if (definition_key) {
-    if (definition_key.match(/DECLARATION_.*/)) {
-      state.DECLARATION_TYPE = definition_key;
-      state.VALUE_TYPE = false;
-    } else if (definition_key.match(/TYPE_.*/)) {
-      state.VALUE_TYPE = definition_key;
+    if (definition_key.match(/DECLARATION_(.*)/)) {
+      state.DECLARATION_TYPE = definition_key.match(/DECLARATION_(.*)/)[1];
+      state.VALUE_TYPES = [];
+    } else if (definition_key.match(/TYPE_(.*)/)) {
+      state.VALUE_TYPES = state.VALUE_TYPES || [];
+      state.VALUE_TYPES.push(definition_key.match(/TYPE_(.*)/)[1]);
     }
   }
 
   switch (definition_key) {
+
+    case 'VAL__DASH':
+    case 'VAL__EQ':
+    case 'VAL__EQEQ':
+    case 'VAL__GTEQ':
+    case 'VAL__HASH':
+    case 'VAL__GT':
+    case 'VAL__LT':
+    case 'VAL__LTEQ':
+    case 'VAL__NOTEQ':
+    case 'VAL__SQBRAC_L':
+    case 'VAL__SQBRAC_R':
+    case 'VAL__TIL':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      break;
+
+    case 'VAL__CURLY_L':
+      color_func = cprint.toWhite;
+      last_token = definition_key;
+      post_indent = 1;
+
+      // switch (state.DECLARATION_TYPE) {
+      //   case 'HASH_BLOCK_START':
+      //     space_before = false;
+      //     break;
+      // }
+      break;
+
+    case 'VAL__CURLY_R':
+      color_func = cprint.toWhite;
+      last_token = definition_key;
+      pre_indent = -1;
+      newline = true;
+
+      // switch (state.VALUE_TYPE) {
+      //   case 'TYPE_KEYFRAMES_ENTRY_END':
+      //     newline = false;
+      //     break;
+
+      //   default:
+      //     switch (state.DECLARATION_TYPE) {
+
+      //       case 'HASH_BLOCK_EXPRESSION':
+      //         newline = false;
+      //         space_before = false;
+      //         break;
+
+      //       case 'HASH_BLOCK_END':
+      //         newline = false;
+      //         space_before = false;
+      //         state.DECLARATION_TYPE = 'HASH_BLOCK_AFTER';
+      //         break;
+      //     }
+      // }
+      break;
+
+    case 'VAL__DOT':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      if (['VAL__SEMI', 'VAL__CURLY_R'].indexOf(state.LAST_TOKEN) > -1) {
+        newline = true;
+        if (whitespace_before_includes_double_newline) {
+          double_newline = true;
+        }
+      }
+      break;
+
+    case 'VAL__AMP':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      if (['VAL__SEMI', 'VAL__CURLY_R'].indexOf(state.LAST_TOKEN) > -1) {
+        newline = true;
+        if (whitespace_before_includes_double_newline) {
+          double_newline = true;
+        }
+      }
+      break;
+
+    case 'VAL__COLON':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      if (['VAL__PROPERTY_KEY', 'VAL__AMP'].indexOf(state.LAST_TOKEN) > -1) {
+        space_before = false;
+      }
+      break;
+
+    case 'VAL__PAREN_L':
+    case 'VAL__PAREN_R':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      if (state.VALUE_TYPES.indexOf('FUNCTION_CALL') > -1) {
+        space_before = false;
+      }
+      break;
+
+    case 'VAL__COMMA':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      if (state.VALUE_TYPES.indexOf('FUNCTION_CALL') > -1) {
+        space_before = false;
+      }
+      if (state.VALUE_TYPES.indexOf('NUMERIC_EXPRESSION') > -1) {
+        space_before = false;
+      }
+      break;
+
+    case 'VAL__PLUS':
+    case 'VAL__MINUS':
+    case 'VAL__NEGATE':
+    case 'VAL__TIMES':
+    case 'VAL__DIVIDE':
+      color_func = cprint.toLightCyan;
+      last_token = definition_key;
+      break;
+
+    case 'MISSING_SEMI':
+    case 'VAL__SEMI':
+      color_func = cprint.toLightMagenta;
+      last_token = 'VAL__SEMI';
+      space_before = false;
+      append = ';'
+      break;
+
+    case 'VAL__SELECTOR_NAME':
+      color_func = cprint.toWhite;
+      last_token = definition_key;
+      if (['VAL__DOT', 'VAL__COLON'].indexOf(state.LAST_TOKEN) > -1) {
+        space_before = false;
+      }
+      break;
+
+    case 'VAL__PROPERTY_KEY':
+      color_func = cprint.toGreen;
+      last_token = definition_key;
+      newline = true;
+      break;
+
+    case 'VAL__KEYWORD_NAME':
+      color_func = cprint.toYellow;
+      last_token = definition_key;
+      break;
+
+    case 'VAL__DOLLAR':
+      color_func = cprint.toLightBlue;
+      last_token = definition_key;
+      break;
+
+    case 'VAL__VARIABLE_NAME':
+      color_func = cprint.toLightBlue;
+      space_before = false;
+      break;
+
+    case 'VAL__NUMBER':
+      color_func = cprint.toYellow;
+      last_token = definition_key;
+      if (state.VALUE_TYPES.indexOf('FUNCTION_CALL') > -1) {
+        if (['VAL__PAREN_L'].indexOf(state.LAST_TOKEN) > -1) {
+          space_before = false;
+        }
+      }
+
+      if (state.VALUE_TYPES.indexOf('NUMERIC_EXPRESSION') > -1) {
+        if (['VAL__NEGATE'].indexOf(state.LAST_TOKEN) > -1) {
+          space_before = false;
+        }
+      }
+      break;
+
+    case 'VAL__UNIT':
+      color_func = cprint.toWhite;
+      last_token = definition_key;
+      if (['VAL__NUMBER'].indexOf(state.LAST_TOKEN) > -1) {
+        space_before = false;
+      }
+      break;
+
+    case 'VAL__SINGLE_LINE_COMMENT':
+      color_func = cprint.toDarkGrey;
+      break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Declaration Types:
     case 'url':
@@ -227,18 +424,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     case 'PIPE_EQ':
     case 'STAR_EQ':
     case 'TILD_EQ':
-    case 'VAL__DASH':
-    case 'VAL__DOT':
-    case 'VAL__EQ':
-    case 'VAL__EQEQ':
-    case 'VAL__GTEQ':
-    case 'VAL__HASH':
-    case 'VAL__LT':
-    case 'VAL__LTEQ':
-    case 'VAL__NOTEQ':
-    case 'VAL__SQBRAC_L':
-    case 'VAL__SQBRAC_R':
-    case 'VAL__TIL':
       color_func = cprint.toLightCyan;
       last_token = definition_value;
 
@@ -252,17 +437,17 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
         newline = (['{', ';', 'SINGLE_LINE_COMMENT', 'MULTI_LINE_COMMENT'].indexOf(state.LAST_TOKEN) >= 0);
       }
 
-      if (['PROPERTY', 'TYPE_KEYFRAMES_ENTRY_PROPERTY'].indexOf(state.LAST_TOKEN) >= 0) {
+      if (['VAL__PROPERTY_KEY', 'TYPE_KEYFRAMES_ENTRY_PROPERTY'].indexOf(state.LAST_TOKEN) >= 0) {
         space_before = false;
       } else if (['VAL__DASH'].indexOf(definition_key) >= 0) {
         space_before = false;
-      } else if (['VARIABLE', 'PROPERTY_VALUE'].indexOf(state.VALUE_TYPE) >= 0 && ['COLON'].indexOf(definition_key) >= 0) {
+      } else if (['VARIABLE', 'PROPERTY_VALUE'].indexOf(state.VALUE_TYPE) >= 0 && ['VAL__COLON'].indexOf(definition_key) >= 0) {
         space_before = false;
       } else if (['MAP_ENTRY_KEY'].indexOf(state.DECLARATION_TYPE) >= 0) {
         space_before = false;
       } else if (['HASH_BLOCK'].indexOf(state.DECLARATION_TYPE) >= 0 && ['OPERATOR', ':', 'VAL__MINUS'].indexOf(state.LAST_TOKEN) < 0) {
         space_before = false;
-      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['COLON', 'VAL__EQ', 'VAL__SQBRAC_R'].indexOf(definition_key) >= 0) {
+      } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['VAL__COLON', 'VAL__EQ', 'VAL__SQBRAC_R'].indexOf(definition_key) >= 0) {
         space_before = false;
       } else if (['SELECTOR'].indexOf(state.DECLARATION_TYPE) >= 0 && ['VAL__SQBRAC_L'].indexOf(definition_key) >= 0 && state.VALUE_TYPE !== 'SELECTOR_PREFIX') {
         space_before = false;
@@ -305,6 +490,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
       last_token = definition_value.toUpperCase();
       break;
 
+    case 'VAL__CURLY_L':
     case 'BlockStart':
       last_token = '{';
       post_indent = 1;
@@ -316,6 +502,8 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
       }
       break;
+
+    case 'VAL__CURLY_R':
     case 'BlockEnd':
       last_token = '}';
       pre_indent = -1;
@@ -489,6 +677,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'PROPERTY':
+        case 'BLOCK_PROPERTY':
           if (['VAL__MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['OPERATOR', ':', '('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
             space_before = false;
           } else if (['('].indexOf(state.LAST_TOKEN) >= 0) {
@@ -669,6 +858,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
           break;
 
         case 'PROPERTY':
+        case 'PROPERTY_KEY':
           newline = (state.LAST_TOKEN !== '(');
           if (['('].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;

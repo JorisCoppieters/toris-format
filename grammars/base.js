@@ -62,6 +62,7 @@ module.exports = grammar.export_grammar({
   VAL__PLUS: { OPERATOR: '==', VALUE: '[+]' },
   VAL__SEMI: { OPERATOR: '==', VALUE: ';' },
   VAL__SLASH: { OPERATOR: '==', VALUE: '[/]' },
+  VAL__SPACE: { OPERATOR: '==', VALUE: '[ ]' },
   VAL__SQBRAC_L: { OPERATOR: '==', VALUE: '\\[' },
   VAL__SQBRAC_R: { OPERATOR: '==', VALUE: '\\]' },
   VAL__SQUOTE: { OPERATOR: '==', VALUE: '[\']' },

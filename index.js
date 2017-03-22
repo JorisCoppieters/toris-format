@@ -274,6 +274,10 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     throw 'Failed to parse:\n' + failed_output;
   }
 
+  if (g_DEBUG) {
+    fsp.write('./_debug_ast_structure.txt', tree_output.values);
+  }
+
   var result = tree_output.output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -294,7 +298,6 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-
   var tree;
   try {
     tree = parser.parse_contents(in_contents);
@@ -310,9 +313,8 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
   }
 
   var tree_output = parser.output_tree(tree);
-
   if (!tree_output.output) {
-    var failed_output = get_failed_output(tree, contents, true);
+    var failed_output = get_failed_output(tree, contents);
     cprint.red('Failed to parse:');
     cprint.red(failed_output);
     return;
@@ -321,6 +323,7 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
   if (g_DEBUG) {
     fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
+
   var result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -468,7 +471,7 @@ function get_failed_output (in_tree, in_contents) {
   unrecognised_contents += '...';
   var result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
   if (g_DEBUG) {
-    result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
+    result += '\n\n' + cprint.toYellow('Best Path:' + tree_output_failed.best_path);
   }
   return result;
 }
