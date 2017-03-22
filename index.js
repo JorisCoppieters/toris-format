@@ -62,6 +62,7 @@
 var parser = require('./src/parser');
 var utils = require('./src/utils');
 var cprint = require('color-print');
+var fs = require('fs');
 var fsp = require('fs-process');
 
 // ******************************
@@ -274,6 +275,9 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     throw 'Failed to parse:\n' + failed_output;
   }
 
+  if (fs.existsSync('./_debug_ast_structure.txt')) {
+    fsp.remove('./_debug_ast_structure.txt');
+  }
   if (g_DEBUG) {
     fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
@@ -320,6 +324,9 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     return;
   }
 
+  if (fs.existsSync('./_debug_ast_structure.txt')) {
+    fsp.remove('./_debug_ast_structure.txt');
+  }
   if (g_DEBUG) {
     fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
@@ -464,6 +471,9 @@ function get_failed_output (in_tree, in_contents) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
+  if (fs.existsSync('./_debug_ast_failed_structure.txt')) {
+    fsp.remove('./_debug_ast_failed_structure.txt');
+  }
   if (g_DEBUG) {
     fsp.write('./_debug_ast_failed_structure.txt', tree_output_failed.values);
   }

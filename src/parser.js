@@ -15,9 +15,11 @@
 var checks = require('./checks');
 var cprint = require('color-print');
 var FORMATTER_SCSS = require('../formatters/scss');
+var FORMATTER_SCSS_OLD = require('../formatters/scss_old');
 var grammar  = require('../grammars/_core');
 var GRAMMAR_HTML = require('../grammars/html');
 var GRAMMAR_SCSS = require('../grammars/scss');
+var GRAMMAR_SCSS_OLD = require('../grammars/scss_old');
 var GRAMMAR_TANGRAM_API = require('../grammars/tangram_api');
 var regexp_shorthand = require('../regexp/shorthand');
 var utils = require('./utils');
@@ -118,7 +120,7 @@ function parse_contents (in_contents) {
         break;
 
       case k_DEFINITION_TYPE_SCSS:
-        definition = GRAMMAR_SCSS;
+        definition = GRAMMAR_SCSS_OLD;
         break;
 
       case k_DEFINITION_TYPE_TANGRAM_API:
@@ -498,7 +500,7 @@ function output_tree (in_tree, in_state, in_tree_output, in_indent) {
         DEBUG: g_DEBUG,
         FORMAT_PROPERTY_VALUES_ON_NEWLINES: g_FORMAT_PROPERTY_VALUES_ON_NEWLINES,
       }
-      output = FORMATTER_SCSS.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
+      output = FORMATTER_SCSS_OLD.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
       break;
 
     default:

@@ -107,7 +107,7 @@ module.exports = grammar.export_grammar({
   blockProperty: { OPERATOR: '||', SEGMENTS: ['blockPropertySemi', 'statement'] },
   blockPropertySemi: { OPERATOR: '&&', SEGMENTS: ['property', 'IMPORTANT?', 'SEMI+'] },
   blockPropertyNoSemi: { OPERATOR: '&&', SEGMENTS: ['property', 'IMPORTANT?', 'NOSEMI'] },
-  NOSEMI: { OPERATOR: '&&', SEGMENTS: ['EMPTY'] },
+  NOSEMI: { OPERATOR: '&&', SEGMENTS: ['VAL__EMPTY'] },
   selectors: { OPERATOR: '&&', SEGMENTS: ['selectorWithComment', 'commaSelectorWithComment*'] },
   commaSelectorWithComment: { OPERATOR: '&&', SEGMENTS: ['COMMA', 'selectorWithComment'] },
   selectorWithComment: { OPERATOR: '&&', SEGMENTS: ['comment?', 'selector', 'comment?'] },
@@ -181,7 +181,7 @@ module.exports = grammar.export_grammar({
   VAL_KEYFRAMES: { OPERATOR: '==', VALUE: '@keyframes' },
   VAL_MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
 
-  EMPTY: { OPERATOR: '==', VALUE: '' },
+  VAL__EMPTY: { OPERATOR: '==', VALUE: '' },
   NULL: { OPERATOR: '==', VALUE: 'null' },
   IN: { OPERATOR: '==', VALUE: 'in' },
   Unit: { OPERATOR: '==', VALUE: '(%|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
