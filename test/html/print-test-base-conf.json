@@ -1,0 +1,8 @@
+{
+    "inputFile": "print-test-base.html",
+    "setup": {
+        "definition_type": "HTML",
+        "line_ending": "\r\n"
+    },
+    "testName": "base"
+}

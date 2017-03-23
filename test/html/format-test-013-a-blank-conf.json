@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-013-a-blank-preformatted.html",
+    "outputFile": "format-test-013-a-blank-formatted.html",
+    "setup": {
+        "add_noopener_noreferrer": true
+    },
+    "testName": "a-blank"
+}

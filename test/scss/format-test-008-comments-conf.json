@@ -1,0 +1,5 @@
+{
+    "inputFile": "format-test-008-comments-preformatted.scss",
+    "outputFile": "format-test-008-comments-formatted.scss",
+    "testName": "008-comments"
+}

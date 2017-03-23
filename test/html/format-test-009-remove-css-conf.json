@@ -1,4 +1,8 @@
 {
-    "remove_css": true,
-    "line_ending": "\r\n"
+    "inputFile": "format-test-009-remove-css-preformatted.html",
+    "outputFile": "format-test-009-remove-css-formatted.html",
+    "setup": {
+        "remove_css": true
+    },
+    "testName": "remove-css"
 }

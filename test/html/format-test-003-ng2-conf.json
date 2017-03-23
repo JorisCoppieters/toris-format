@@ -1,10 +1,15 @@
 {
-    "ng_attributes_order_pre_native": [
-        "\\*.*",
-        "\\#.*",
-        "\\[\\(.*\\)\\]",
-        "\\(.*\\)",
-        "\\[.*\\]"
-    ],
-    "ng_version": 2
+    "inputFile": "format-test-003-ng2-preformatted.html",
+    "outputFile": "format-test-003-ng2-formatted.html",
+    "setup": {
+        "ng_attributes_order_pre_native": [
+            "\\*.*",
+            "\\#.*",
+            "\\[\\(.*\\)\\]",
+            "\\(.*\\)",
+            "\\[.*\\]"
+        ],
+        "ng_version": 2
+    },
+    "testName": "ng2"
 }

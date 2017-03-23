@@ -1,3 +1,8 @@
 {
-    "line_ending": "\r\n"
+    "inputFile": "format-test-007-windows-line-endings-preformatted.html",
+    "outputFile": "format-test-007-windows-line-endings-formatted.html",
+    "setup": {
+        "line_ending": "\r\n"
+    },
+    "testName": "windows-line-endings"
 }
