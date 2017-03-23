@@ -38,56 +38,56 @@ function runTests () {
 // ******************************
 
 function formatTests (testFolder, fileType, formatFunction) {
-    var filter = 'format-test-.*\\-conf.json';
-    fsp.list('./test/' + testFolder, filter).then(function (files) {
-        files.sort();
-        files.forEach(function (file) {
-            if (g_TEST_FAILED) {
-                return;
-            }
+  var filter = 'format-test-.*\\-conf.json';
+  fsp.list('./test/' + testFolder, filter).then(function (files) {
+    files.sort();
+    files.forEach(function (file) {
+      if (g_TEST_FAILED) {
+        return;
+      }
 
-            var dirname = path.dirname(file);
+      var dirname = path.dirname(file);
 
-            var configFile = file;
-            var config = loadConfigFile(configFile);
-            if (config.ignore) {
-                return;
-            }
+      var configFile = file;
+      var config = loadConfigFile(configFile);
+      if (config.ignore) {
+        return;
+      }
 
-            var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
-            var outputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.outputFile), 'utf8');
-            var testName = config.testName;
+      var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
+      var outputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.outputFile), 'utf8');
+      var testName = config.testName;
 
-            formatTestFiles(testFolder + '-' + testName, fileType, formatFunction, inputContents, outputContents);
-        })
-    });
+      formatTestFiles(testFolder + '-' + testName, fileType, formatFunction, inputContents, outputContents);
+    })
+  });
 }
 
 // ******************************
 
 function printTests (testFolder, fileType, formatFunction) {
-    var filter = 'print-test-.*\\-conf.json';
-    fsp.list('./test/' + testFolder, filter).then(function (files) {
-        files.sort();
-        files.forEach(function (file) {
-            if (g_TEST_FAILED) {
-                return;
-            }
+  var filter = 'print-test-.*\\-conf.json';
+  fsp.list('./test/' + testFolder, filter).then(function (files) {
+    files.sort();
+    files.forEach(function (file) {
+      if (g_TEST_FAILED) {
+        return;
+      }
 
-            var dirname = path.dirname(file);
+      var dirname = path.dirname(file);
 
-            var configFile = file;
-            var config = loadConfigFile(configFile);
-            if (config.ignore) {
-                return;
-            }
+      var configFile = file;
+      var config = loadConfigFile(configFile);
+      if (config.ignore) {
+        return;
+      }
 
-            var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
-            var testName = config.testName;
+      var inputContents = fs.readFileSync(path.resolve(__dirname, dirname, config.inputFile), 'utf8');
+      var testName = config.testName;
 
-            printTestContents(testFolder + '-' + testName, fileType, formatFunction, inputContents);
-        })
-    });
+      printTestContents(testFolder + '-' + testName, fileType, formatFunction, inputContents);
+    })
+  });
 }
 
 // ******************************

@@ -219,10 +219,16 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
 
     tree.DEFINITION_KEY = definition_key;
 
-    if ((!tree.VALUE && !tree.CHILDREN) || result.trim() !== '') {
+    if (!tree.VALUE && !tree.CHILDREN) {
       if (is_start) {
         tree.FAILED = true;
       }
+      result = '';
+      break;
+    }
+
+    if (is_start && result.trim() !== '') {
+      tree.FAILED = true;
       result = '';
       break;
     }
