@@ -275,13 +275,6 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     throw 'Failed to parse:\n' + failed_output;
   }
 
-  if (fs.existsSync('./_debug_ast_structure.txt')) {
-    fsp.remove('./_debug_ast_structure.txt');
-  }
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_structure.txt', tree_output.values);
-  }
-
   var result = tree_output.output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -322,13 +315,6 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     cprint.red('Failed to parse:');
     cprint.red(failed_output);
     return;
-  }
-
-  if (fs.existsSync('./_debug_ast_structure.txt')) {
-    fsp.remove('./_debug_ast_structure.txt');
-  }
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
 
   var result = tree_output.color_output;
@@ -469,13 +455,6 @@ function get_failed_output (in_tree, in_contents) {
 
   if (recognised_contents.length > 100) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
-  }
-
-  if (fs.existsSync('./_debug_ast_failed_structure.txt')) {
-    fsp.remove('./_debug_ast_failed_structure.txt');
-  }
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_failed_structure.txt', tree_output_failed.values);
   }
 
   unrecognised_contents += '...';
