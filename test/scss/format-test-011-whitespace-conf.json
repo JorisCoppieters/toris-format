@@ -1,0 +1,5 @@
+{
+    "inputFile": "format-test-011-whitespace-preformatted.scss",
+    "outputFile": "format-test-011-whitespace-formatted.scss",
+    "testName": "011-whitespace"
+}

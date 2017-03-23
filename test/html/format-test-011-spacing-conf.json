@@ -1,3 +1,7 @@
 {
-    "ignore": true
+    "ignore": true,
+    "inputFile": "format-test-011-spacing-preformatted.html",
+    "outputFile": "format-test-011-spacing-formatted.html",
+    "setup": {},
+    "testName": "spacing"
 }

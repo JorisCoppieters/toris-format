@@ -1,0 +1,5 @@
+{
+    "inputFile": "format-test-010-conditions-preformatted.scss",
+    "outputFile": "format-test-010-conditions-formatted.scss",
+    "testName": "010-conditions"
+}

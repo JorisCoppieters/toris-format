@@ -1,3 +1,8 @@
 {
-    "line_ending": "\n"
+    "inputFile": "format-test-008-linux-line-endings-preformatted.html",
+    "outputFile": "format-test-008-linux-line-endings-formatted.html",
+    "setup": {
+        "line_ending": "\n"
+    },
+    "testName": "linux-line-endings"
 }

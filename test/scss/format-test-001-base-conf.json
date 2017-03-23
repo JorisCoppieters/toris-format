@@ -1,4 +1,10 @@
 {
-    "line_ending": "\r\n",
-    "definition_type": "SCSS"
+    "inputFile": "format-test-001-base-preformatted.scss",
+    "outputFile": "format-test-001-base-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "001-base"
 }

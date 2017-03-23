@@ -1,3 +1,8 @@
 {
-    "line_ending": "\r"
+    "inputFile": "format-test-006-macosx-line-endings-preformatted.html",
+    "outputFile": "format-test-006-macosx-line-endings-formatted.html",
+    "setup": {
+        "line_ending": "\r"
+    },
+    "testName": "macosx-line-endings"
 }

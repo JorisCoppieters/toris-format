@@ -20,31 +20,31 @@ var r_S = '[\\s]+'; // RegEx: Whitepsace
 // ******************************
 
 function r_w (in_re) { // RegEx: Whitespace around
-  return r_W + in_re + r_W;
+    return r_W + in_re + r_W;
 }
 
 // ******************************
 
 function r_g (in_re) { // RegEx: Group
-  return '(?:' + in_re + ')';
+    return '(?:' + in_re + ')';
 }
 
 // ******************************
 
 function r_v (in_re) { // RegEx: Variable
-  return '(' + in_re + ')';
+    return '(' + in_re + ')';
 }
 
 // ******************************
 
 function r_dq (in_re) { // RegEx: Double Quote
-  return r_W + '"' + r_W + in_re + r_W + '"';
+    return r_W + '"' + r_W + in_re + r_W + '"';
 }
 
 // ******************************
 
 function r_sq (in_re) { // RegEx: Single Quote
-  return r_W + '\'' + r_W + in_re + r_W + '\'';
+    return r_W + '\'' + r_W + in_re + r_W + '\'';
 }
 
 // ******************************

@@ -1,8 +1,13 @@
 {
-    "ng_attributes_order": [
-        "my-z-.*",
-        "my-a-.*",
-        "my-.*"
-    ],
-    "ng_version": 1.5
+    "inputFile": "format-test-002-ng1-preformatted.html",
+    "outputFile": "format-test-002-ng1-formatted.html",
+    "setup": {
+        "ng_attributes_order": [
+            "my-z-.*",
+            "my-a-.*",
+            "my-.*"
+        ],
+        "ng_version": 1.5
+    },
+    "testName": "ng1"
 }

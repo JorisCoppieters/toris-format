@@ -33,7 +33,7 @@ var r_sq = regexp_shorthand.r_sq;
 // Output:
 // ******************************
 
-function get_output (in_definition_key, in_definition_value, in_state, in_options) {
+function get_definition_output (in_definition_key, in_definition_value, in_state, in_options) {
   var state = in_state;
   state.ELEMENT_STACK = state.ELEMENT_STACK || [];
 
@@ -134,6 +134,6 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
 // Exports:
 // ******************************
 
-module.exports['get_output'] = get_output;
+module.exports['get_definition_output'] = get_definition_output
 
 // ******************************
