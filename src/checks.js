@@ -94,6 +94,9 @@ function check_left_factored (in_definition, in_definition_key) {
 
       left_most_definition_values_for_key = get_left_most_definition_values(in_definition, [sub_definition_key]);
       left_most_definition_values_for_key.forEach(function (left_most_definition_value) {
+        if (left_most_definition_value === grammar.k_DEFINITION_KEY_EMPTY) {
+          return;
+        }
 
         left_most_definition_value_seen_key = left_most_definition_values[left_most_definition_value];
 

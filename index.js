@@ -62,6 +62,7 @@
 var parser = require('./src/parser');
 var utils = require('./src/utils');
 var cprint = require('color-print');
+var fs = require('fs');
 var fsp = require('fs-process');
 
 // ******************************
@@ -300,6 +301,13 @@ function format_sass_contents (in_contents, in_indent_count, in_convert_newlines
     throw 'Failed to parse:\n' + failed_output;
   }
 
+  if (fs.existsSync('./_debug_ast_structure.txt')) {
+    fsp.remove('./_debug_ast_structure.txt');
+  }
+  if (g_DEBUG) {
+    fsp.write('./_debug_ast_structure.txt', tree_output.values);
+  }
+
   var result = tree_output.output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -320,7 +328,6 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
     definition_type: parser.k_DEFINITION_TYPE_SCSS
   });
 
-
   var tree;
   try {
     tree = parser.parse_contents(in_contents);
@@ -336,17 +343,20 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
   }
 
   var tree_output = parser.get_tree_output(tree);
-
   if (!tree_output.output) {
-    var failed_output = get_failed_output(tree, contents, true);
+    var failed_output = get_failed_output(tree, contents);
     cprint.red('Failed to parse:');
     cprint.red(failed_output);
     return;
   }
 
+  if (fs.existsSync('./_debug_ast_structure.txt')) {
+    fsp.remove('./_debug_ast_structure.txt');
+  }
   if (g_DEBUG) {
     fsp.write('./_debug_ast_structure.txt', tree_output.values);
   }
+
   var result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);

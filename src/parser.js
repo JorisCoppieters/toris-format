@@ -15,10 +15,12 @@
 var checks = require('./checks');
 var cprint = require('color-print');
 var FORMATTER_SCSS = require('../formatters/scss');
+var FORMATTER_SCSS_OLD = require('../formatters/scss_old');
 var FORMATTER_TANGRAM_API = require('../formatters/tangram_api');
 var grammar  = require('../grammars/_core');
 var GRAMMAR_HTML = require('../grammars/html');
 var GRAMMAR_SCSS = require('../grammars/scss');
+var GRAMMAR_SCSS_OLD = require('../grammars/scss_old');
 var GRAMMAR_TANGRAM_API = require('../grammars/tangram_api');
 var regexp_shorthand = require('../regexp/shorthand');
 var utils = require('./utils');
@@ -50,6 +52,9 @@ const k_DEFINITION_TYPE_TANGRAM_API = 'TANGRAM_API';
 // ******************************
 
 var g_DEBUG = false;
+var g_PRINT_TREE = false;
+var g_RUN_CHECKS = false;
+
 var g_NL = '\n';
 
 // Config - General:
@@ -75,6 +80,8 @@ function setup (in_config) {
   // General:
   g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
   g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
+  g_PRINT_TREE = utils.get_setup_property(in_config, "print_tree", g_PRINT_TREE);
+  g_RUN_CHECKS = utils.get_setup_property(in_config, "run_checks", g_RUN_CHECKS);
   g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
   g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
   g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT_COUNT);
@@ -114,7 +121,7 @@ function parse_contents (in_contents) {
         break;
 
       case k_DEFINITION_TYPE_SCSS:
-        definition = GRAMMAR_SCSS;
+        definition = GRAMMAR_SCSS_OLD;
         break;
 
       case k_DEFINITION_TYPE_TANGRAM_API:
@@ -129,12 +136,15 @@ function parse_contents (in_contents) {
       throw_error(fn, 'Definition doesn\'t have starting element: ' + g_DEFINITION_TYPE);
     }
 
-    if (g_DEBUG) {
+    if (g_RUN_CHECKS) {
       try {
         checks.check_grammar(definition);
       } catch (err) {
         throw_error(fn, err);
       }
+    }
+
+    if (g_PRINT_TREE) {
       definition[grammar.k_DEFINITION_KEY_START].DEBUG = grammar.k_DEBUG_MATCH_VAL;
     }
 
@@ -207,20 +217,14 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         break;
     }
 
-    if (!tree.VALUE && !tree.CHILDREN) {
+    tree.DEFINITION_KEY = definition_key;
+
+    if ((!tree.VALUE && !tree.CHILDREN) || result.trim() !== '') {
       if (is_start) {
         tree.FAILED = true;
       }
+      result = '';
       break;
-    }
-
-    tree.DEFINITION_KEY = definition_key;
-
-    if (is_start) {
-      if (result.trim() !== '') {
-        tree.FAILED = true;
-        result = '';
-      }
     }
   }
   while (false);
@@ -509,7 +513,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent) {
         DEBUG: g_DEBUG,
         FORMAT_PROPERTY_VALUES_ON_NEWLINES: g_FORMAT_PROPERTY_VALUES_ON_NEWLINES,
       }
-      output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
+      output = FORMATTER_SCSS_OLD.get_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, options);
       break;
 
     default:
@@ -592,7 +596,6 @@ function _populate_tree_failed_output (in_tree, in_tree_output, in_tree_path, in
   var indent = in_indent || '';
 
   var definition_key = in_tree.DEFINITION_KEY || 'Root';
-
   var definition_value = (in_tree.VALUE || '').trim();
 
   var definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');

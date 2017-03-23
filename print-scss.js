@@ -10,6 +10,9 @@ var fs = require('fs');
 
 var g_ARGV = minimist(process.argv.slice(2));
 var g_FILE = g_ARGV['file'];
+var g_DEBUG = g_ARGV['debug'];
+var g_PRINT_TREE = g_ARGV['print-tree'];
+var g_RUN_CHECKS = g_ARGV['run-checks'];
 
 // ******************************
 
@@ -25,7 +28,9 @@ function printTestSCSS () {
 
     torisFormat.setup({
       definition_type: torisFormat.k_DEFINITION_TYPE_SCSS,
-      debug: true
+      debug: g_DEBUG,
+      print_tree: g_PRINT_TREE,
+      run_checks: g_RUN_CHECKS
     });
 
     let file = g_FILE;
