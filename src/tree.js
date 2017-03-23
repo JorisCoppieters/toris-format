@@ -70,8 +70,6 @@ function get_tree_output (in_tree, in_config) {
 // ******************************
 
 function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in_config) {
-    var fn = 'output_tree';
-
     var state = in_state || {};
     state.LAST_TOKEN = state.LAST_TOKEN || '';
     state.STACK = state.STACK || [];
@@ -104,7 +102,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
             break;
 
         default:
-            throw_error(fn, 'Unhandled definition type: ' + g_DEFINITION_TYPE);
+            throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
     }
 
     var append = output.append;

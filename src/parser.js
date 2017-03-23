@@ -57,29 +57,6 @@ var g_RUN_CHECKS = false;
 var g_INDENT_COUNT = 0;
 var g_INDENT = '    ';
 
-// Config - HTML (Base):
-var g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
-var g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
-var g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
-var g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-
-// Config - HTML:
-var g_ALLOW_EMPTY_FILES = false;
-var g_ADD_NOOPENER_NOREFERRER = false;
-var g_ANGULAR_VERSION = 1;
-var g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
-var g_FORCE_BLOCK_WHITESPACE_FORMATTING = false;
-var g_FORCE_INLINE_WHITESPACE_FORMATTING = false;
-var g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = -1;
-var g_INLINE_ELEMENTS = g_INLINE_ELEMENTS_BASE;
-var g_MULTI_CLASSES_ORDER = [];
-var g_NG_ATTRIBUTES_ORDER = [];
-var g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-var g_NONE_ONE_TIME_BOUND_ELEMENTS = [];
-var g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
-var g_REMOVE_CSS = false;
-var g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
-
 // ******************************
 // Setup Functions:
 // ******************************
