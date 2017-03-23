@@ -62,52 +62,15 @@
 var parser = require('./src/parser');
 var utils = require('./src/utils');
 var cprint = require('color-print');
+var fs = require('fs');
 var fsp = require('fs-process');
+var re = require('./regexp/shorthand');
 
 // ******************************
 // Constants:
 // ******************************
 
 const k_VERSION = '1.6.1';
-
-// ******************************
-// RegEx Shorthand:
-// ******************************
-
-var r_A = '[\\s\\S]*?'; // RegEx: Any (Not Greedy)
-var r_AG = '[\\s\\S]*'; // RegEx: Any (Greedy)
-var r_W = '[\\s]*'; // RegEx: Optional Whitepsace
-var r_S = '[\\s]+'; // RegEx: Whitepsace
-
-// ******************************
-
-function r_w (in_re) { // RegEx: Whitespace around
-  return r_W + in_re + r_W;
-}
-
-// ******************************
-
-function r_g (in_re) { // RegEx: Group
-  return '(?:' + in_re + ')';
-}
-
-// ******************************
-
-function r_v (in_re) { // RegEx: Variable
-  return '(' + in_re + ')';
-}
-
-// ******************************
-
-function r_dq (in_re) { // RegEx: Double Quote
-  return r_W + '"' + r_W + in_re + r_W + '"';
-}
-
-// ******************************
-
-function r_sq (in_re) { // RegEx: Single Quote
-  return r_W + '\'' + r_W + in_re + r_W + '\'';
-}
 
 // ******************************
 // Globals:
@@ -124,7 +87,7 @@ var g_INDENT = '    ';
 // RegEx:
 var t_NL = '\n';
 var g_NL = '\r\n';
-var g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
+var g_REGEX_NL = re.r_g('\\r\\n|\\r|\\n');
 
 // ******************************
 // Setup Functions:
@@ -147,69 +110,27 @@ function setup (in_config) {
 // ******************************
 
 function format_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
-  var contents = in_contents || '';
-  if (in_convert_newlines) {
-    contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
-  }
-
-  parser.setup({
-    indent_count: in_indent_count || 0,
-    definition_type: parser.k_DEFINITION_TYPE_SCSS
-  });
-
-  var tree = parser.parse_contents(contents);
-  if (tree === '') {
-    return '';
-  }
-
-  var tree_output = parser.output_tree(tree);
-  if (!tree_output.output) {
-    var failed_output = get_failed_output(tree, contents);
-    throw 'Failed to parse:\n' + failed_output;
-  }
-
-  var result = tree_output.output;
-  if (in_convert_newlines) {
-    result = result.replace(new RegExp(t_NL, 'g'), g_NL);
-  }
-  return result;
+  return _format_contents(
+    in_contents,
+    {
+      indent_count: in_indent_count || 0,
+      definition_type: parser.k_DEFINITION_TYPE_SCSS
+    },
+    in_convert_newlines
+  );
 }
 
 // ******************************
 
 function print_sass_contents (in_contents, in_indent_count, in_convert_newlines) {
-  var contents = in_contents || '';
-  if (in_convert_newlines) {
-    contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
-  }
-
-  parser.setup({
-    indent_count: in_indent_count || 0,
-    definition_type: parser.k_DEFINITION_TYPE_SCSS
-  });
-
-  var tree = parser.parse_contents(in_contents);
-  if (tree === '') {
-    console.log('Empty Contents');
-  }
-
-  var tree_output = parser.output_tree(tree);
-
-  if (!tree_output.output) {
-    var failed_output = get_failed_output(tree, contents, true);
-    cprint.red('Failed to parse:');
-    console.log(failed_output);
-    return;
-  }
-
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_structure.txt', tree_output.values);
-  }
-  var result = tree_output.color_output;
-  if (in_convert_newlines) {
-    result = result.replace(new RegExp(t_NL, 'g'), g_NL);
-  }
-  console.log(result);
+  _print_contents(
+    in_contents,
+    {
+      indent_count: in_indent_count || 0,
+      definition_type: parser.k_DEFINITION_TYPE_SCSS
+    },
+    in_convert_newlines
+  );
 }
 
 // ******************************
@@ -217,17 +138,49 @@ function print_sass_contents (in_contents, in_indent_count, in_convert_newlines)
 // ******************************
 
 function format_html_contents (in_contents, in_indent_count, in_convert_newlines) {
+  return _format_contents(
+    in_contents,
+    {
+      indent_count: in_indent_count || 0,
+      definition_type: parser.k_DEFINITION_TYPE_HTML
+    },
+    in_convert_newlines
+  );
+}
+
+// ******************************
+
+function print_html_contents (in_contents, in_indent_count, in_convert_newlines) {
+  _print_contents(
+    in_contents,
+    {
+      indent_count: in_indent_count || 0,
+      definition_type: parser.k_DEFINITION_TYPE_HTML
+    },
+    in_convert_newlines
+  );
+}
+
+// ******************************
+// Helper Functions:
+// ******************************
+
+function _format_contents (in_contents, in_parser_config, in_convert_newlines) {
   var contents = in_contents || '';
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
 
-  parser.setup({
-    indent_count: in_indent_count || 0,
-    definition_type: parser.k_DEFINITION_TYPE_HTML
-  });
+  parser.setup(in_parser_config || {});
 
-  var tree = parser.parse_contents(contents);
+  var tree;
+  try {
+    tree = parser.parse_contents(in_contents);
+  } catch (err) {
+    throw 'Failed to parse:\n' + err;
+    return;
+  }
+
   if (tree === '') {
     return '';
   }
@@ -238,6 +191,8 @@ function format_html_contents (in_contents, in_indent_count, in_convert_newlines
     throw 'Failed to parse:\n' + failed_output;
   }
 
+  // writeDebugFile('./_debug_ast_structure.txt', tree_output.values);
+
   var result = tree_output.output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -247,34 +202,38 @@ function format_html_contents (in_contents, in_indent_count, in_convert_newlines
 
 // ******************************
 
-function print_html_contents (in_contents, in_indent_count, in_convert_newlines) {
+function _print_contents (in_contents, in_parser_config, in_convert_newlines) {
   var contents = in_contents || '';
   if (in_convert_newlines) {
     contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
   }
 
-  parser.setup({
-    indent_count: in_indent_count || 0,
-    definition_type: parser.k_DEFINITION_TYPE_HTML
-  });
+  parser.setup(in_parser_config || {});
 
-  var tree = parser.parse_contents(in_contents);
-  if (tree === '') {
-    console.log('Empty Contents');
-  }
-
-  var tree_output = parser.output_tree(tree);
-
-  if (!tree_output.output) {
-    var failed_output = get_failed_output(tree, contents, true);
+  var tree;
+  try {
+    tree = parser.parse_contents(in_contents);
+  } catch (err) {
     cprint.red('Failed to parse:');
-    console.log(failed_output);
+    cprint.red(err);
     return;
   }
 
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_structure.txt', tree_output.values);
+  if (tree === '') {
+    cprint.yellow('Empty Contents');
+    return;
   }
+
+  var tree_output = parser.output_tree(tree);
+  if (!tree_output.output) {
+    var failed_output = get_failed_output(tree, contents);
+    cprint.red('Failed to parse:');
+    cprint.red(failed_output);
+    return;
+  }
+
+  // writeDebugFile('./_debug_ast_structure.txt', tree_output.values);
+
   var result = tree_output.color_output;
   if (in_convert_newlines) {
     result = result.replace(new RegExp(t_NL, 'g'), g_NL);
@@ -282,8 +241,6 @@ function print_html_contents (in_contents, in_indent_count, in_convert_newlines)
   console.log(result);
 }
 
-// ******************************
-// Helper Functions:
 // ******************************
 
 function print_contents_diff (in_expected_contents, in_contents) {
@@ -417,16 +374,28 @@ function get_failed_output (in_tree, in_contents) {
     recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
   }
 
-  if (g_DEBUG) {
-    fsp.write('./_debug_ast_failed_structure.txt', tree_output_failed.values);
-  }
+  // writeDebugFile('./_debug_ast_failed_structure.txt', tree_output_failed.values);
 
   unrecognised_contents += '...';
   var result = cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
   if (g_DEBUG) {
-    result += '\n' + cprint.toYellow('Best Path:\n' + tree_output_failed.best_path);
+    result += '\n\n' + cprint.toYellow('Best Path:' + tree_output_failed.best_path);
   }
   return result;
+}
+
+// ******************************
+
+function writeDebugFile (in_file_name, in_file_contents) {
+  var writeFileFn = function () {
+    if (g_DEBUG) {
+      fsp.write(in_file_name, in_file_contents);
+    }
+  }
+
+  if (!fs.existsSync(in_file_name)) {
+    writeFileFn();
+  }
 }
 
 // ******************************

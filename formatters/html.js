@@ -12,22 +12,22 @@
 // Requires:
 // ******************************
 
-var utils = require('./utils');
 var cprint = require('color-print');
+var regexp_shorthand = require('../regexp/shorthand');
 
 // ******************************
 // Exposing Functions:
 // ******************************
 
-var r_A = utils.r_A;
-var r_AG = utils.r_AG;
-var r_W = utils.r_W;
-var r_S = utils.r_S;
-var r_w = utils.r_w;
-var r_g = utils.r_g;
-var r_v = utils.r_v;
-var r_dq = utils.r_dq;
-var r_sq = utils.r_sq;
+var r_A = regexp_shorthand.r_A;
+var r_AG = regexp_shorthand.r_AG;
+var r_W = regexp_shorthand.r_W;
+var r_S = regexp_shorthand.r_S;
+var r_w = regexp_shorthand.r_w;
+var r_g = regexp_shorthand.r_g;
+var r_v = regexp_shorthand.r_v;
+var r_dq = regexp_shorthand.r_dq;
+var r_sq = regexp_shorthand.r_sq;
 
 // ******************************
 // Output:
@@ -60,73 +60,52 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
   var post_indent = 0;
   var last_token = false;
 
-  // if (definition_key) {
-  //   if (definition_key.match(/DECLARATION_.*/)) {
-  //     state.DECLARATION_TYPE = definition_key;
-  //     state.VALUE_TYPE = false;
-  //   } else if (definition_key.match(/TYPE_.*/)) {
-  //     state.VALUE_TYPE = definition_key;
-  //   }
-  // }
-
   switch (definition_key) {
 
-    case 'HTML_OPEN_ELEMENT':
-      state.DECLARATION_TYPE = 'OPEN_ELEMENT';
-      break;
-
-    case 'HTML_CLOSE_ELEMENT':
-      state.DECLARATION_TYPE = 'CLOSE_ELEMENT';
-      post_indent = -1;
-      break;
-
-    case 'HTML_OPEN_ELEMENT_END_CLOSED':
+    case 'HTML_OPEN_ELEMENT_END':
       post_indent = 1;
       break;
 
-    case 'OPEN_ANGLED_BRACKET':
-      if (['OPEN_ELEMENT', 'CLOSE_ELEMENT'].indexOf(state.DECLARATION_TYPE) > -1) {
-        append = '<';
+    case 'HTML_CLOSE_ELEMENT':
+      post_indent = -1;
+      break;
+
+    case 'VAL__ANBRAC_L':
+      if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
         color_func = cprint.toWhite;
-        state.LAST_TOKEN = '<';
+        state.LAST_TOKEN = definition_key;
         newline = true;
       }
       break;
 
-    case 'CLOSE_ANGLED_BRACKET':
-      if (['OPEN_ELEMENT', 'CLOSE_ELEMENT'].indexOf(state.DECLARATION_TYPE) > -1) {
-        append = '>';
+    case 'VAL__ANBRAC_R':
+      if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
         color_func = cprint.toWhite;
-        state.LAST_TOKEN = '>';
+        state.LAST_TOKEN = definition_key;
         space_before = false;
       }
       break;
 
-    case 'SLASH':
-      if (['OPEN_ELEMENT', 'CLOSE_ELEMENT'].indexOf(state.DECLARATION_TYPE) > -1) {
-        append = '/';
+    case 'VAL__SLASH':
+      if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
         color_func = cprint.toWhite;
-        state.LAST_TOKEN = '/';
+        state.LAST_TOKEN = definition_key;
         space_before = false;
       }
       break;
 
-    case 'HTML_ELEMENT_NAME':
-      if (['OPEN_ELEMENT', 'CLOSE_ELEMENT'].indexOf(state.DECLARATION_TYPE) > -1) {
-        append = definition_value;
+    case 'VAL__ELEMENT_NAME':
+      if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
         color_func = cprint.toWhite;
-        state.LAST_TOKEN = 'ELEMENT_NAME';
-        state.ELEMENT_STACK.push(definition_value);
-        state.CURRENT_ELEMENT_NAME = definition_value;
+        state.LAST_TOKEN = definition_key;
         space_before = false;
       }
       break;
 
-    case 'HTML_CONTENT':
-      if (['OPEN_ELEMENT', 'CLOSE_ELEMENT'].indexOf(state.DECLARATION_TYPE) > -1) {
-        append = definition_value;
+    case 'VAL__HTML_CONTENT':
+      if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
         color_func = cprint.toGreen;
-        state.LAST_TOKEN = 'CONTENT';
+        state.LAST_TOKEN = definition_key;
         newline = true;
       }
       break;
@@ -134,7 +113,7 @@ function get_output (in_definition_key, in_definition_value, in_state, in_option
     default:
       if (options.DEBUG && definition_value) {
         append = definition_key + ':' + definition_value;
-        color_func = cprint.toRed;
+        color_func = cprint.toBackgroundRed;
       }
       break;
   }
