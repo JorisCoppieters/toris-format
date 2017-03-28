@@ -51,15 +51,8 @@ const k_DEFINITION_TYPE_SCSS = 'SCSS';
 var g_ALLOW_EMPTY_CONTENT = false;
 var g_DEBUG = false;
 var g_DEFINITION_TYPE = k_DEFINITION_TYPE_HTML;
-var g_PRINT_TREE = false;
+var g_PRINT_TREE_CONSTRUCTION = false;
 var g_RUN_CHECKS = false;
-
-// Config - Indenting:
-var g_INDENT_COUNT = 0;
-var g_INDENT = '    ';
-
-// Config - SASS:
-var g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = [];
 
 // ******************************
 // Setup Functions:
@@ -74,18 +67,13 @@ function setup (in_config) {
     g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
     g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
     g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
-    g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
-    g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT_COUNT);
-    g_PRINT_TREE = utils.get_setup_property(in_config, "print_tree", g_PRINT_TREE);
+    g_PRINT_TREE_CONSTRUCTION = utils.get_setup_property(in_config, "print_tree_construction", g_PRINT_TREE_CONSTRUCTION);
     g_RUN_CHECKS = utils.get_setup_property(in_config, "run_checks", g_RUN_CHECKS);
 
     if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
         // HTML:
         parserHtml.setup(in_config);
 
-    } else if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_SCSS) {
-        // SASS:
-        g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = utils.get_setup_property(in_config, "format_property_values_on_newlines", g_FORMAT_PROPERTY_VALUES_ON_NEWLINES);
     }
 }
 
@@ -133,7 +121,7 @@ function parse_contents (in_contents) {
             }
         }
 
-        if (g_PRINT_TREE) {
+        if (g_PRINT_TREE_CONSTRUCTION) {
             definition[grammar.k_DEFINITION_KEY_START].DEBUG = grammar.k_DEBUG_MATCH_VAL;
         }
 
@@ -206,6 +194,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         }
 
         tree.DEFINITION_KEY = definition_key;
+        tree.STACK_MARKER = definition_value.STACK || null;
 
         if (is_start) {
             if ((!tree.VALUE && !tree.CHILDREN) || result.trim() !== '') {

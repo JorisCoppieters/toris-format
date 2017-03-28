@@ -153,7 +153,7 @@ function formatTestFiles (testName, inputFile, outputFile, setupConfig) {
             g_TEST_FAILED = true;
             return false;
         } else {
-            console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Parsing function failed'));
+            console.log(cprint.toRed('✘ Test') + testIdentifier + '\n' + cprint.toRed('Format function failed'));
             g_TEST_FAILED = true;
             return false;
         }

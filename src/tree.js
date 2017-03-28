@@ -69,9 +69,12 @@ function get_tree_output (in_tree, in_config) {
 // ******************************
 
 function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in_config) {
-    var state = in_state;
-    var tree_output = in_tree_output;
-    var indent = in_indent;
+    var state = in_state || {};
+    state.LAST_TOKEN = state.LAST_TOKEN || '';
+    state.STACK = state.STACK || [];
+
+    var tree_output = in_tree_output || {};
+    var indent = in_indent || '';
 
     if (in_tree.FAILED) {
         return tree_output;
@@ -79,6 +82,13 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     var definition_key = in_tree.DEFINITION_KEY;
     var definition_value = (in_tree.VALUE || '').trim();
+    var definition_stack_marker = in_tree.STACK_MARKER;
+
+    var original_stack = state.STACK;
+    if (definition_stack_marker) {
+        state.STACK = state.STACK.slice(0);
+        state.STACK.push(definition_stack_marker);
+    }
 
     var output;
 
@@ -148,6 +158,10 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
         in_tree.CHILDREN.forEach(function (child) {
             _populate_tree_output(child, state, tree_output, indent + '  ');
         });
+    }
+
+    if (definition_stack_marker) {
+        state.STACK = original_stack;
     }
 }
 

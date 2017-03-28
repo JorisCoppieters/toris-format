@@ -146,7 +146,7 @@ function get_left_most_definition_values (in_definition, in_definition_keys) {
             }
 
             if (!definition_value.SEGMENTS) {
-                throw 'Definition key "' + definition_key + '" has no defined SEGMENTS';
+                throw 'Definition key "' + definition_key + '" has no defined SEGMENTS or VALUE';
             }
 
             if (!definition_value.SEGMENTS.length) {
