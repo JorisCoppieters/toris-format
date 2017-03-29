@@ -41,7 +41,9 @@ var r_sq = regexp_shorthand.r_sq;
 
 function get_definition_output (in_definition_key, in_definition_value, in_state, in_options) {
     var state = in_state || { LAST_TOKEN: '' };
-    var options = in_options || { FORMAT_PROPERTY_VALUES_ON_NEWLINES: [], DEBUG: false };
+    var options = in_options || {};
+    options.format_property_values_on_newlines = options.format_property_values_on_newlines || [];
+    options.debug + options.debug || false;
 
     var definition_key = in_definition_key;
     var definition_value = (in_definition_value || '').trim();
@@ -76,9 +78,20 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         case 'VAL__NOTEQ':
         case 'VAL__SQBRAC_L':
         case 'VAL__SQBRAC_R':
+        case 'VAL__IN':
         case 'VAL__TIL':
             color_func = cprint.toLightCyan;
             last_token = definition_key;
+            break;
+
+        case 'VAL__AT_EACH':
+            color_func = cprint.toLightCyan;
+            last_token = definition_key;
+            if (whitespace_before_includes_double_newline) {
+                double_newline = true;
+            } else {
+                newline = true;
+            }
             break;
 
         case 'VAL__CURLY_L':
@@ -112,7 +125,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             color_func = cprint.toLightCyan;
             last_token = definition_key;
 
-            if (within(['FUNCTION_CALL']) && !within('EXPRESSION_2ND')) {
+            if (within(['FUNCTION_CALL']) && !within('EXPRESSION_2ND') && !last('VAL__COLON')) {
                 space_before = false;
             }
             break;
@@ -163,11 +176,19 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (within(['SELECTORS', 'PROPERTY', 'VARIABLE'])) {
                 space_before = false;
             }
+
+            if (within(['CLASS']) && last('VAL__CURLY_L')) {
+                newline = true;
+            }
             break;
 
         case 'VAL__PAREN_L':
             color_func = cprint.toLightCyan;
             last_token = definition_key;
+
+            if (within('PAREN_EXPRESSION')) {
+                post_indent = 1;
+            }
 
             if (within('FUNCTION_CALL')) {
                 space_before = false;
@@ -176,11 +197,23 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (within('PAREN_EXPRESSION') && last('VAL__NEGATE')) {
                 space_before = false;
             }
+
+            if (state.MULTI_LINE_FUNCTION) {
+                state.MULTI_LINE_FUNCTION_PAREN_DEPTH += 1;
+            }
             break;
 
         case 'VAL__PAREN_R':
             color_func = cprint.toLightCyan;
             last_token = definition_key;
+
+            if (within('PAREN_EXPRESSION')) {
+                pre_indent = -1;
+            }
+
+            if (last('VAL__PAREN_R') && within('PAREN_EXPRESSION')) {
+                newline = true;
+            }
 
             if (within('FUNCTION_CALL')) {
                 space_before = false;
@@ -189,13 +222,27 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (within('PAREN_EXPRESSION')) {
                 space_before = false;
             }
+
+            if (state.MULTI_LINE_FUNCTION) {
+                state.MULTI_LINE_FUNCTION_PAREN_DEPTH -= 1;
+                if (state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 0) {
+                    newline = true;
+                    state.MULTI_LINE_FUNCTION = false;
+                    pre_indent = -1;
+                }
+            }
             break;
 
         case 'VAL__COMMA':
             color_func = cprint.toLightCyan;
             last_token = definition_key;
 
-            if (within(['PROPERTY', 'FUNCTION_CALL', 'NUMERIC_EXPRESSION', 'SELECTORS'])) {
+            if (within('EXTRA_COMMA')) {
+                append = false;
+                break;
+            }
+
+            if (within(['PROPERTY', 'FUNCTION_CALL', 'NUMERIC_EXPRESSION', 'PAREN_EXPRESSION', 'EACH', 'SELECTORS'])) {
                 space_before = false;
             }
             break;
@@ -262,8 +309,22 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             color_func = cprint.toYellow;
             last_token = definition_key;
 
-            if (within('FUNCTION_PARAM') && last(['VAL__PAREN_L'])) {
+            if (within('FUNCTION_PARAM') && last('VAL__PAREN_L')) {
                 space_before = false;
+            }
+
+            if (within('HASH_EXPRESSION') && last('VAL__CURLY_L')) {
+                space_before = false;
+            }
+
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within('FUNCTION_PARAM') && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
+            }
+
+            if (options.format_property_values_on_newlines.indexOf(definition_value) >= 0) {
+                state.MULTI_LINE_FUNCTION = true;
+                state.MULTI_LINE_FUNCTION_PAREN_DEPTH = 0;
+                post_indent = 1;
             }
             break;
 
@@ -286,6 +347,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (within('HASH_EXPRESSION')) {
                 space_before = false;
             }
+
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within(['FUNCTION_PARAM', 'VARIABLE_EXPRESSION']) && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
+            }
             break;
 
         case 'VAL__VARIABLE_NAME':
@@ -303,18 +368,22 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (within('FUNCTION_PARAM') && last(['VAL__PAREN_L'])) {
                 space_before = false;
             }
+
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within('FUNCTION_PARAM') && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
+            }
             break;
 
         case 'VAL__NUMBER':
             color_func = cprint.toYellow;
             last_token = definition_key;
 
-            if (within('FUNCTION_PARAM') && !within(['FUNCTION_PARAM_2ND', 'HASH_EXPRESSION']) && !last(['VAL__MINUS'])) {
+            if (within('NUMERIC_EXPRESSION') && last(['VAL__NEGATE', 'VAL__PAREN_L'])) {
                 space_before = false;
             }
 
-            if (within('NUMERIC_EXPRESSION') && last(['VAL__NEGATE', 'VAL__PAREN_L'])) {
-                space_before = false;
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within('FUNCTION_PARAM') && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
             }
             break;
 
@@ -322,18 +391,23 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             color_func = cprint.toWhite;
             last_token = definition_key;
 
-            if (within('FUNCTION_PARAM') && !within(['FUNCTION_PARAM_2ND', 'HASH_EXPRESSION']) && !last(['VAL__MINUS'])) {
-                space_before = false;
-            }
-
             if (within('NUMERIC_EXPRESSION') && last(['VAL__NEGATE', 'VAL__PAREN_L'])) {
                 space_before = false;
             }
+
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within('FUNCTION_PARAM') && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
+            }
             break;
 
+        case 'VAL__STRING_SINGLE_QUOTED':
         case 'VAL__STRING_DOUBLE_QUOTED':
             color_func = cprint.toMagenta;
             last_token = definition_key;
+
+            if (state.MULTI_LINE_FUNCTION && state.MULTI_LINE_FUNCTION_PAREN_DEPTH === 1 && within('FUNCTION_PARAM') && last(['VAL__PAREN_L', 'VAL__COMMA'])) {
+                newline = true;
+            }
             break;
 
         case 'VAL__SINGLE_LINE_COMMENT':
@@ -343,6 +417,21 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             } else if (whitespace_before_includes_newline) {
                 newline = true;
             }
+            break;
+
+        case 'VAL__MULTI_LINE_COMMENT':
+            color_func = cprint.toDarkGrey;
+            if (whitespace_before_includes_double_newline) {
+                double_newline = true;
+            } else if (whitespace_before_includes_newline) {
+                newline = true;
+            }
+            break;
+
+        case 'VAL__MAP_KEY':
+            color_func = cprint.toYellow;
+            last_token = definition_key;
+            newline = true;
             break;
     }
 
