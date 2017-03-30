@@ -69,9 +69,12 @@ function get_tree_output (in_tree, in_config) {
 // ******************************
 
 function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in_config) {
-    var state = in_state;
-    var tree_output = in_tree_output;
-    var indent = in_indent;
+    var state = in_state || {};
+    state.LAST_TOKEN = state.LAST_TOKEN || '';
+    state.STACK = state.STACK || [];
+
+    var tree_output = in_tree_output || {};
+    var indent = in_indent || '';
 
     if (in_tree.FAILED) {
         return tree_output;
@@ -79,6 +82,13 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     var definition_key = in_tree.DEFINITION_KEY;
     var definition_value = (in_tree.VALUE || '').trim();
+    var definition_stack_marker = in_tree.STACK_MARKER;
+
+    var original_stack = state.STACK;
+    if (definition_stack_marker) {
+        state.STACK = state.STACK.slice(0);
+        state.STACK.push(definition_stack_marker);
+    }
 
     var output;
 
@@ -146,8 +156,12 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     if (in_tree.CHILDREN) {
         in_tree.CHILDREN.forEach(function (child) {
-            _populate_tree_output(child, state, tree_output, indent + '  ');
+            _populate_tree_output(child, state, tree_output, indent + '  ', in_config);
         });
+    }
+
+    if (definition_stack_marker) {
+        state.STACK = original_stack;
     }
 }
 
@@ -251,9 +265,11 @@ function get_recognized_chunk (in_tree) {
 // ******************************
 
 function _get_recognized_contents (in_failed_tree_output, in_contents) {
-    var recognised_contents_length = Math.max(0, in_contents.length - in_failed_tree_output.least_remaining);
+    var contents = in_contents.replace(new RegExp('(\\r\\n|\\r|\\n)', 'g'), '\n');
 
-    var recognised_contents = in_contents.substr(0, recognised_contents_length);
+    var recognised_contents_length = Math.max(0, contents.length - in_failed_tree_output.least_remaining);
+
+    var recognised_contents = contents.substr(0, recognised_contents_length);
     if (recognised_contents.length > 100) {
         recognised_contents = recognised_contents.substr(recognised_contents.length - 100, 100);
     }
@@ -264,13 +280,15 @@ function _get_recognized_contents (in_failed_tree_output, in_contents) {
 // ******************************
 
 function _get_unrecognized_contents (in_failed_tree_output, in_contents) {
-    var recognised_contents_length = Math.max(0, in_contents.length - in_failed_tree_output.least_remaining);
+    var contents = in_contents.replace(new RegExp('(\\r\\n|\\r|\\n)', 'g'), '\n');
+
+    var recognised_contents_length = Math.max(0, contents.length - in_failed_tree_output.least_remaining);
     var unrecognised_contents_length = 100;
 
-    var unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
-    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < in_contents.length - recognised_contents_length) {
+    var unrecognised_contents = contents.substr(recognised_contents_length, unrecognised_contents_length);
+    while (unrecognised_contents.trim().length === 0 && unrecognised_contents_length < contents.length - recognised_contents_length) {
         unrecognised_contents_length += 10;
-        unrecognised_contents = in_contents.substr(recognised_contents_length, unrecognised_contents_length);
+        unrecognised_contents = contents.substr(recognised_contents_length, unrecognised_contents_length);
     }
 
     return unrecognised_contents;

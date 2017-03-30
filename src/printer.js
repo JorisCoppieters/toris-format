@@ -36,6 +36,7 @@ var g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
 
 var g_CONVERT_LINE_ENDINGS = false;
 var g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
+var g_PRINT_TREE = false;
 
 // ******************************
 // Setup Functions:
@@ -49,6 +50,7 @@ function setup (in_config) {
     g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, "convert_line_endings", g_CONVERT_LINE_ENDINGS);
     g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
     g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
+    g_PRINT_TREE = utils.get_setup_property(in_config, "print_tree", g_PRINT_TREE);
 
     parser.setup(in_config);
 }
@@ -125,6 +127,10 @@ function print_contents (in_contents, in_config) {
     var result = tree_output.color_output;
     if (g_CONVERT_LINE_ENDINGS) {
         result = result.replace(new RegExp(t_NL, 'g'), g_NL);
+    }
+
+    if (g_PRINT_TREE) {
+        cprint.magenta(tree_output.values);
     }
 
     console.log(result);
