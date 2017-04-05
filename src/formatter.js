@@ -94,7 +94,7 @@ function format_contents (in_contents, in_config) {
     }
 
     if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
-        var result = parserHtml.format_html_contents(contents);
+        var result = parserHtml.format_html_contents(contents, in_config.indent_count, in_config.wrap_with_divs);
         return result;
     }
 
