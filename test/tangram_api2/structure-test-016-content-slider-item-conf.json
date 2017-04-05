@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-016-content-slider-item-source.ts",
-    "outputFile": "structure-test-016-content-slider-item-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "016-content-slider-item"
-}

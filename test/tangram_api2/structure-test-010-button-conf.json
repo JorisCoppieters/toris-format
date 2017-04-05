@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-010-button-source.ts",
-    "outputFile": "structure-test-010-button-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "010-button"
-}

@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-044-flag-source.ts",
-    "outputFile": "structure-test-044-flag-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "flag"
-}

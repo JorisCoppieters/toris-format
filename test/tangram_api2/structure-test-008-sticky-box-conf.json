@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-008-sticky-box-source.ts",
-    "outputFile": "structure-test-008-sticky-box-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "008-sticky-box"
-}

@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-067-address-street-source.ts",
-    "outputFile": "structure-test-067-address-street-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "address-street"
-}

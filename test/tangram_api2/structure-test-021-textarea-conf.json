@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-021-textarea-source.ts",
-    "outputFile": "structure-test-021-textarea-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "textarea"
-}

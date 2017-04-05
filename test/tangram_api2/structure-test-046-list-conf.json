@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-046-list-source.ts",
-    "outputFile": "structure-test-046-list-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "list"
-}

@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-030-media-block-source.ts",
-    "outputFile": "structure-test-030-media-block-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "media-block"
-}

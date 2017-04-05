@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-007-info-box-source.ts",
-    "outputFile": "structure-test-007-info-box-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "007-info-box"
-}

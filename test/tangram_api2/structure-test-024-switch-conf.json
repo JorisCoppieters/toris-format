@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-024-switch-source.ts",
-    "outputFile": "structure-test-024-switch-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "switch"
-}

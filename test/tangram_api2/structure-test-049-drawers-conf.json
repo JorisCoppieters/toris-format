@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-049-drawers-source.ts",
-    "outputFile": "structure-test-049-drawers-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "drawers"
-}

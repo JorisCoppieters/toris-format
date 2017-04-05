@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-055-modal-source.ts",
-    "outputFile": "structure-test-055-modal-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "modal"
-}

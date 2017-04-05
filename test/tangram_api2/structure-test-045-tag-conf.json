@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-045-tag-source.ts",
-    "outputFile": "structure-test-045-tag-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "tag"
-}

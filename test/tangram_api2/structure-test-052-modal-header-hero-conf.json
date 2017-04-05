@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-052-modal-header-hero-source.ts",
-    "outputFile": "structure-test-052-modal-header-hero-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "modal-header-hero"
-}

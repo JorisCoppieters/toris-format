@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-032-sticker-multi-row-source.ts",
-    "outputFile": "structure-test-032-sticker-multi-row-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "sticker-multi-row"
-}

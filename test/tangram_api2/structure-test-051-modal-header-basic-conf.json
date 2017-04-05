@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-051-modal-header-basic-source.ts",
-    "outputFile": "structure-test-051-modal-header-basic-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "modal-header-basic"
-}

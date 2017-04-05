@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-035-tab-trap-source.ts",
-    "outputFile": "structure-test-035-tab-trap-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "tab-trap"
-}

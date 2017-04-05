@@ -1,8 +1,0 @@
-{
-    "inputFile": "structure-test-002-accordion-source.ts",
-    "outputFile": "structure-test-002-accordion-structure.json",
-    "setup": {
-        "definition_type": "TANGRAM_API"
-    },
-    "testName": "002-accordion"
-}
