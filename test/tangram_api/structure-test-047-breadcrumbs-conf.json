@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-047-breadcrumbs-source.ts",
+    "outputFile": "structure-test-047-breadcrumbs-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "breadcrumbs"
+}

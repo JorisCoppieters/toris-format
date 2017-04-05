@@ -1,0 +1,21 @@
+{
+    "color-stamp": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "ColorStampColorEnum",
+                    "name": "color"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "ColorStampSizeEnum",
+                    "name": "size"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

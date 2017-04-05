@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-053-modal-header-rack-source.ts",
+    "outputFile": "structure-test-053-modal-header-rack-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "modal-header-rack"
+}

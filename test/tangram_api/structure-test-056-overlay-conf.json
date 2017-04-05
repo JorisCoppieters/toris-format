@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-056-overlay-source.ts",
+    "outputFile": "structure-test-056-overlay-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "overlay"
+}

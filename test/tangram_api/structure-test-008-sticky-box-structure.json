@@ -1,0 +1,15 @@
+{
+    "sticky-box": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": true,
+                    "type": "boolean",
+                    "name": "active"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

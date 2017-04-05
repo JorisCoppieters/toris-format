@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-009-toaster-source.ts",
+    "outputFile": "structure-test-009-toaster-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "009-toaster"
+}

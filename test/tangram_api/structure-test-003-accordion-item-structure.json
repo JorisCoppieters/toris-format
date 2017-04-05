@@ -1,0 +1,27 @@
+{
+    "accordion-item": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "expanded"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "TangramIconEnum",
+                    "name": "leftIcon"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "string",
+                    "name": "title"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-020-input-container-source.ts",
+    "outputFile": "structure-test-020-input-container-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "input-container"
+}

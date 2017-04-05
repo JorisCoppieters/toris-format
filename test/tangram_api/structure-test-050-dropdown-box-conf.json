@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-050-dropdown-box-source.ts",
+    "outputFile": "structure-test-050-dropdown-box-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "dropdown-box"
+}

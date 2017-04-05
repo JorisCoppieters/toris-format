@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-040-expanding-image-source.ts",
+    "outputFile": "structure-test-040-expanding-image-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "expanding-image"
+}

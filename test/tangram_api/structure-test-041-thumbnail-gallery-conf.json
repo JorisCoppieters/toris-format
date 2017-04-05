@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-041-thumbnail-gallery-source.ts",
+    "outputFile": "structure-test-041-thumbnail-gallery-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "thumbnail-gallery"
+}

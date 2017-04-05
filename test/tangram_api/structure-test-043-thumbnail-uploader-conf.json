@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-043-thumbnail-uploader-source.ts",
+    "outputFile": "structure-test-043-thumbnail-uploader-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "thumbnail-uploader"
+}

@@ -1,0 +1,27 @@
+{
+    "button-group": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "fitAcross"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "stackAtSmall"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "stackTiles"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

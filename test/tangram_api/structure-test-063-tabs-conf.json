@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-063-tabs-source.ts",
+    "outputFile": "structure-test-063-tabs-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "tabs"
+}

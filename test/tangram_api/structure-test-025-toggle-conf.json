@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-025-toggle-source.ts",
+    "outputFile": "structure-test-025-toggle-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "toggle"
+}

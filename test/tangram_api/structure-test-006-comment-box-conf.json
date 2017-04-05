@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-006-comment-box-source.ts",
+    "outputFile": "structure-test-006-comment-box-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "006-comment-box"
+}

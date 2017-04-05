@@ -1,0 +1,111 @@
+{
+    "button": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "compact"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "danger"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "dangerInverted"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "dark"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "fullWidth"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "inverted"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "link"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "Promise<any>|Observable<any>",
+                    "name": "loading"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "marketplace"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "overlay"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "primary"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "rounded"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "secondary"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "string",
+                    "name": "size"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "success"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "successInverted"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "transparent"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

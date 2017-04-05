@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-065-address-source.ts",
+    "outputFile": "structure-test-065-address-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "address"
+}

@@ -1,0 +1,15 @@
+{
+    "toaster": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "TangramIconEnum",
+                    "name": "icon"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

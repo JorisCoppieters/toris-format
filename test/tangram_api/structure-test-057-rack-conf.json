@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-057-rack-source.ts",
+    "outputFile": "structure-test-057-rack-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "rack"
+}

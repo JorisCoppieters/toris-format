@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-015-color-stamp-source.ts",
+    "outputFile": "structure-test-015-color-stamp-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "015-color-stamp"
+}

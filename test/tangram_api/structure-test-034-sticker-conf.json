@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-034-sticker-source.ts",
+    "outputFile": "structure-test-034-sticker-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "sticker"
+}

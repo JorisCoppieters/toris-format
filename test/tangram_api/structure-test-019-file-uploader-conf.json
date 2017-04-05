@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-019-file-uploader-source.ts",
+    "outputFile": "structure-test-019-file-uploader-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "file-uploader"
+}

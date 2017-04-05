@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-037-image-viewer-item-source.ts",
+    "outputFile": "structure-test-037-image-viewer-item-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "image-viewer-item"
+}

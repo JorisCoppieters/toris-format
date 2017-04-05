@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-023-radio-item-source.ts",
+    "outputFile": "structure-test-023-radio-item-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "radio-item"
+}

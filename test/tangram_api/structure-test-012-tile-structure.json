@@ -1,0 +1,51 @@
+{
+    "tile-button": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "active"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "compact"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "dashed"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "highlight"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "Promise<any>|Observable<any>",
+                    "name": "loading"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "stackIcon"
+                },
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "string",
+                    "name": "tileHeight"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

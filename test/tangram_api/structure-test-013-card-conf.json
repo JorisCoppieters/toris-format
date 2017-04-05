@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-013-card-source.ts",
+    "outputFile": "structure-test-013-card-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "013-card"
+}

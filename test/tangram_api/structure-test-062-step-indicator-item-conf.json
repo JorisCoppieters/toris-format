@@ -1,0 +1,8 @@
+{
+    "inputFile": "structure-test-062-step-indicator-item-source.ts",
+    "outputFile": "structure-test-062-step-indicator-item-structure.json",
+    "setup": {
+        "definition_type": "TANGRAM_API"
+    },
+    "testName": "step-indicator-item"
+}

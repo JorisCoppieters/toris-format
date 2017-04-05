@@ -1,0 +1,15 @@
+{
+    "comment-box": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "boolean",
+                    "name": "alternative"
+                }
+            ],
+            "context": {}
+        }
+    }
+}

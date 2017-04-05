@@ -1,0 +1,15 @@
+{
+    "info-box": {
+        "api": {
+            "bindings": [
+                {
+                    "isInput": true,
+                    "isOutput": false,
+                    "type": "TangramIconEnum",
+                    "name": "icon"
+                }
+            ],
+            "context": {}
+        }
+    }
+}
