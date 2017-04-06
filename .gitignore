@@ -3,6 +3,7 @@ npm-debug.log
 _debug_*
 _formatTest_*
 _structureTest_*
+test.html
 test.scss
 test.ts
 test/tangram_api/structure-test-002-*
