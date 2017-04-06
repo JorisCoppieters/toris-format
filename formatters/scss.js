@@ -897,4 +897,6 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
 
 module.exports['get_definition_output'] = get_definition_output;
 
+module.exports['setup'] = setup; // TODO: DEPRECATE EXPORT
+
 // ******************************

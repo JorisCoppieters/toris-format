@@ -119,10 +119,25 @@ function format_contents (in_contents, in_config) {
 }
 
 // ******************************
+// TODO: DEPRECATE
+// ******************************
+
+function format_sass_contents (in_contents, in_indent_count, in_convert_Line_endings) {
+    return format_contents(in_contents, {
+        convert_line_endings: in_convert_Line_endings,
+        indent_count: in_indent_count,
+        definition_type: parser.k_DEFINITION_TYPE_SCSS
+    });
+}
+
+// ******************************
 // Exports:
 // ******************************
 
 module.exports['format_contents'] = format_contents;
 module.exports['format_file'] = format_file;
+
+module.exports['setup'] = setup; // TODO: DEPRECATE EXPORT
+module.exports['format_sass_contents'] = format_sass_contents; // TODO: DEPRECATE
 
 // ******************************
