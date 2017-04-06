@@ -73,6 +73,20 @@ var test = require('./src/test');
 const k_VERSION = '1.7.0';
 
 // ******************************
+// TODO: DEPRECATE
+// ******************************
+
+function setup (in_config) {
+    formatter.setup(in_config);
+    printer.setup(in_config);
+    tree.setup(in_config);
+    parserHtml.setup(Object.assign({}, in_config, {
+        convert_line_endings: true
+    }));
+    require('./formatters/scss').setup(in_config);
+}
+
+// ******************************
 // Exports:
 // ******************************
 
@@ -104,6 +118,9 @@ module.exports['structureTests'] = test.structure_tests;
 module.exports['print_tests'] = test.print_tests;
 module.exports['printTests'] = test.print_tests;
 
+module.exports['setup'] = setup; // TODO: Deprecate
+module.exports['format_sass_contents'] = formatter.format_sass_contents; // TODO: Deprecate
+module.exports['print_sass_contents'] = printer.print_sass_contents; // TODO: Deprecate
 module.exports['format_html_contents'] = parserHtml.format_html_contents; // TODO: Deprecate
 module.exports['format_html_file'] = parserHtml.format_html_contents; // TODO: Deprecate
 
