@@ -7,6 +7,12 @@
 //
 // Version History:
 //
+// 1.7.0
+// - Refactored grammars and formatters
+// - Added test functions
+// - Added grammar checks
+// - Created new test files structure
+//
 // 1.6.1
 // - Added support for vh as a measurement in CSS grammar
 // - Added support for >>> as a selector in CSS grammar

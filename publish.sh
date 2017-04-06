@@ -5,6 +5,11 @@ if [[ $# -lt 1 ]]; then
   exit;
 fi
 
+NPM=npm
+if [[ -e /usr/local/bin/npmme ]]; then
+  NPM=/usr/local/bin/npmme
+fi
+
 VERSION=$1
 
 function ask {
@@ -26,7 +31,7 @@ sed -i "s/\"version\": \".*\",/\"version\": \"$VERSION\",/g" package.json
 
 if [[ `ask "Do you want to publish $VERSION?" && echo true` == true ]]; then
   echo "Running npm publish..."
-  npm publish
+  $NPM publish
   echo "Tagging revision..."
   git tag -a v$VERSION -m "Published v$VERSION"
   git push origin v$VERSION
