@@ -184,7 +184,7 @@ module.exports = grammar.export_grammar({
     VAL__EMPTY: { OPERATOR: '==', VALUE: '' },
     NULL: { OPERATOR: '==', VALUE: 'null' },
     IN: { OPERATOR: '==', VALUE: 'in' },
-    Unit: { OPERATOR: '==', VALUE: '(%|px|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+    Unit: { OPERATOR: '==', VALUE: '(%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
     COMBINE_COMPARE: { OPERATOR: '||', SEGMENTS: ['COMBINE_COMPARE_AND', 'COMBINE_COMPARE_OR'] },
     COMBINE_COMPARE_AND: { OPERATOR: '==', VALUE: '[&][&]' },
     COMBINE_COMPARE_OR: { OPERATOR: '==', VALUE: '[|][|]' },

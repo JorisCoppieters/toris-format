@@ -13,6 +13,7 @@
 // ******************************
 
 var cprint = require('color-print');
+var utils = require('../src/utils');
 var regexp_shorthand = require('../regexp/shorthand');
 
 // ******************************
@@ -30,12 +31,33 @@ var r_dq = regexp_shorthand.r_dq;
 var r_sq = regexp_shorthand.r_sq;
 
 // ******************************
+// Globals:
+// ******************************
+
+var g_DEBUG = false;
+var g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = [];
+
+// ******************************
+// Setup Functions:
+// ******************************
+
+function setup (in_config) {
+    if (!in_config) {
+        return;
+    }
+
+    g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
+    g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = utils.get_setup_property(in_config, "format_property_values_on_newlines", g_FORMAT_PROPERTY_VALUES_ON_NEWLINES);
+}
+
+// ******************************
 // Output:
 // ******************************
 
-function get_definition_output (in_definition_key, in_definition_value, in_state, in_options) {
+function get_definition_output (in_definition_key, in_definition_value, in_state, in_config) {
+    setup(in_config);
+
     var state = in_state || { LAST_TOKEN: '' };
-    var options = in_options || { FORMAT_PROPERTY_VALUES_ON_NEWLINES: [], DEBUG: false };
 
     var definition_key = in_definition_key;
     var definition_value = (in_definition_value || '').trim();
@@ -551,7 +573,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                     break;
 
                 default:
-                    if (options.DEBUG) {
+                    if (g_DEBUG) {
                         append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
                         color_func = cprint.toBackgroundYellow;
                     }
@@ -736,7 +758,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                             break;
 
                         default:
-                            if (options.DEBUG) {
+                            if (g_DEBUG) {
                                 append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
                                 color_func = cprint.toBackgroundYellow;
                             }
@@ -751,7 +773,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                         space_before = false;
                     }
 
-                    if (options.FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
+                    if (g_FORMAT_PROPERTY_VALUES_ON_NEWLINES.indexOf(definition_value) >= 0) {
                         state.MULTI_LINE_FUNCTION = true;
                         state.MULTI_LINE_FUNCTION_PAREN_DEPTH = 0;
                         post_indent = 1;
@@ -777,7 +799,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
 
                 default:
                     if (state.VALUE_TYPE) {
-                        if (options.DEBUG) {
+                        if (g_DEBUG) {
                             append = state.DECLARATION_TYPE + ':' + state.VALUE_TYPE + ':' + definition_key;
                             color_func = cprint.toBackgroundRed;
                         }
@@ -846,7 +868,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                             break;
 
                         default:
-                            if (options.DEBUG) {
+                            if (g_DEBUG) {
                                 append = state.DECLARATION_TYPE + ':[NO_VALUE]:' + definition_key;
                                 color_func = cprint.toBackgroundRed;
                             }
@@ -874,5 +896,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
 // ******************************
 
 module.exports['get_definition_output'] = get_definition_output;
+
+module.exports['setup'] = setup; // TODO: DEPRECATE EXPORT
 
 // ******************************

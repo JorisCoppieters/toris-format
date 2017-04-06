@@ -36,6 +36,26 @@ var r_dq = regexp_shorthand.r_dq;
 var r_sq = regexp_shorthand.r_sq;
 
 // ******************************
+// Globals:
+// ******************************
+
+var g_DEBUG = false;
+var g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = [];
+
+// ******************************
+// Setup Functions:
+// ******************************
+
+function setup (in_config) {
+    if (!in_config) {
+        return;
+    }
+
+    g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
+    g_FORMAT_PROPERTY_VALUES_ON_NEWLINES = utils.get_setup_property(in_config, "format_property_values_on_newlines", g_FORMAT_PROPERTY_VALUES_ON_NEWLINES);
+}
+
+// ******************************
 // Output:
 // ******************************
 
