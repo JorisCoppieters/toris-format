@@ -126,7 +126,5 @@ module.exports['printTests'] = test.print_tests;
 module.exports['setup'] = setup; // TODO: Deprecate
 module.exports['format_sass_contents'] = formatter.format_sass_contents; // TODO: Deprecate
 module.exports['print_sass_contents'] = printer.print_sass_contents; // TODO: Deprecate
-module.exports['format_html_contents'] = parserHtml.format_html_contents; // TODO: Deprecate
-module.exports['format_html_file'] = parserHtml.format_html_contents; // TODO: Deprecate
 
 // ******************************
