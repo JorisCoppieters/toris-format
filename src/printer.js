@@ -288,6 +288,18 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
 }
 
 // ******************************
+// TODO: DEPRECATE
+// ******************************
+
+function print_sass_contents (in_contents, in_indent_count, in_convert_Line_endings) {
+    return print_contents(in_contents, {
+        convert_line_endings: in_convert_Line_endings,
+        indent_count: in_indent_count,
+        definition_type: parser.k_DEFINITION_TYPE_SCSS
+    });
+}
+
+// ******************************
 // Exports:
 // ******************************
 
@@ -296,5 +308,8 @@ module.exports['print_contents_diff'] = print_contents_diff;
 module.exports['print_file'] = print_file;
 module.exports['print_recognized_chunk'] = print_recognized_chunk;
 module.exports['print_tree'] = print_tree;
+
+module.exports['setup'] = setup; // TODO: DEPRECATE EXPORT
+module.exports['print_sass_contents'] = print_sass_contents; // TODO: DEPRECATE
 
 // ******************************

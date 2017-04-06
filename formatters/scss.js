@@ -480,4 +480,6 @@ function last (in_definition_keys) {
 
 module.exports['get_definition_output'] = get_definition_output;
 
+module.exports['setup'] = setup; // TODO: DEPRECATE EXPORT
+
 // ******************************

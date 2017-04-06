@@ -3,9 +3,15 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.6.1
+// TORIS FORMAT v1.7.0
 //
 // Version History:
+//
+// 1.7.0
+// - Refactored grammars and formatters
+// - Added test functions
+// - Added grammar checks
+// - Created new test files structure
 //
 // 1.6.1
 // - Added support for vh as a measurement in CSS grammar
@@ -70,7 +76,21 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.6.1';
+const k_VERSION = '1.7.0';
+
+// ******************************
+// TODO: DEPRECATE
+// ******************************
+
+function setup (in_config) {
+    formatter.setup(in_config);
+    printer.setup(in_config);
+    tree.setup(in_config);
+    parserHtml.setup(Object.assign({}, in_config, {
+        convert_line_endings: true
+    }));
+    require('./formatters/scss').setup(in_config);
+}
 
 // ******************************
 // Exports:
@@ -104,6 +124,9 @@ module.exports['structureTests'] = test.structure_tests;
 module.exports['print_tests'] = test.print_tests;
 module.exports['printTests'] = test.print_tests;
 
+module.exports['setup'] = setup; // TODO: Deprecate
+module.exports['format_sass_contents'] = formatter.format_sass_contents; // TODO: Deprecate
+module.exports['print_sass_contents'] = printer.print_sass_contents; // TODO: Deprecate
 module.exports['format_html_contents'] = parserHtml.format_html_contents; // TODO: Deprecate
 module.exports['format_html_file'] = parserHtml.format_html_contents; // TODO: Deprecate
 
