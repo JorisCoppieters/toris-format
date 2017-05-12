@@ -1,0 +1,7 @@
+{
+    "inputFile": "format-test-014-single-quotes-in-block-preformatted.html",
+    "outputFile": "format-test-014-single-quotes-in-block-formatted.html",
+    "setup": {
+    },
+    "testName": "single-quotes-in-block"
+}
