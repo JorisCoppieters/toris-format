@@ -21,7 +21,7 @@ var grammar = require('./_core');
 module.exports = grammar.export_grammar({
     START: { OPERATOR: '||', SEGMENTS: ['stylesheet'] },
     stylesheet: { OPERATOR: '&&', SEGMENTS: ['statement*'] },
-    statement: { OPERATOR: '||', SEGMENTS: ['CLASS', 'COMMENT', 'VARIABLE', 'EACH', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'KEYFRAMES', 'pageDeclaration', 'extendDeclaration', 'mixinDeclaration', 'functionDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'nested'] },
+    statement: { OPERATOR: '||', SEGMENTS: ['CLASS', 'COMMENT', 'VARIABLE', 'EACH', 'FOR', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'KEYFRAMES', 'pageDeclaration', 'extendDeclaration', 'mixinDeclaration', 'functionDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'nested'] },
 
     VARIABLE: { STACK: 'VARIABLE', OPERATOR: '&&', SEGMENTS: ['VARIABLE_KEY', 'VAL__COLON', 'VARIABLE_VALUE', 'VAL__POUND_DEFAULT?', 'REQUIRED_SEMI'] },
     VARIABLE_KEY: { STACK: 'VARIABLE_KEY', OPERATOR: '||', SEGMENTS: ['STRING', 'VARIABLE_EXPRESSION'] },
@@ -29,33 +29,54 @@ module.exports = grammar.export_grammar({
 
     CLASS: { STACK: 'CLASS', OPERATOR: '&&', SEGMENTS: ['SELECTORS', 'BLOCK'] },
     SELECTORS: { STACK: 'SELECTORS',OPERATOR: '&&', SEGMENTS: ['SELECTOR', 'COMMA_SELECTOR*'] },
-    COMMA_SELECTOR: { STACK: 'SELECTORS_2ND', OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'SELECTOR'] },
+    COMMA_SELECTOR: { STACK: 'SELECTORS_2ND', OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'VAL__SINGLE_LINE_COMMENT?', 'SELECTOR'] },
 
     SELECTOR: { STACK: 'SELECTOR', OPERATOR: '&&', SEGMENTS: ['FIRST_SELECTOR_PREFIX?', 'SELECTOR_ELEMENT', 'PREFIXED_SELECTOR_ELEMENT*'] },
     FIRST_SELECTOR_PREFIX: { STACK: 'FIRST_SELECTOR_PREFIX', OPERATOR: '&&', SEGMENTS: ['SELECTOR_PREFIX'] },
     PREFIXED_SELECTOR_ELEMENT: { STACK: 'SELECTOR_2ND', OPERATOR: '&&', SEGMENTS: ['SELECTOR_PREFIX?', 'SELECTOR_ELEMENT'] },
-    SELECTOR_ELEMENT: { OPERATOR: '&&', SEGMENTS: ['SELECTOR_ELEMENT_NAME', 'SELECTOR_ELEMENT_MODIFIER?'] },
-    SELECTOR_ELEMENT_MODIFIER: { OPERATOR: '&&', SEGMENTS: ['VAL__COLON', 'VAL__SELECTOR_MODIFIER'] },
-    SELECTOR_ELEMENT_NAME: { OPERATOR: '||', SEGMENTS: ['DOT_SELECTOR_NAME', 'HASH_SELECTOR_NAME', 'VAL__SELECTOR_NAME'] },
-    SELECTOR_PREFIX: { OPERATOR: '||', SEGMENTS: ['GT_PREFIX', 'AMP_PREFIX', 'VAL__PLUS', 'VAL__TIL'] },
-    GT_PREFIX: { OPERATOR: '&&', SEGMENTS: ['VAL__GT', 'GTGT?'] },
+    SELECTOR_ELEMENT: { OPERATOR: '&&', SEGMENTS: ['SELECTOR_ELEMENT_NAME', 'SELECTOR_ELEMENT_MODIFIER*'] },
+    SELECTOR_ELEMENT_MODIFIER: { STACK: 'SELECTOR_ELEMENT_MODIFIER', OPERATOR: '||', SEGMENTS: ['SELECTOR_ELEMENT_COLON_MODIFIER', 'SELECTOR_ELEMENT_MODIFIER_VALUE_IN_PAREN'] },
+    SELECTOR_ELEMENT_COLON_MODIFIER: { STACK: 'COLON_MODIFIER', OPERATOR: '&&', SEGMENTS: ['VAL__COLON', 'VAL__SELECTOR_MODIFIER'] },
+    SELECTOR_ELEMENT_MODIFIER_VALUE_IN_PAREN: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'SELECTOR_ELEMENT_MODIFIER_VALUE', 'VAL__PAREN_R'] },
+    SELECTOR_ELEMENT_MODIFIER_VALUE: { STACK: 'SELECTOR_ELEMENT_MODIFIER_VALUE', OPERATOR: '||', SEGMENTS: ['VAL__NUMBER', 'SELECTOR_ELEMENT_MODIFIER', 'SELECTOR_ELEMENT', 'HASH_EXPRESSION'] },
+    SELECTOR_ELEMENT_NAME: { OPERATOR: '||', SEGMENTS: ['VAL__AMP', 'VAL__TIMES', 'DOT_SELECTOR', 'BRACKET_SELECTOR', 'SELECTOR_NAME'] },
+    SELECTOR_PREFIX: { OPERATOR: '||', SEGMENTS: ['GT_PREFIX', 'AMP_PREFIX', 'VAL__PLUS', 'VAL__TIL', 'COLON_PREFIX'] },
+    GT_PREFIX: { OPERATOR: '&&', SEGMENTS: ['VAL__GT', 'GTGT?', 'VAL__COLON?'] },
     GTGT: { OPERATOR: '&&', SEGMENTS: ['VAL__GT', 'VAL__GT'] },
     AMP_PREFIX: { OPERATOR: '&&', SEGMENTS: ['VAL__AMP', 'AMP_PREFIX_REMAINDER'] },
     AMP_PREFIX_REMAINDER: { OPERATOR: '||', SEGMENTS: ['VAL__COLON', 'VAL__MINUS'] },
+    COLON_PREFIX: { OPERATOR: '&&', SEGMENTS: ['VAL__COLON', 'COLON_PREFIX_REMAINDER?'] },
+    COLON_PREFIX_REMAINDER: { OPERATOR: '||', SEGMENTS: ['VAL__COLON', 'VAL__MINUS'] },
 
-    DOT_SELECTOR_NAME: { OPERATOR: '&&', SEGMENTS: ['VAL__DOT', 'VAL__SELECTOR_NAME'] },
-    HASH_SELECTOR_NAME: { OPERATOR: '&&', SEGMENTS: ['VAL__HASH', 'VAL__SELECTOR_NAME'] },
+    SELECTOR_NAME: { OPERATOR: '&&', SEGMENTS: ['SELECTOR_NAME_PARTS+'] },
+    SELECTOR_NAME_PARTS: { OPERATOR: '||', SEGMENTS: ['VAL__SELECTOR_NAME', 'VAL__DASH'] },
+
+    DOT_SELECTOR: { OPERATOR: '&&', SEGMENTS: ['VAL__DOT', 'SELECTOR_REMAINDER'] },
+
+    SELECTOR_REMAINDER: { OPERATOR: '&&', SEGMENTS: ['SELECTOR_REMAINDER_PARTS+'] },
+    SELECTOR_REMAINDER_PARTS: { OPERATOR: '||', SEGMENTS: ['VAL__SELECTOR_NAME', 'HASH_EXPRESSION', 'VAL__DASH'] },
+
+    BRACKET_SELECTOR: { STACK: 'BRACKET_SELECTOR', OPERATOR: '&&', SEGMENTS: ['VAL__SQBRAC_L', 'SELECTOR_KEY', 'SELECTOR_ASSIGNMENT?', 'VAL__SQBRAC_R'] },
+    SELECTOR_KEY: { OPERATOR: '&&', SEGMENTS: ['VAL__SELECTOR_NAME'] },
+    SELECTOR_ASSIGNMENT: { OPERATOR: '&&', SEGMENTS: ['VAL__TIMES?', 'VAL__EQ', 'STRING'] },
 
     BLOCK: { STACK: 'BLOCK', OPERATOR: '&&', SEGMENTS: ['VAL__CURLY_L', 'BLOCK_CONTENT_ENTRY*', 'VAL__CURLY_R'] },
 
-    BLOCK_CONTENT_ENTRY: { OPERATOR: '||', SEGMENTS: ['PROPERTY_ENTRY', 'VARIABLE', 'BLOCK_CLASS_ENTRY', 'COMMENT', 'EACH'] },
+    BLOCK_CONTENT_ENTRY: { OPERATOR: '||', SEGMENTS: ['HASH_PROPERTY_OR_CLASS_ENTRY', 'PROPERTY_ENTRY', 'VARIABLE', 'BLOCK_CLASS_ENTRY', 'COMMENT', 'EACH', 'FOR'] },
 
     PROPERTY_ENTRY: { OPERATOR: '&&', SEGMENTS: ['PROPERTY', 'REQUIRED_SEMI'] },
 
-    BLOCK_CLASS_ENTRY: { OPERATOR: '&&', SEGMENTS: ['CLASS'] },
+    HASH_PROPERTY_OR_CLASS_ENTRY: { OPERATOR: '&&', SEGMENTS: ['VAL__HASH', 'CURLY_EXPRESSION?', 'HASH_PROPERTY_OR_CLASS_ENTRY_REMAINDER'] },
+    HASH_PROPERTY_OR_CLASS_ENTRY_REMAINDER: { OPERATOR: '||', SEGMENTS: ['HASH_PROPERTY_REMAINDER', 'HASH_CLASS_ENTRY_REMAINDER'] },
 
-    PROPERTY: { STACK: 'PROPERTY', OPERATOR: '&&', SEGMENTS: ['PROPERTY_KEY?', 'VAL__COLON', 'PROPERTY_VALUE', 'IMPORTANT?'] },
-    PROPERTY_KEY: { OPERATOR: '&&', SEGMENTS: ['VAL__PROPERTY_KEY'] },
+    HASH_PROPERTY_REMAINDER: { OPERATOR: '&&', SEGMENTS: ['PROPERTY_ENTRY'] },
+
+    BLOCK_CLASS_ENTRY: { OPERATOR: '&&', SEGMENTS: ['CLASS'] },
+    HASH_CLASS_ENTRY_REMAINDER: { OPERATOR: '&&', SEGMENTS: ['SELECTOR_REMAINDER', 'COMMA_SELECTOR*', 'BLOCK'] },
+
+    PROPERTY: { STACK: 'PROPERTY', OPERATOR: '&&', SEGMENTS: ['PROPERTY_KEY', 'VAL__COLON', 'PROPERTY_VALUE', 'IMPORTANT?'] },
+    PROPERTY_KEY: { OPERATOR: '&&', SEGMENTS: ['PROPERTY_KEY_PART+'] },
+    PROPERTY_KEY_PART: { OPERATOR: '||', SEGMENTS: ['VAL__PROPERTY_KEY'] },
     PROPERTY_VALUE: { OPERATOR: '||', SEGMENTS: ['COMMA_SEPERATED_EXPRESSION'] },
     IMPORTANT: { OPERATOR: '==', VALUE: '\\!important' },
 
@@ -86,11 +107,14 @@ module.exports = grammar.export_grammar({
     COLOUR_EXPRESSION: { STACK: 'COLOUR_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__HEX_COLOUR'] },
     KEYWORD_EXPRESSION: { STACK: 'KEYWORD_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__KEYWORD_NAME', 'FUNCTION_CALL?'] },
     VARIABLE_EXPRESSION: { STACK: 'VARIABLE_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__DOLLAR', 'VAL__VARIABLE_NAME'] },
+
     COMMA_VARIABLE_EXPRESSION: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'VARIABLE_EXPRESSION'] },
-    HASH_EXPRESSION: { STACK: 'HASH_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__HASH', 'VAL__CURLY_L', 'EXPRESSION', 'VAL__CURLY_R'] },
+    HASH_EXPRESSION: { STACK: 'HASH_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__HASH', 'CURLY_EXPRESSION'] },
     MAP_ENTRY_EXPRESSION: { STACK: 'MAP_ENTRY_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['MAP_ENTRY_KEY', 'VAL__COLON', 'MAP_ENTRY_VALUE'] },
     MAP_ENTRY_KEY: { STACK: 'MAP_ENTRY_KEY', OPERATOR: '&&', SEGMENTS: ['VAL__MAP_KEY'] },
     MAP_ENTRY_VALUE: { STACK: 'MAP_ENTRY_VALUE', OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'COMMA_SEPERATED_EXPRESSION', 'VAL__PAREN_R'] },
+
+    CURLY_EXPRESSION: { STACK: 'HASH_EXPRESSION', OPERATOR: '&&', SEGMENTS: ['VAL__CURLY_L', 'EXPRESSION', 'VAL__CURLY_R'] },
 
     FUNCTION_CALL: { STACK: 'FUNCTION_CALL', OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'FUNCTION_PARAMS?', 'VAL__PAREN_R', 'BLOCK?'] },
     FUNCTION_PARAMS: { STACK: 'FUNCTION_PARAM', OPERATOR: '&&', SEGMENTS: ['FUNCTION_PARAM', 'COMMA_FUNCTION_PARAM*', 'EXTRA_COMMA?'] },
@@ -102,6 +126,8 @@ module.exports = grammar.export_grammar({
     EACH_VALUE_LIST_ENTRY: { OPERATOR: '||', SEGMENTS: ['EACH_VALUE_LIST_IN_PAREN', 'KEYWORD_EXPRESSION', 'VARIABLE_EXPRESSION'] },
     COMMA_EACH_VALUE_LIST_ENTRY: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'EACH_VALUE_LIST_ENTRY'] },
     EACH_VALUE_LIST_IN_PAREN: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'EACH_VALUE_LIST', 'VAL__PAREN_R'] },
+
+    FOR: { STACK: 'FOR', OPERATOR: '&&', SEGMENTS: ['VAL__AT_FOR', 'VARIABLE_EXPRESSION', 'VAL__FROM', 'VAL__NUMBER', 'VAL__THROUGH', 'VAL__NUMBER', 'BLOCK'] },
 
     MATH_CHARACTER: { OPERATOR: '||', SEGMENTS: ['VAL__TIMES', 'VAL__PLUS', 'VAL__DIVIDE', 'MINUS_SPACE', 'VAL__PERC'] },
     MINUS_SPACE: { OPERATOR: '&&', SEGMENTS: ['VAL__MINUS', 'VAL__SPACE'] },
@@ -133,10 +159,10 @@ module.exports = grammar.export_grammar({
     VAL__TRUE: { OPERATOR: '==', VALUE: '[T]rue' },
     VAL__VARIABLE_NAME: { OPERATOR: '==', VALUE: '\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*' },
     VAL__AT_EACH: { OPERATOR: '==', VALUE: '@each' },
+    VAL__AT_FOR: { OPERATOR: '==', VALUE: '@for' },
     VAL__IN: { OPERATOR: '==', VALUE: 'in' },
-
-
-
+    VAL__FROM: { OPERATOR: '==', VALUE: 'from' },
+    VAL__THROUGH: { OPERATOR: '==', VALUE: 'through' },
 
     params: { OPERATOR: '&&', SEGMENTS: ['param', 'paramMore*', 'Ellipsis?'] },
     paramMore: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'param*', 'Ellipsis?'] },
@@ -145,8 +171,8 @@ module.exports = grammar.export_grammar({
     paramOptionalValue: { OPERATOR: '&&', SEGMENTS: ['COLON', 'expression'] },
     paramsInParen: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'params?', 'RPAREN'] },
     valuesInParen: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'values?', 'RPAREN'] },
-    mixinDeclaration: { OPERATOR: '&&', SEGMENTS: ['MIXIN', 'Identifier', 'paramsInParen?', 'block'] },
-    pageDeclaration: { OPERATOR: '&&', SEGMENTS: ['PAGE', 'block'] },
+    mixinDeclaration: { OPERATOR: '&&', SEGMENTS: ['MIXIN', 'Identifier', 'paramsInParen?', 'BLOCK'] },
+    pageDeclaration: { OPERATOR: '&&', SEGMENTS: ['PAGE', 'BLOCK'] },
     extendDeclaration: { OPERATOR: '&&', SEGMENTS: ['EXTEND', 'percIdentifier', 'VAL__SEMI?'] },
     includeDeclaration: { OPERATOR: '&&', SEGMENTS: ['INCLUDE', 'Identifier', 'includeDeclarationTermination'] },
     includeDeclarationTermination: { OPERATOR: '||', SEGMENTS: ['VAL__SEMI+', 'valuesInParenSemiBlock'] },
@@ -160,7 +186,7 @@ module.exports = grammar.export_grammar({
     mediaDeclarationPart: { OPERATOR: '||', SEGMENTS: ['propertyInParen', 'identifier'] },
     mediaDeclarationTermination: { OPERATOR: '||', SEGMENTS: ['VAL__SEMI+', 'valuesInParenSemiBlock'] },
     valuesInParenSemi: { OPERATOR: '&&', SEGMENTS: ['valuesInParen', 'VAL__SEMI?'] },
-    valuesInParenSemiBlock: { OPERATOR: '&&', SEGMENTS: ['valuesInParenSemi?', 'block?'] },
+    valuesInParenSemiBlock: { OPERATOR: '&&', SEGMENTS: ['valuesInParenSemi?', 'BLOCK?'] },
     functionDeclaration: { OPERATOR: '&&', SEGMENTS: ['FUNCTION', 'Identifier', 'paramsInParen', 'BlockStart', 'functionBody?', 'BlockEnd'] },
     functionBody: { OPERATOR: '&&', SEGMENTS: ['functionStatement*', 'functionReturn'] },
     functionReturn: { OPERATOR: '&&', SEGMENTS: ['RETURN', 'commandStatement', 'VAL__SEMI+'] },
@@ -185,28 +211,28 @@ module.exports = grammar.export_grammar({
     // RGB: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'RGB_VAL', 'COMMA_RGB_VAL*', 'RPAREN'] },
     // COMMA_RGB_VAL: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'RGB_VAL'] },
     // RGB_VAL: { OPERATOR: '||', SEGMENTS: ['RGB_NUMERIC_VAL', 'variableName'] },
-    ifDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_IF', 'CONDITIONS', 'block', 'elseIfStatement*', 'elseStatement?'] },
-    elseIfStatement: { OPERATOR: '&&', SEGMENTS: ['AT_ELSE', 'IF', 'CONDITIONS', 'block'] },
-    elseStatement: { OPERATOR: '&&', SEGMENTS: ['AT_ELSE', 'block'] },
+    ifDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_IF', 'CONDITIONS', 'BLOCK', 'elseIfStatement*', 'elseStatement?'] },
+    elseIfStatement: { OPERATOR: '&&', SEGMENTS: ['AT_ELSE', 'IF', 'CONDITIONS', 'BLOCK'] },
+    elseStatement: { OPERATOR: '&&', SEGMENTS: ['AT_ELSE', 'BLOCK'] },
 
     // commaVariableName: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'variableName'] },
     commaIdentifier: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'Identifier'] },
     colonValues: { OPERATOR: '&&', SEGMENTS: ['COLON', 'values'] },
-    forDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_FOR', 'variableName', 'FROM', 'fromNumber', 'THROUGH', 'through', 'block'] },
+    forDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_FOR', 'variableName', 'FROM', 'fromNumber', 'THROUGH', 'through', 'BLOCK'] },
     fromNumber: { OPERATOR: '&&', SEGMENTS: ['VAL__NUMBER'] },
     through: { OPERATOR: '||', SEGMENTS: ['VAL__NUMBER', 'functionCall', 'variableName'] },
-    whileDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_WHILE', 'CONDITIONS', 'block'] },
+    whileDeclaration: { OPERATOR: '&&', SEGMENTS: ['AT_WHILE', 'CONDITIONS', 'BLOCK'] },
     // identifierValue: { OPERATOR: '&&', SEGMENTS: ['identifier', 'colonValues?'] },
     importDeclaration: { OPERATOR: '&&', SEGMENTS: ['IMPORT', 'referenceUrl', 'commaReferenceUrl*', 'mediaTypes?', 'VAL__SEMI+'] },
     referenceUrl: { OPERATOR: '||', SEGMENTS: ['StringLiteral', 'url'] },
     commaReferenceUrl: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'referenceUrl'] },
     mediaTypes: { OPERATOR: '&&', SEGMENTS: ['Identifier', 'commaIdentifier*'] },
-    nested: { OPERATOR: '&&', SEGMENTS: ['AT', 'AND?', 'Identifier+', 'pseudo*', 'selectors', 'BlockStart', 'stylesheet', 'BlockEnd'] },
-    // ruleset: { OPERATOR: '&&', SEGMENTS: ['selectors', 'block'] },
-    block: { OPERATOR: '&&', SEGMENTS: ['BlockStart', 'blockProperty*', 'blockPropertyNoSemi?', 'BlockEnd'] },
+    nested: { OPERATOR: '&&', SEGMENTS: ['AT', 'AND?', 'Identifier+', 'pseudo*', 'BlockStart', 'stylesheet', 'BlockEnd'] },
+    // ruleset: { OPERATOR: '&&', SEGMENTS: ['selectors', 'BLOCK'] },
+    // block: { OPERATOR: '&&', SEGMENTS: ['BlockStart', 'blockProperty*', 'blockPropertyNoSemi?', 'BlockEnd'] },
     blockProperty: { OPERATOR: '||', SEGMENTS: ['blockPropertySemi'] },
     blockPropertySemi: { OPERATOR: '&&', SEGMENTS: ['property', 'IMPORTANT?', 'VAL__SEMI+'] },
-    blockPropertyNoSemi: { OPERATOR: '&&', SEGMENTS: ['property', 'IMPORTANT?', 'MISSING_SEMI'] },
+    // blockPropertyNoSemi: { OPERATOR: '&&', SEGMENTS: ['property', 'IMPORTANT?', 'MISSING_SEMI'] },
     // selectors: { OPERATOR: '&&', SEGMENTS: ['selector', 'commaSelector*'] },
     // commaSelector: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'selector'] },
     // selector: { OPERATOR: '&&', SEGMENTS: ['selectorStart*', 'attrib*', 'selectorPrefix?', 'pseudo*'] },

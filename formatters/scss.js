@@ -97,11 +97,18 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         case 'VAL__LTEQ':
         case 'VAL__NOTEQ':
         case 'VAL__SQBRAC_L':
-        case 'VAL__SQBRAC_R':
         case 'VAL__IN':
         case 'VAL__TIL':
             color_func = cprint.toLightCyan;
             last_token = definition_key;
+            break;
+
+        case 'VAL__SQBRAC_R':
+            color_func = cprint.toLightCyan;
+            last_token = definition_key;
+            if (within('BRACKET_SELECTOR')) {
+                space_before = false;
+            }
             break;
 
         case 'VAL__AT_EACH':
@@ -146,6 +153,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             last_token = definition_key;
 
             if (within(['FUNCTION_CALL']) && !within('EXPRESSION_2ND') && !last('VAL__COLON')) {
+                space_before = false;
+            }
+
+            if (within('SELECTOR_ELEMENT_MODIFIER')) {
                 space_before = false;
             }
             break;
@@ -218,6 +229,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                 space_before = false;
             }
 
+            if (withinAll(['EACH', 'BLOCK', 'SELECTOR'])) {
+                space_before = false;
+            }
+
             if (state.MULTI_LINE_FUNCTION) {
                 state.MULTI_LINE_FUNCTION_PAREN_DEPTH += 1;
             }
@@ -240,6 +255,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             }
 
             if (within('PAREN_EXPRESSION')) {
+                space_before = false;
+            }
+
+            if (within('SELECTOR_ELEMENT_MODIFIER')) {
                 space_before = false;
             }
 
@@ -308,6 +327,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                     newline = true;
                 }
             }
+
+            if (withinAll(['EACH', 'BLOCK']) && last('VAL__COLON')) {
+                space_before = true;
+            }
             break;
 
         case 'VAL__SELECTOR_MODIFIER':
@@ -352,7 +375,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             color_func = cprint.toLightBlue;
             last_token = definition_key;
 
-            if (within('VARIABLE')) {
+            if (within('VARIABLE') && !within('FUNCTION_CALL')) {
                 if (whitespace_before_includes_double_newline) {
                     double_newline = true;
                 } else {
@@ -481,6 +504,21 @@ function within (in_definition_keys) {
     });
 
     return matched.length;
+}
+
+// ******************************
+
+function withinAll (in_definition_keys) {
+    if (!g_STATE || !g_STATE.STACK || !g_STATE.STACK.length) {
+        return false;
+    }
+
+    var definition_keys = Array.isArray(in_definition_keys) ? in_definition_keys : [in_definition_keys];
+    var noMatch = definition_keys.filter(function (definition_key) {
+        return g_STATE.STACK.indexOf(definition_key) < 0;
+    });
+
+    return !noMatch.length;
 }
 
 // ******************************
