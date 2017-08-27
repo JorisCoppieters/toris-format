@@ -1,0 +1,7 @@
+{
+    "inputFile": "format-test-015-bindings-preformatted.html",
+    "outputFile": "format-test-015-bindings-formatted.html",
+    "setup": {
+    },
+    "testName": "bindings"
+}
