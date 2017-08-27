@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.1
+// TORIS FORMAT v1.7.2
 //
 // Version History:
+//
+// 1.7.2
+// - Added support for some NG2 specific syntax
 //
 // 1.7.0
 // - Refactored grammars and formatters

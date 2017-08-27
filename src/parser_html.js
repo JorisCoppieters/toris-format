@@ -541,15 +541,15 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
-                regExpString += r_v('\[' + '[@:a-zA-Z._-]+' + '\]');
+                regExpString += r_v('\[' + '[$@:a-zA-Z._-]+' + '\]');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
-                regExpString += r_v('\[\\(' + '[@:a-zA-Z._-]+' + '\\)\]');
+                regExpString += r_v('\[\\(' + '[$@:a-zA-Z._-]+' + '\\)\]');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
-                regExpString += r_v('\\(' + '[@:a-zA-Z._-]+' + '\\)');
+                regExpString += r_v('\\(' + '[$@:a-zA-Z._-]+' + '\\)');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
@@ -1233,7 +1233,7 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z_]+)+\\([a-zA-Z0-9 "\',_-]*\\)');
+                regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z_]+)*\\([a-zA-Z0-9 "\',_-]*\\)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:

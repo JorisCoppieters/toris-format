@@ -52,3 +52,9 @@
     (window:resize)="lol()"
     [@yolo]="swag.rofl">Crazy stuff
 </div>
+<div
+    [results$]="watchlistListings$"
+    binding="{
+        'closing-time-picker__is-selected': isSelectedHour(hour)
+    }">
+</div>
