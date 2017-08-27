@@ -56,5 +56,20 @@
 'closing-time-picker__is-selected': isSelectedHour(hour)
                                     }"
 
->
+    [ngClass]="{
+        'h-text-align-1': c.b,
+        'h-text-align-2': a,
+        'h-text-align-3': !c.b,
+        'h-text-align-4': !a,
+        'h-text-align-5': c.b(),
+        'h-text-align-6': a(),
+        'h-text-align-7': !c.b(),
+        'h-text-align-8': !a(),
+        'h-text-align-9': c.b(d),
+        'h-text-align-10': a(d),
+        'h-text-align-11': !c.b(d),
+        'h-text-align-12': !a(d),
+        'h-text-align-left': (mediaSize$ | async)?.isSm,
+        'h-text-align-center': !(mediaSize$ | async)?.isSm
+    }">
 </div>

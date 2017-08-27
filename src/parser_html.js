@@ -33,6 +33,7 @@ const k_ATTRIBUTE_TYPE_VALUE_BLOCK = '[ATTRIBUTE_TYPE_VALUE_BLOCK]';
 const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION]';
+const k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE = '[ATTRIBUTE_TYPE_ASYNC_PIPE]';
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR]';
 const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
 const k_ATTRIBUTE_TYPE_NO_VALUE = '[ATTRIBUTE_TYPE_NO_VALUE]';
@@ -1150,6 +1151,7 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR); },
+            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK); },
         ];
 
@@ -1233,11 +1235,15 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z_]+)*\\([a-zA-Z0-9 "\',_-]*\\)');
+                regExpString += r_W + r_v('!?(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+\\([a-zA-Z0-9 "\',_-]*\\)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-                regExpString += r_W + r_v('[!$a-zA-Z_]+(?:\\.[a-zA-Z_]+)*[a-zA-Z0-9_-]*');
+                regExpString += r_W + r_v('!?(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+');
+                break;
+
+            case k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE:
+                regExpString += r_W + r_v('!?\\([!$a-zA-Z_]+ ?\\| ?async\\)\\??\\.[a-zA-Z_]+');
                 break;
         }
 
