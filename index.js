@@ -79,7 +79,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.1';
+const k_VERSION = '1.7.2';
 
 // ******************************
 // TODO: DEPRECATE
