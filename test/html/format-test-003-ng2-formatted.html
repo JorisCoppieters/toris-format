@@ -67,10 +67,15 @@
         'h-text-align-8': !a(),
         'h-text-align-9': c.b(d),
         'h-text-align-center': !(mediaSize$ | async)?.isSm,
-        'h-text-align-left': (mediaSize$ | async)?.isSm
+        'h-text-align-left': (mediaSize$ | async)?.isSm,
+        'refiner__range-refiner-option--selected': refiner.isMinSelected(refiner.ANY_OPTION)
     }"
     [results$]="watchlistListings$"
     binding="{
         'closing-time-picker__is-selected': isSelectedHour(hour)
+    }"
+    tg-validation="::{
+        maxCharacters: $ctrl.attributeMetadata.maxStringLength,
+        required: !!$ctrl.attributeMetadata.isRequiredForSell
     }">
 </div>

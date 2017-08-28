@@ -1235,15 +1235,15 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('!?(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+\\([a-zA-Z0-9 "\',_-]*\\)');
+                regExpString += r_W + r_v('[!]*(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-                regExpString += r_W + r_v('!?(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+');
+                regExpString += r_W + r_v('[!]*(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE:
-                regExpString += r_W + r_v('!?\\([!$a-zA-Z_]+ ?\\| ?async\\)\\??\\.[a-zA-Z_]+');
+                regExpString += r_W + r_v('[!]*\\([!$a-zA-Z_]+ ?\\| ?async\\)\\??\\.[a-zA-Z_]+');
                 break;
         }
 

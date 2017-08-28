@@ -56,7 +56,14 @@
 'closing-time-picker__is-selected': isSelectedHour(hour)
                                     }"
 
+        tg-validation="::{
+            maxCharacters: $ctrl.attributeMetadata.maxStringLength,
+            required: !!$ctrl.attributeMetadata.isRequiredForSell
+        }"
+
     [ngClass]="{
+        'refiner__range-refiner-option--selected': refiner.isMinSelected(refiner.ANY_OPTION),
+
         'h-text-align-1': c.b,
         'h-text-align-2': a,
         'h-text-align-3': !c.b,
