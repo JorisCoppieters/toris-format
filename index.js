@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.2
+// TORIS FORMAT v1.7.3
 //
 // Version History:
+//
+// 1.7.3
+// - Added support for comment formatting in HTML
 //
 // 1.7.2
 // - Added support for some NG2 specific syntax
@@ -79,7 +82,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.2';
+const k_VERSION = '1.7.3';
 
 // ******************************
 // TODO: DEPRECATE
