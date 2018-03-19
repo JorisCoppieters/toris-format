@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-015-viewport-units-preformatted.scss",
+    "outputFile": "format-test-015-viewport-units-formatted.scss",
+    "testName": "015-viewport-units",
+    "setup": {
+        "line_ending": "\r\n"
+    }
+}

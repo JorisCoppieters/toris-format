@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-014-units-preformatted.scss",
+    "outputFile": "format-test-014-units-formatted.scss",
+    "testName": "014-units",
+    "setup": {
+        "line_ending": "\r\n"
+    }
+}
