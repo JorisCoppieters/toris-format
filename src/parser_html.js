@@ -22,6 +22,7 @@ var utils = require('./utils');
 
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
+const k_NULL_VALUE_TOKEN = '[NULLVALUE]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
 
 const k_ATTRIBUTE_NAME_CLASS = "class";
@@ -35,6 +36,7 @@ const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTE
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION]';
 const k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE = '[ATTRIBUTE_TYPE_ASYNC_PIPE]';
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR]';
+const k_ATTRIBUTE_TYPE_VALUE_NULL = '[ATTRIBUTE_TYPE_VALUE_NULL]';
 const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
 const k_ATTRIBUTE_TYPE_NO_VALUE = '[ATTRIBUTE_TYPE_NO_VALUE]';
 
@@ -383,6 +385,7 @@ function parse_html_open_element_attributes (in_html_content) {
     var functions = [
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
+        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE); },
     ];
@@ -391,26 +394,31 @@ function parse_html_open_element_attributes (in_html_content) {
         functions = functions.concat([
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
 
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
 
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
 
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
 
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
         ]);
@@ -466,6 +474,10 @@ function parse_attribute (in_html_content, in_attribute_type) {
                 regExpString += r_W + '=' + r_dq('');
                 break;
 
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                regExpString += r_W + '=null';
+                break;
+
             case k_ATTRIBUTE_TYPE_NO_VALUE:
                 break;
         }
@@ -510,6 +522,10 @@ function parse_attribute (in_html_content, in_attribute_type) {
                 val = '';
                 break;
 
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                val = k_NULL_VALUE_TOKEN;
+                break;
+
             case k_ATTRIBUTE_TYPE_NO_VALUE:
                 val = k_NO_VALUE_TOKEN;
                 break;
@@ -519,7 +535,6 @@ function parse_attribute (in_html_content, in_attribute_type) {
         var remaining = matches.shift() || '';
 
         // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+regExpString+'~~~'+key+'~~~'+already_one_time_bound+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
-
         result = remaining;
 
     } while (false);
@@ -572,6 +587,10 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
                 regExpString += r_W + '=' + r_dq('');
                 break;
 
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                regExpString += r_W + '=null';
+                break;
+
             case k_ATTRIBUTE_TYPE_NO_VALUE:
                 regExpString += ''; // Add nothing
                 break;
@@ -604,6 +623,10 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
             case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
                 val = '';
+                break;
+
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                val = k_NULL_VALUE_TOKEN;
                 break;
 
             case k_ATTRIBUTE_TYPE_NO_VALUE:
@@ -802,6 +825,11 @@ function sort_attributes (in_attributes) {
 
             var val = attributes[key];
             val = val.replace(/[\s]+/, ' ');
+
+            if (val === k_NULL_VALUE_TOKEN) {
+                result += t_NL + indent + key + '=null';
+                return;
+            }
 
             if (val === k_NO_VALUE_TOKEN) {
                 result += t_NL + indent + key;

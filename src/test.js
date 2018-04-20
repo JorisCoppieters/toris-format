@@ -55,6 +55,14 @@ function format_tests (tests_folder, format_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -82,6 +90,14 @@ function structure_tests (tests_folder, structure_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -109,6 +125,14 @@ function print_tests (tests_folder, print_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
