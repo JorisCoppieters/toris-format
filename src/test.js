@@ -55,6 +55,14 @@ function format_tests (tests_folder, format_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -82,6 +90,14 @@ function structure_tests (tests_folder, structure_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -109,6 +125,14 @@ function print_tests (tests_folder, print_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -154,16 +178,16 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
         var test_expected_output_file = '_formatTest_' + test_name + '_expected_output.txt';
         var test_output_file = '_formatTest_' + test_name + '_output.txt';
 
+        if (ignore) {
+            console.log(cprint.toDarkGrey('~ Ignored') + test_identifier);
+            return true;
+        }
+
         var output;
         if (format_function) {
             output = format_function(input_file, setup_config);
         } else {
             output = formatter.format_file(input_file, setup_config);
-        }
-
-        if (ignore) {
-            console.log(cprint.toDarkGrey('~ Ignored') + test_identifier);
-            return true;
         }
 
         if (output && expected_output && output.trim() == expected_output.trim()) {

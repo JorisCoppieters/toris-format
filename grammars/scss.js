@@ -179,7 +179,7 @@ module.exports = grammar.export_grammar({
     MEASUREMENT: { OPERATOR: '&&', SEGMENTS: ['VAL_MEASUREMENT'] },
 
     VAL_KEYFRAMES: { OPERATOR: '==', VALUE: '@keyframes' },
-    VAL_MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
+    VAL_MEASUREMENT: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+(?:%|vh|vw|px|rem|cm|mm|in|pt|pc|em|ex|deg|rad|grad|ms|s|hz|khz)' },
 
     VAL__EMPTY: { OPERATOR: '==', VALUE: '' },
     NULL: { OPERATOR: '==', VALUE: 'null' },

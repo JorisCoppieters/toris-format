@@ -3,9 +3,21 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.0
+// TORIS FORMAT v1.7.7
 //
 // Version History:
+//
+// 1.7.5
+// - Added support for value=null in NG HTML bindings
+//
+// 1.7.4
+// - Added fix for the vw unit in CSS
+//
+// 1.7.3
+// - Added support for comment formatting in HTML
+//
+// 1.7.2
+// - Added support for some NG2 specific syntax
 //
 // 1.7.0
 // - Refactored grammars and formatters
@@ -75,7 +87,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.0';
+const k_VERSION = '1.7.7';
 
 // ******************************
 // TODO: DEPRECATE
