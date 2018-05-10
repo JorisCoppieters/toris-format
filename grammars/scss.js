@@ -20,7 +20,6 @@ var grammar = require('./_core');
 
 module.exports = grammar.export_grammar({
     START: { OPERATOR: '||', SEGMENTS: ['stylesheet'] },
-    SCSS_SEGMENTS: { OPERATOR: '||', SEGMENTS: ['stylesheet'] },
     stylesheet: { OPERATOR: '&&', SEGMENTS: ['statement*'] },
     statement: { OPERATOR: '||', SEGMENTS: ['COMMENT', 'SL_COMMENT', 'importDeclaration', 'includeDeclaration', 'fontFaceDeclaration', 'mediaDeclaration', 'DECLARATION_KEYFRAMES', 'pageDeclaration', 'extendDeclaration', 'ruleset', 'mixinDeclaration', 'functionDeclaration', 'variableDeclaration', 'ifDeclaration', 'forDeclaration', 'whileDeclaration', 'eachDeclaration', 'nested'] },
     params: { OPERATOR: '&&', SEGMENTS: ['param', 'paramMore*', 'Ellipsis?'] },

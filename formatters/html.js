@@ -67,7 +67,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             break;
 
         case 'HTML_CLOSE_ELEMENT':
-            post_indent = -1;
+            pre_indent = -1;
             break;
 
         case 'VAL__ANBRAC_L':
@@ -84,11 +84,94 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                 state.LAST_TOKEN = definition_key;
                 space_before = false;
             }
+            if (state.STACK.indexOf('HTML_OPEN_ELEMENT_END') > -1) {
+                post_indent = -1;
+            }
+            break;
+
+        case 'VAL__SQBRAC_L':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toYellow;
+                state.LAST_TOKEN = definition_key;
+            }
+            if (state.STACK.indexOf('HTML_OPEN_ELEMENT_ATTRIBUTE') > -1) {
+                newline = true;
+            }
+            break;
+
+        case 'VAL__SQBRAC_R':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toYellow;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            break;
+
+        case 'VAL__CURLY_L':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toMagenta;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+                newline = true;
+                post_indent = 1;
+            }
+            break;
+
+        case 'VAL__CURLY_R':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toMagenta;
+                state.LAST_TOKEN = definition_key;
+                newline = true;
+                pre_indent = -1;
+            }
             break;
 
         case 'VAL__SLASH':
             if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
                 color_func = cprint.toWhite;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            break;
+
+        case 'VAL__EQ':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toWhite;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            break;
+
+        case 'VAL__COLON':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toWhite;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            break;
+
+        case 'VAL__SQUOTE':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toYellow;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT_ENTRY_KEY_BEGIN_SQUOTE') > -1) {
+                newline = true;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT_ENTRY_VAUE_BEGIN_SQUOTE') > -1) {
+                space_before = true;
+                newline = false;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT_ENTRY_VAUE_BEGIN_DQUOTE') > -1) {
+                space_before = true;
+                newline = false;
+            }
+            break;
+
+        case 'VAL__DQUOTE':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toYellow;
                 state.LAST_TOKEN = definition_key;
                 space_before = false;
             }
@@ -100,6 +183,9 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                 state.LAST_TOKEN = definition_key;
                 space_before = false;
             }
+            if (state.STACK.indexOf('HTML_OPEN_ELEMENT_START') > -1) {
+                post_indent = 1;
+            }
             break;
 
         case 'VAL__HTML_CONTENT':
@@ -107,6 +193,43 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                 color_func = cprint.toGreen;
                 state.LAST_TOKEN = definition_key;
                 newline = true;
+            }
+            break;
+
+        case 'VAL__ATTRIBUTE_KEY':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toGreen;
+                state.LAST_TOKEN = definition_key;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT') > -1) {
+                color_func = cprint.toGreen;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            if (state.STACK.indexOf('HTML_OPEN_ELEMENT_ATTRIBUTE') > -1) {
+                newline = true;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT_ENTRY_KEY_STRING') > -1) {
+                newline = false;
+            }
+            if (state.STACK.indexOf('HTML_OBJECT_ENTRY_VAUE_STRING') > -1) {
+                newline = false;
+            }
+            break;
+
+        case 'VAL__ATTRIBUTE_NG2_BINDING_KEY':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toGreen;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
+            }
+            break;
+
+        case 'VAL__ATTRIBUTE_VALUE_STRING':
+            if (state.STACK.indexOf('HTML_ELEMENT') > -1) {
+                color_func = cprint.toCyan;
+                state.LAST_TOKEN = definition_key;
+                space_before = false;
             }
             break;
 
