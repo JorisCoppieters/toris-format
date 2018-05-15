@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-017-xml-header-preformatted.html",
+    "outputFile": "format-test-017-xml-header-formatted.html",
+    "setup": {
+        "ng_version": 2
+    },
+    "testName": "xml-header"
+}

@@ -22,6 +22,7 @@ var utils = require('./utils');
 
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
+const k_XML_HEADER_TOKEN = '[XML_HEADER]';
 const k_NULL_VALUE_TOKEN = '[NULLVALUE]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
 
@@ -150,6 +151,7 @@ var g_REGEX_HTML_CONTENT = '[^<]+?';
 var g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
 var g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_-]+';
 var g_REGEX_HTML_ATTRIBUTE_VALUE = r_A;
+var g_REGEX_XML_HEADER = r_v('<\\?xml version="' + r_A + '" encoding="' + r_A + '"\\?>');
 
 // ******************************
 // Setup Functions:
@@ -216,7 +218,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
 
         while(g_ELEMENT_STACK.length) {
             var top_element = g_ELEMENT_STACK.pop();
-            if (top_element === k_COMMENT_TOKEN) {
+            if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN].indexOf(top_element) >= 0) {
                 continue;
             }
 
@@ -254,11 +256,12 @@ function parse_html (in_html_content) {
     var html_content = in_html_content || '';
 
     var functions = [
+        parse_xml_header,
         parse_style,
         parse_html_open_element,
         parse_html_close_element,
         parse_comment,
-        parse_content,
+        parse_content
     ];
 
     var parse_run = 0;
@@ -689,7 +692,11 @@ function parse_html_open_element_end (in_html_content) {
                 indent = t_NL + get_indent();
 
             } else if (space_content) {
-                if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+                if (top_element_info.had_content
+                    || top_element_info.had_comment
+                    || top_element_info.had_xml_header
+                    || !top_element_info.top_element_is_inline_element) {
+
                     if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                         indent = ' ';
                     } else {
@@ -1382,6 +1389,7 @@ function parse_html_close_element (in_html_content) {
         var top_element_is_empty = (
             !top_element_info.had_content &&
             !top_element_info.had_comment &&
+            !top_element_info.had_xml_header &&
             top_element_info.top_element === g_CURRENT_ELEMENT);
 
         output = '</' + element + '>';
@@ -1391,7 +1399,10 @@ function parse_html_close_element (in_html_content) {
         } else if (space_content) {
             if (top_element_is_empty && top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                 indent = '';
-            } else if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+            } else if (top_element_info.had_content
+                    || top_element_info.had_comment
+                    || top_element_info.had_xml_header
+                    || !top_element_info.top_element_is_inline_element) {
                 if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                     indent = ' ';
                 } else {
@@ -1458,7 +1469,10 @@ function parse_content (in_html_content) {
 
         var top_element_info = get_top_element_info();
         if (space_content) {
-            if (top_element_info.had_content || top_element_info.had_comment || !top_element_info.top_element_is_inline_element) {
+            if (top_element_info.had_content
+                || top_element_info.had_comment
+                || top_element_info.had_xml_header
+                || !top_element_info.top_element_is_inline_element) {
                 if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                     indent = ' ';
                 } else {
@@ -1513,7 +1527,7 @@ function parse_temporary_content (in_html_content, in_indent_count) {
 
             while(g_ELEMENT_STACK.length) {
                 var top_element = g_ELEMENT_STACK.pop();
-                if (top_element === k_COMMENT_TOKEN) {
+                if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN].indexOf(top_element) >= 0) {
                     continue;
                 }
                 throw 'get out';
@@ -1603,6 +1617,31 @@ function parse_comment (in_html_content) {
             g_HTML_CONTENT += '<!-- ' + comment + ' -->';
         }
 
+        result = remaining;
+    }
+    while (false);
+
+    return result;
+}
+
+// ******************************
+
+function parse_xml_header (in_html_content) {
+    var result = false;
+
+    do {
+        var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + g_REGEX_XML_HEADER + r_v(r_AG), 'i'));
+        if (!matches) {
+            break;
+        }
+
+        matches.shift(); // First idx in match is the complete match string
+        var whitespace_before = !!(matches.shift() || '').length;
+        var xml_header = (matches.shift() || '').trim();
+        var remaining = matches.shift() || '';
+
+        g_ELEMENT_STACK.push(k_XML_HEADER_TOKEN);
+        g_HTML_CONTENT += xml_header;
         result = remaining;
     }
     while (false);
@@ -1749,6 +1788,7 @@ function get_top_element_info (in_pop) {
     {
         var had_content = false;
         var had_comment = false;
+        var had_xml_header = false;
         var top_element_idx = g_ELEMENT_STACK.length - 1;
         var top_element = '';
 
@@ -1775,11 +1815,19 @@ function get_top_element_info (in_pop) {
                 found_signal_element = true;
                 continue;
             }
+
+            if (top_element === k_XML_HEADER_TOKEN) {
+                top_element_idx--;
+                had_xml_header = true;
+                found_signal_element = true;
+                continue;
+            }
         }
 
         result = {
             had_comment,
             had_content,
+            had_xml_header,
             top_element,
             top_element_is_inline_element: (g_INLINE_ELEMENTS.indexOf(top_element) >= 0),
             top_element_is_block_element: (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0)
