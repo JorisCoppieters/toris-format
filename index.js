@@ -3,11 +3,11 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.7
+// TORIS FORMAT v1.7.8
 //
 // Version History:
 //
-// 1.7.7
+// 1.7.8
 // - Added support for <?xml ?> header
 //
 // 1.7.5
@@ -91,7 +91,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.7';
+const k_VERSION = '1.7.8';
 
 // ******************************
 // TODO: DEPRECATE
