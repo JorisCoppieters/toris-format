@@ -151,7 +151,7 @@ var g_REGEX_HTML_CONTENT = '[^<]+?';
 var g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
 var g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_-]+';
 var g_REGEX_HTML_ATTRIBUTE_VALUE = r_A;
-var g_REGEX_XML_HEADER = r_v('<\\?xml version="' + r_A + '" encoding="' + r_A + '"\\?>');
+var g_REGEX_XML_HEADER = r_v('<\\?xml' + r_A + '\\?>');
 
 // ******************************
 // Setup Functions:

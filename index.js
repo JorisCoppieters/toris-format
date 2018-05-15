@@ -7,6 +7,9 @@
 //
 // Version History:
 //
+// 1.7.7
+// - Added support for <?xml ?> header
+//
 // 1.7.5
 // - Added support for value=null in NG HTML bindings
 //
