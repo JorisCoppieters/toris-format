@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.8
+// TORIS FORMAT v1.7.9
 //
 // Version History:
 //
@@ -91,7 +91,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.8';
+const k_VERSION = '1.7.9';
 
 // ******************************
 // TODO: DEPRECATE
