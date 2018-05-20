@@ -22,15 +22,66 @@ var g_HTML = g_ARGV['html'] !== false;
 var g_DEBUG = g_ARGV['debug'];
 var g_PRINT_TREE = g_ARGV['print-tree'];
 var g_RUN_CHECKS = g_ARGV['run-checks'];
+var g_CREATE_TEST = g_ARGV['create'];
+var g_NAME = g_ARGV['name'];
+var g_TYPE = g_ARGV['type'];
 
 // ******************************
 // Script:
 // ******************************
 
-runTests();
+if (g_CREATE_TEST) {
+    createTest();
+} else {
+    runTests();
+}
 
 // ******************************
 // Functions:
+// ******************************
+
+function createTest() {
+    if (!g_NAME) {
+        cprint.yellow('Please specify a name');
+        return;
+    }
+
+    if (!g_TYPE) {
+        cprint.yellow('Please specify a type');
+        return;
+    }
+
+    let folder = path.resolve('./test', g_TYPE);
+    if (!fs.existsSync(folder)) {
+        cprint.yellow(`Invalid folder : ${folder}`)
+        return;
+    }
+
+    let latestTestNumber = fs.readdirSync(folder)
+        .filter(file => file.match(/format-test-.*-conf.json/))
+        .map(file => file.replace(/format-test-([0-9]+)-.*/, '$1'))
+        .reduce((max, v) => Math.max(max, parseInt(v)), 0);
+
+    let nextTestNumber = latestTestNumber + 1;
+    let nextTestNumberStr = ('000' + nextTestNumber).substr(-3);
+
+    let testName = `format-test-${nextTestNumberStr}-${g_NAME}`;
+    let configFile = `${testName}-conf.json`;
+    let formattedFile = `${testName}-formatted.${g_TYPE}`;
+    let preformattedFile = `${testName}-preformatted.${g_TYPE}`;
+
+    let config = {
+        "inputFile": preformattedFile,
+        "outputFile": formattedFile,
+        "setup": {},
+        "testName": g_NAME
+    }
+
+    fs.writeFileSync(`${folder}/${configFile}`, JSON.stringify(config, null, 4));
+    fs.writeFileSync(`${folder}/${formattedFile}`, '');
+    fs.writeFileSync(`${folder}/${preformattedFile}`, '');
+}
+
 // ******************************
 
 function runTests () {

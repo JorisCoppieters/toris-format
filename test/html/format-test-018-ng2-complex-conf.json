@@ -1,0 +1,8 @@
+{
+    "inputFile": "format-test-018-ng2-complex-preformatted.html",
+    "outputFile": "format-test-018-ng2-complex-formatted.html",
+    "setup": {
+        "ng_version": 2
+    },
+    "testName": "ng2-complex"
+}
