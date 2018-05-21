@@ -1286,25 +1286,30 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('[!]*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
+                regExpString += r_W + r_v('\\!*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-                regExpString += r_W + r_v('[!]*' + r_g(
-                    '\\(?' +
+                regExpString += r_W + r_v('\\!*' + r_g(
                     r_g(
-                        r_g('[$a-zA-Z0-9_]+') +
+                        r_g(
+                            '\\(' +
+                            r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async')
+                            + '\\)'
+                        ) +
                         '|' +
-                        r_g(r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async'))
-                    )
-                    + '\\)?\\??\\.'
+                        r_g(
+                            r_g('[$a-zA-Z0-9_]+')
+                        )
+                    ) +
+                    '\\??\\.'
                 ) + '*' + r_g(
                     r_g(
                         '\\(' +
                         r_g(
-                            r_g(r_w('[$a-zA-Z0-9_-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9_-]+') +
+                            r_g(r_w('[$a-zA-Z0-9._-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9._-]+') +
                             '|' +
-                            r_g(r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async'))
+                            r_g(r_w('[$a-zA-Z0-9._]+') + r_w('\\|') + r_w('async'))
                         )
                         + '\\)'
                     ) +
