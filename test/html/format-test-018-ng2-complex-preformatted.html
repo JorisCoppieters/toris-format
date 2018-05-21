@@ -1,4 +1,18 @@
 <button
     [ngBinding]="{ 'key': (val$ | async) } "
+    [objBinding]="{
+        key: nested?.field1?.field2,
+        a1: 'b' + 'a',
+        a2: 3 + 'a',
+        a3: 'b' + 3,
+        a4: 'b' + (3),
+        a5: 'b' + (quantity || 1),
+        a6: 'b' + ( 3 ),
+        a7: 'b' + ( quantity || 1 || 2 )
+    }"
+    [anotherBinding]=true
+
+    bool=false
     otherBinding>
 </button>
+{{ condition ? '1' : '2' }}

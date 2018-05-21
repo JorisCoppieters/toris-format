@@ -35,7 +35,6 @@ const k_ATTRIBUTE_TYPE_VALUE_BLOCK = '[ATTRIBUTE_TYPE_VALUE_BLOCK]';
 const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION]';
-const k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE = '[ATTRIBUTE_TYPE_ASYNC_PIPE]';
 const k_ATTRIBUTE_TYPE_VALUE_ACCESSOR = '[ATTRIBUTE_TYPE_VALUE_ACCESSOR]';
 const k_ATTRIBUTE_TYPE_VALUE_NULL = '[ATTRIBUTE_TYPE_VALUE_NULL]';
 const k_ATTRIBUTE_TYPE_VALUE_EMPTY = '[ATTRIBUTE_TYPE_VALUE_EMPTY]';
@@ -218,7 +217,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
 
         while(g_ELEMENT_STACK.length) {
             var top_element = g_ELEMENT_STACK.pop();
-            if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN].indexOf(top_element) >= 0) {
+            if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN, k_CONTENT_TOKEN].indexOf(top_element) >= 0) {
                 continue;
             }
 
@@ -388,6 +387,7 @@ function parse_html_open_element_attributes (in_html_content) {
     var functions = [
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
+        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY); },
         function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE); },
@@ -403,6 +403,7 @@ function parse_html_open_element_attributes (in_html_content) {
 
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
             function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
@@ -473,6 +474,10 @@ function parse_attribute (in_html_content, in_attribute_type) {
                 regExpString += r_W + '=' + r_sq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
                 break;
 
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                regExpString += r_W + '=' + r_v('(?:true|false)');
+                break;
+
             case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
                 regExpString += r_W + '=' + r_dq('');
                 break;
@@ -521,6 +526,10 @@ function parse_attribute (in_html_content, in_attribute_type) {
                 }
                 break;
 
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                val = matches.shift() || '';
+                break;
+
             case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
                 val = '';
                 break;
@@ -560,19 +569,19 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
-                regExpString += r_v('\[' + '[$@:a-zA-Z._-]+' + '\]');
+                regExpString += r_v('\[' + '[$@:a-zA-Z0-9._-]+' + '\]');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
-                regExpString += r_v('\[\\(' + '[$@:a-zA-Z._-]+' + '\\)\]');
+                regExpString += r_v('\[\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)\]');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
-                regExpString += r_v('\\(' + '[$@:a-zA-Z._-]+' + '\\)');
+                regExpString += r_v('\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)');
                 break;
 
             case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
-                regExpString += r_v('\\*' + '[@:a-zA-Z._-]+');
+                regExpString += r_v('\\*' + '[@:a-zA-Z0-9._-]+');
                 break;
         }
 
@@ -584,6 +593,10 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
             case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
                 regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+                break;
+
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                regExpString += r_W + '=' + r_v('(?:true|false)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
@@ -622,6 +635,10 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
                     val = 'false';
                 }
 
+                break;
+
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                val = matches.shift() || '';
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
@@ -1186,7 +1203,6 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE); },
             function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK); },
         ];
 
@@ -1270,15 +1286,31 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('[!]*(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
+                regExpString += r_W + r_v('[!]*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
                 break;
 
             case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-                regExpString += r_W + r_v('[!]*(?:[$a-zA-Z_]+\\.)*[$a-zA-Z0-9_-]+');
-                break;
-
-            case k_ATTRIBUTE_TYPE_VALUE_ASYNC_PIPE:
-                regExpString += r_W + r_v('[!]*\\([!$a-zA-Z_]+ ?\\| ?async\\)(?:\\??\\.[a-zA-Z_]+)?');
+                regExpString += r_W + r_v('[!]*' + r_g(
+                    '\\(?' +
+                    r_g(
+                        r_g('[$a-zA-Z0-9_]+') +
+                        '|' +
+                        r_g(r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async'))
+                    )
+                    + '\\)?\\??\\.'
+                ) + '*' + r_g(
+                    r_g(
+                        '\\(' +
+                        r_g(
+                            r_g(r_w('[$a-zA-Z0-9_-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9_-]+') +
+                            '|' +
+                            r_g(r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async'))
+                        )
+                        + '\\)'
+                    ) +
+                    '|' +
+                    r_g('[$a-zA-Z0-9_-]+')
+                ));
                 break;
         }
 
@@ -1440,7 +1472,7 @@ function parse_content (in_html_content) {
     var result = false;
 
     do {
-        var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + r_v(g_REGEX_HTML_CONTENT) + r_v(r_W + '<' + r_AG) + '$', 'i'));
+        var matches = in_html_content.match(new RegExp('^' + r_v(r_W) + r_v(g_REGEX_HTML_CONTENT) + r_v(r_g(r_W + '<' + r_AG) + '?') + '$', 'i'));
         if (!matches) {
             break;
         }

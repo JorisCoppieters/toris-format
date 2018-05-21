@@ -4,5 +4,5 @@
     "setup": {
         "definition_type": "SCSS"
     },
-    "testName": "012-reformat"
+    "testName": "reformat"
 }

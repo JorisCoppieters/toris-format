@@ -1,5 +1,5 @@
 {
     "inputFile": "format-test-009-stack-size-preformatted.scss",
     "outputFile": "format-test-009-stack-size-formatted.scss",
-    "testName": "009-stack-size"
+    "testName": "stack-size"
 }

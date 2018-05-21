@@ -338,8 +338,13 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                     break;
             }
             break;
+
+        case 'BlockEndSemi':
         case 'BlockEnd':
             last_token = '}';
+            if (definition_key === 'BlockEndSemi') {
+                append = '}';
+            }
             pre_indent = -1;
             newline = true;
             color_func = cprint.toWhite;
@@ -619,6 +624,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         case 'PERC':
         case 'AND':
         case 'DOLLAR':
+        case 'PathIdentifier':
         case 'Identifier':
             last_token = state.VALUE_TYPE;
 

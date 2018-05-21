@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-016-semicolon-preformatted.scss",
+    "outputFile": "format-test-016-semicolon-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "semicolon"
+}
