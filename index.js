@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.10
+// TORIS FORMAT v1.7.11
 //
 // Version History:
+//
+// 1.7.11
+// - Code clean up
 //
 // 1.7.10
 // - Fixed various HTML formatting issues
@@ -98,7 +101,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.10';
+const k_VERSION = '1.7.11';
 
 // ******************************
 // TODO: DEPRECATE
