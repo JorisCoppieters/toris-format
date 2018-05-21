@@ -20,17 +20,19 @@ var utils = require('./utils');
 // Constants:
 // ******************************
 
+const FALSE = false;
+const TRUE = true;
+
 const k_COMMENT_TOKEN = '[COMMENT]';
 const k_CONTENT_TOKEN = '[CONTENT]';
 const k_XML_HEADER_TOKEN = '[XML_HEADER]';
 const k_NULL_VALUE_TOKEN = '[NULLVALUE]';
 const k_NO_VALUE_TOKEN = '[NOVALUE]';
 
-const k_ATTRIBUTE_NAME_CLASS = "class";
+const k_ATTRIBUTE_NAME_CLASS = 'class';
 
 const k_ATTRIBUTE_TYPE_VALUE_BOOLEAN = '[ATTRIBUTE_TYPE_VALUE_BOOLEAN]';
 const k_ATTRIBUTE_TYPE_VALUE_NUMERIC = '[ATTRIBUTE_TYPE_VALUE_NUMERIC]';
-const k_ATTRIBUTE_TYPE_VALUE_CONDITIONAL = '[ATTRIBUTE_TYPE_VALUE_CONDITIONAL]';
 const k_ATTRIBUTE_TYPE_VALUE_BLOCK = '[ATTRIBUTE_TYPE_VALUE_BLOCK]';
 const k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED]';
 const k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED = '[ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED]';
@@ -134,17 +136,11 @@ var g_ONE_TIME_BOUND_ELEMENT_PREFIXES = g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE;
 var g_REMOVE_CSS = false;
 var g_SELF_CLOSING_HTML_TAGS = g_SELF_CLOSING_HTML_TAGS_BASE;
 
-// Config - Deprecated
-var g__DEPRECATED__NG1_ATTRIBUTES_ORDER = [];
-var g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-var g__DEPRECATED__NG2_ATTRIBUTES_ORDER = [];
-var g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = [];
-
 // RegEx:
 var t_NL = '\n';
 var g_NL = '\r\n';
 var g_REGEX_NL = r_g('\\r\\n|\\r|\\n');
-var g_REGEX_HTML_STYLE = '<style' + r_A + '>' + r_v(r_A) + '<\/style>';
+var g_REGEX_HTML_STYLE = '<style' + r_A + '>' + r_v(r_A) + '<\\/style>';
 var g_REGEX_HTML_COMMENT = '<!--' + r_W + r_v(r_A) + r_W + '-->';
 var g_REGEX_HTML_CONTENT = '[^<]+?';
 var g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
@@ -161,24 +157,24 @@ function setup (in_config) {
         return;
     }
 
-    g_ADD_NOOPENER_NOREFERRER = utils.get_setup_property(in_config, "add_noopener_noreferrer", g_ADD_NOOPENER_NOREFERRER);
-    g_ALLOW_EMPTY_FILES = utils.get_setup_property(in_config, "allow_empty_files", g_ALLOW_EMPTY_FILES);
-    g_ANGULAR_VERSION = utils.get_setup_property(in_config, ["angular_version", "ng_version"], g_ANGULAR_VERSION);
-    g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, "block_elements", g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
-    g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_block_whitespace_formatting", g_FORCE_BLOCK_WHITESPACE_FORMATTING);
-    g_FORCE_INLINE_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, "force_inline_whitespace_formatting", g_FORCE_INLINE_WHITESPACE_FORMATTING);
-    g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = utils.get_setup_property(in_config, "format_multi_classes_with_at_least", g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
-    g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
-    g_INLINE_ELEMENTS = utils.get_setup_property(in_config, "inline_elements", g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
-    g_MULTI_CLASSES_ORDER = utils.get_setup_property(in_config, "multi_classes_order", g_MULTI_CLASSES_ORDER);
-    g_NG_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng_attributes_order", g_NG_ATTRIBUTES_ORDER);
-    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng_attributes_order_pre_native", g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
-    g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
-    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, "convert_line_endings", g_CONVERT_LINE_ENDINGS);
-    g_NONE_ONE_TIME_BOUND_ELEMENTS = utils.get_setup_property(in_config, "none_one_time_bound_elements", g_NONE_ONE_TIME_BOUND_ELEMENTS);
-    g_ONE_TIME_BOUND_ELEMENT_PREFIXES = utils.get_setup_property(in_config, "one_time_bound_element_prefixes", g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
-    g_REMOVE_CSS = utils.get_setup_property(in_config, "remove_css", g_REMOVE_CSS);
-    g_SELF_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, "self_closing_tags", g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
+    g_ADD_NOOPENER_NOREFERRER = utils.get_setup_property(in_config, 'add_noopener_noreferrer', g_ADD_NOOPENER_NOREFERRER);
+    g_ALLOW_EMPTY_FILES = utils.get_setup_property(in_config, 'allow_empty_files', g_ALLOW_EMPTY_FILES);
+    g_ANGULAR_VERSION = utils.get_setup_property(in_config, ['angular_version', 'ng_version'], g_ANGULAR_VERSION);
+    g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, 'block_elements', g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
+    g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, 'force_block_whitespace_formatting', g_FORCE_BLOCK_WHITESPACE_FORMATTING);
+    g_FORCE_INLINE_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, 'force_inline_whitespace_formatting', g_FORCE_INLINE_WHITESPACE_FORMATTING);
+    g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST = utils.get_setup_property(in_config, 'format_multi_classes_with_at_least', g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST);
+    g_INDENT = utils.get_setup_property(in_config, 'indent', g_INDENT);
+    g_INLINE_ELEMENTS = utils.get_setup_property(in_config, 'inline_elements', g_INLINE_ELEMENTS, g_INLINE_ELEMENTS_BASE);
+    g_MULTI_CLASSES_ORDER = utils.get_setup_property(in_config, 'multi_classes_order', g_MULTI_CLASSES_ORDER);
+    g_NG_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, 'ng_attributes_order', g_NG_ATTRIBUTES_ORDER);
+    g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, 'ng_attributes_order_pre_native', g_NG_ATTRIBUTES_ORDER_PRE_NATIVE);
+    g_NL = utils.get_setup_property(in_config, 'line_ending', g_NL);
+    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, 'convert_line_endings', g_CONVERT_LINE_ENDINGS);
+    g_NONE_ONE_TIME_BOUND_ELEMENTS = utils.get_setup_property(in_config, 'none_one_time_bound_elements', g_NONE_ONE_TIME_BOUND_ELEMENTS);
+    g_ONE_TIME_BOUND_ELEMENT_PREFIXES = utils.get_setup_property(in_config, 'one_time_bound_element_prefixes', g_ONE_TIME_BOUND_ELEMENT_PREFIXES, g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE);
+    g_REMOVE_CSS = utils.get_setup_property(in_config, 'remove_css', g_REMOVE_CSS);
+    g_SELF_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, 'self_closing_tags', g_SELF_CLOSING_HTML_TAGS, g_SELF_CLOSING_HTML_TAGS_BASE);
 }
 
 // ******************************
@@ -242,7 +238,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
 
         reset_html_variables();
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -343,7 +339,7 @@ function parse_html_open_element (in_html_content) {
             result = remaining;
         }
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -372,7 +368,7 @@ function parse_html_open_element_start (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -466,28 +462,28 @@ function parse_attribute (in_html_content, in_attribute_type) {
 
         switch (in_attribute_type)
         {
-            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-                regExpString += r_W + '=' + r_dq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+            regExpString += r_W + '=' + r_dq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-                regExpString += r_W + '=' + r_sq(r_v('\:\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+            regExpString += r_W + '=' + r_sq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-                regExpString += r_W + '=' + r_v('(?:true|false)');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+            regExpString += r_W + '=' + r_v('(?:true|false)');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-                regExpString += r_W + '=' + r_dq('');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+            regExpString += r_W + '=' + r_dq('');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_NULL:
-                regExpString += r_W + '=null';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_NULL:
+            regExpString += r_W + '=null';
+            break;
 
-            case k_ATTRIBUTE_TYPE_NO_VALUE:
-                break;
+        case k_ATTRIBUTE_TYPE_NO_VALUE:
+            break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -504,43 +500,43 @@ function parse_attribute (in_html_content, in_attribute_type) {
 
         switch (in_attribute_type)
         {
-            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-                already_one_time_bound = matches.shift() === '::';
-                val = matches.shift() || '';
+        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+            already_one_time_bound = matches.shift() === '::';
+            val = matches.shift() || '';
 
-                var should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
-                var should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
-                var binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
+            var should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
+            var should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
+            var binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
 
-                if (val === '"true"' || val === '\'true\'' || val === 'true') {
-                    val = binding + 'true';
-                } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-                    val = binding + 'false';
-                } else if (is_numeric(val)) {
-                    val = binding + val;
-                } else if (already_one_time_bound) {
-                    val = binding + val;
-                } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
-                    val = binding + val;
-                }
-                break;
+            if (val === '"true"' || val === '\'true\'' || val === 'true') {
+                val = binding + 'true';
+            } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
+                val = binding + 'false';
+            } else if (is_numeric(val)) {
+                val = binding + val;
+            } else if (already_one_time_bound) {
+                val = binding + val;
+            } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
+                val = binding + val;
+            }
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-                val = matches.shift() || '';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+            val = matches.shift() || '';
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-                val = '';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+            val = '';
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_NULL:
-                val = k_NULL_VALUE_TOKEN;
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_NULL:
+            val = k_NULL_VALUE_TOKEN;
+            break;
 
-            case k_ATTRIBUTE_TYPE_NO_VALUE:
-                val = k_NO_VALUE_TOKEN;
-                break;
+        case k_ATTRIBUTE_TYPE_NO_VALUE:
+            val = k_NO_VALUE_TOKEN;
+            break;
         }
 
         g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
@@ -549,7 +545,8 @@ function parse_attribute (in_html_content, in_attribute_type) {
         // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+regExpString+'~~~'+key+'~~~'+already_one_time_bound+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -564,52 +561,52 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
         switch (in_ng2_binding_type)
         {
-            case k_NG2_ATTRIBUTE_TYPE_REFERENCE:
-                regExpString += r_v('#[@:a-z]+');
-                break;
+        case k_NG2_ATTRIBUTE_TYPE_REFERENCE:
+            regExpString += r_v('#[@:a-z]+');
+            break;
 
-            case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
-                regExpString += r_v('\[' + '[$@:a-zA-Z0-9._-]+' + '\]');
-                break;
+        case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
+            regExpString += r_v('\\[' + '[$@:a-zA-Z0-9._-]+' + '\\]');
+            break;
 
-            case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
-                regExpString += r_v('\[\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)\]');
-                break;
+        case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
+            regExpString += r_v('\\[\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)\\]');
+            break;
 
-            case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
-                regExpString += r_v('\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)');
-                break;
+        case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
+            regExpString += r_v('\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)');
+            break;
 
-            case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
-                regExpString += r_v('\\*' + '[@:a-zA-Z0-9._-]+');
-                break;
+        case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
+            regExpString += r_v('\\*' + '[@:a-zA-Z0-9._-]+');
+            break;
         }
 
         switch (in_attribute_type)
         {
-            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-                regExpString += r_W + '=' + r_dq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+            regExpString += r_W + '=' + r_dq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-                regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+            regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-                regExpString += r_W + '=' + r_v('(?:true|false)');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+            regExpString += r_W + '=' + r_v('(?:true|false)');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-                regExpString += r_W + '=' + r_dq('');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+            regExpString += r_W + '=' + r_dq('');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_NULL:
-                regExpString += r_W + '=null';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_NULL:
+            regExpString += r_W + '=null';
+            break;
 
-            case k_ATTRIBUTE_TYPE_NO_VALUE:
-                regExpString += ''; // Add nothing
-                break;
+        case k_ATTRIBUTE_TYPE_NO_VALUE:
+            regExpString += ''; // Add nothing
+            break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -625,33 +622,33 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
         switch (in_attribute_type)
         {
-            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-                val = matches.shift() || '';
+        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+            val = matches.shift() || '';
 
-                if (val === '"true"' || val === '\'true\'' || val === 'true') {
-                    val = 'true';
-                } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-                    val = 'false';
-                }
+            if (val === '"true"' || val === '\'true\'' || val === 'true') {
+                val = 'true';
+            } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
+                val = 'false';
+            }
 
-                break;
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-                val = matches.shift() || '';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+            val = matches.shift() || '';
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-                val = '';
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+            val = '';
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_NULL:
-                val = k_NULL_VALUE_TOKEN;
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_NULL:
+            val = k_NULL_VALUE_TOKEN;
+            break;
 
-            case k_ATTRIBUTE_TYPE_NO_VALUE:
-                val = k_NO_VALUE_TOKEN;
-                break;
+        case k_ATTRIBUTE_TYPE_NO_VALUE:
+            val = k_NO_VALUE_TOKEN;
+            break;
         }
 
         g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
@@ -661,7 +658,8 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -683,7 +681,6 @@ function parse_html_open_element_end (in_html_content) {
 
         // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+self_closing_tag+'~~~'+remaining.substr(0,100)+'|------\n');
 
-        var error = false;
         var output = '';
         var indent = '';
         var space_content = g_CURRENT_ELEMENT_WHITESPACE_BEFORE.length;
@@ -744,7 +741,7 @@ function parse_html_open_element_end (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -789,12 +786,12 @@ function sort_attributes (in_attributes) {
         var attributes_order_pre_native = [];
         g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.forEach(function (attribute) {
             attributes_order_pre_native.push('^' + attribute + '$');
-        })
+        });
 
         var attributes_order_post_native = [];
         g_NG_ATTRIBUTES_ORDER.forEach(function (attribute) {
             attributes_order_post_native.push('^' + attribute + '$');
-        })
+        });
 
         var sorted_attribute_keys = [];
 
@@ -860,10 +857,10 @@ function sort_attributes (in_attributes) {
                 return;
             }
 
-            var inline_variable = val.match(new RegExp('^(\:\:)?\{\{' + r_v(r_A) + '\}\}$', 'i'));
+            var inline_variable = val.match(new RegExp('^(\\:\\:)?\\{\\{' + r_v(r_A) + '\\}\\}$', 'i'));
             if (!inline_variable) {
 
-                var inline_block = val.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i'));
+                var inline_block = val.match(new RegExp('^(\\:\\:)?\\{' + r_v(r_AG) + '\\}$', 'i'));
                 if (inline_block) {
                     var attribute_block_object_parse_result = parse_attribute_block_content(val);
                     var binding = attribute_block_object_parse_result.binding;
@@ -880,9 +877,9 @@ function sort_attributes (in_attributes) {
                     classes = sort_classes(classes);
 
                     if (g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST >= 0 && classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
-                        val = t_NL + val_indent + classes.filter(function (val) {return val.trim().length}).join(t_NL + val_indent);
+                        val = t_NL + val_indent + classes.filter(function (val) {return val.trim().length;}).join(t_NL + val_indent);
                     } else {
-                        val = classes.filter(function (val) {return val.trim().length}).join(' ');
+                        val = classes.filter(function (val) {return val.trim().length;}).join(' ');
                     }
                 }
             }
@@ -890,7 +887,7 @@ function sort_attributes (in_attributes) {
             result += t_NL + indent + key + '="' + val + '"';
         });
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -907,14 +904,14 @@ function parse_classes_content (in_classes_content) {
         g_CURRENT_ELEMENT_CLASSES = [];
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
 
-        while (true) {
+        while (TRUE) {
             var remaining = parse_classes_content_class_name(classes_content_remaining);
             if (remaining === false) {
                 break;
             }
             classes_content_remaining = remaining;
 
-            remaining = parse_classes_content_space(classes_content_remaining)
+            remaining = parse_classes_content_space(classes_content_remaining);
             if (remaining === false) {
                 break;
             }
@@ -929,7 +926,7 @@ function parse_classes_content (in_classes_content) {
         g_CURRENT_ELEMENT_CLASSES = [];
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
     }
-    while ( false );
+    while (FALSE);
 
     return result;
 }
@@ -954,7 +951,8 @@ function parse_classes_content_space (in_classes_content) {
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -991,7 +989,8 @@ function parse_classes_content_class_name (in_classes_content) {
         g_CURRENT_ELEMENT_CLASSES.push(g_CURRENT_ELEMENT_CLASSES_CLASS_NAME);
 
         result = classes_content;
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1006,13 +1005,13 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
 
         switch (in_class_name_type)
         {
-            case k_CLASS_TYPE_BINDING:
-                regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
-                break;
+        case k_CLASS_TYPE_BINDING:
+            regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
+            break;
 
-            case k_CLASS_TYPE_NORMAL:
-                regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
-                break;
+        case k_CLASS_TYPE_NORMAL:
+            regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
+            break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -1032,7 +1031,8 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1080,7 +1080,7 @@ function sort_classes (in_class_names) {
 
         result = sorted_class_names;
     }
-    while ( false );
+    while (FALSE);
 
     return result;
 }
@@ -1092,7 +1092,7 @@ function parse_attribute_block_content (in_attribute_block_content) {
 
     do {
         var matches;
-        if (!(matches = in_attribute_block_content.match(new RegExp('^(\:\:)?\{' + r_v(r_AG) + '\}$', 'i')))) {
+        if (!(matches = in_attribute_block_content.match(new RegExp('^(\\:\\:)?\\{' + r_v(r_AG) + '\\}$', 'i')))) {
             break;
         }
 
@@ -1104,14 +1104,14 @@ function parse_attribute_block_content (in_attribute_block_content) {
         var attribute_block_content = matches.shift() || '';
         var attribute_block_content_remaining = attribute_block_content;
 
-        while (true) {
+        while (TRUE) {
             var remaining = parse_attribute_block_content_entry(attribute_block_content_remaining);
             if (remaining === false) {
                 break;
             }
             attribute_block_content_remaining = remaining;
 
-            remaining = parse_attribute_block_content_comma(attribute_block_content_remaining)
+            remaining = parse_attribute_block_content_comma(attribute_block_content_remaining);
             if (remaining === false) {
                 break;
             }
@@ -1130,7 +1130,7 @@ function parse_attribute_block_content (in_attribute_block_content) {
         g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
 
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1155,7 +1155,8 @@ function parse_attribute_block_content_comma (in_attribute_block_content) {
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1182,7 +1183,8 @@ function parse_attribute_block_content_entry (in_attribute_block_content) {
         // console.log('[KEY]"'+attribute_block_content.substr(0,100)+'" => ~~~'+key+'|------\n');
 
         result = parse_attribute_block_content_entry_key_value_pair(key, val);
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1250,7 +1252,8 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1265,58 +1268,58 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
 
         switch (in_attribute_type)
         {
-            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-                regExpString += r_W + r_v('(?:true|false)');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+            regExpString += r_W + r_v('(?:true|false)');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
-                regExpString += r_W + r_v('[0-9.-]+');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
+            regExpString += r_W + r_v('[0-9.-]+');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-                regExpString += r_W + r_v(r_sq(r_A));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+            regExpString += r_W + r_v(r_sq(r_A));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-                regExpString += r_W + r_v(r_dq(r_A));
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+            regExpString += r_W + r_v(r_dq(r_A));
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_BLOCK:
-                regExpString += r_W + r_v('\\{' + r_A + '\\}');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_BLOCK:
+            regExpString += r_W + r_v('\\{' + r_A + '\\}');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-                regExpString += r_W + r_v('\\!*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
-                break;
+        case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
+            regExpString += r_W + r_v('\\!*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
+            break;
 
-            case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-                regExpString += r_W + r_v('\\!*' + r_g(
+        case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
+            regExpString += r_W + r_v('\\!*' + r_g(
+                r_g(
                     r_g(
-                        r_g(
-                            '\\(' +
+                        '\\(' +
                             r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async')
                             + '\\)'
-                        ) +
+                    ) +
                         '|' +
                         r_g(
                             r_g('[$a-zA-Z0-9_]+')
                         )
-                    ) +
+                ) +
                     '\\??\\.'
-                ) + '*' + r_g(
-                    r_g(
-                        '\\(' +
+            ) + '*' + r_g(
+                r_g(
+                    '\\(' +
                         r_g(
                             r_g(r_w('[$a-zA-Z0-9._-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9._-]+') +
                             '|' +
                             r_g(r_w('[$a-zA-Z0-9._]+') + r_w('\\|') + r_w('async'))
                         )
                         + '\\)'
-                    ) +
+                ) +
                     '|' +
                     r_g('[$a-zA-Z0-9_-]+')
-                ));
-                break;
+            ));
+            break;
         }
 
         regExpString += r_W + r_v(r_AG) + '$';
@@ -1326,8 +1329,6 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
             break;
         }
 
-        var key = in_attribute_block_content_entry_key;
-
         matches.shift(); // First idx in match is the complete match string
         var val = matches.shift() || '';
         var remaining = matches.shift() || '';
@@ -1335,7 +1336,6 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
         if (in_attribute_type === k_ATTRIBUTE_TYPE_VALUE_BLOCK) {
             var tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT = g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT;
             var attribute_block_object_parse_result = parse_attribute_block_content(val);
-            var binding = attribute_block_object_parse_result.binding;
             var attribute_block_object = attribute_block_object_parse_result.object;
             g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = tmp_CURRENT_ELEMENT_ATTRIBUTE_OBJECT;
 
@@ -1348,7 +1348,8 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
 
         result = remaining;
 
-    } while (false);
+    }
+    while (FALSE);
 
     return result;
 }
@@ -1369,7 +1370,7 @@ function attribute_block_object_to_string (in_binding, in_attribute_block_object
 
         attribute_block_object_entry_keys.forEach(function (attribute_block_object_entry_key) {
             var attribute_block_object_entry_value = in_attribute_block_object[attribute_block_object_entry_key];
-            if (typeof(attribute_block_object_entry_value) === "object") {
+            if (typeof(attribute_block_object_entry_value) === 'object') {
                 attribute_block_object_entry_value = attribute_block_object_to_string( '', attribute_block_object_entry_value );
             }
             attribute_block_object_formatted += t_NL + indent + g_INDENT + attribute_block_object_entry_key + ': ' + attribute_block_object_entry_value + ',';
@@ -1384,7 +1385,7 @@ function attribute_block_object_to_string (in_binding, in_attribute_block_object
 
         result = in_binding + attribute_block_object_formatted;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1466,7 +1467,7 @@ function parse_html_close_element (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1536,7 +1537,7 @@ function parse_content (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1584,7 +1585,7 @@ function parse_temporary_content (in_html_content, in_indent_count) {
 
         result = contents;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1656,7 +1657,7 @@ function parse_comment (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1673,7 +1674,7 @@ function parse_xml_header (in_html_content) {
         }
 
         matches.shift(); // First idx in match is the complete match string
-        var whitespace_before = !!(matches.shift() || '').length;
+        matches.shift();
         var xml_header = (matches.shift() || '').trim();
         var remaining = matches.shift() || '';
 
@@ -1681,7 +1682,7 @@ function parse_xml_header (in_html_content) {
         g_HTML_CONTENT += xml_header;
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1749,7 +1750,7 @@ function parse_style (in_html_content) {
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -1771,7 +1772,7 @@ function reset_html_variables () {
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
         g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
     }
-    while (false);
+    while (FALSE);
 }
 
 // ******************************
@@ -1793,7 +1794,7 @@ function get_html_variables_state () {
             CURRENT_ELEMENT_WHITESPACE_BEFORE: g_CURRENT_ELEMENT_WHITESPACE_BEFORE
         };
     }
-    while (false);
+    while (FALSE);
 }
 
 // ******************************
@@ -1813,7 +1814,7 @@ function set_html_variables_state (in_state) {
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = in_state.CURRENT_ELEMENT_CLASSES_CLASS_NAME || '';
         g_CURRENT_ELEMENT_WHITESPACE_BEFORE = in_state.CURRENT_ELEMENT_WHITESPACE_BEFORE || false;
     }
-    while (false);
+    while (FALSE);
 }
 
 // ******************************
@@ -1870,7 +1871,7 @@ function get_top_element_info (in_pop) {
             top_element_is_block_element: (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0)
         };
     }
-    while ( false );
+    while (FALSE);
 
     return result;
 }
@@ -1906,67 +1907,6 @@ function is_numeric (n) {
 
 function str_repeat (s, n) {
     return Array(n+1).join(s);
-}
-
-// ******************************
-// Deprecated Functions
-// ******************************
-
-function _setup_attribute_ordering(in_config) {
-    if (!in_config) {
-        return;
-    }
-
-    var has_old_attributes_order_configs = false;
-
-    if (utils.get_setup_property(in_config, "ng1_attributes_order", false)) {
-        has_old_attributes_order_configs = true;
-        console.warn('Using old config key "ng1_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
-    }
-
-    if (utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", false)) {
-        has_old_attributes_order_configs = true;
-        console.warn('Using old config key "ng1_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
-    }
-
-    if (utils.get_setup_property(in_config, "ng2_attributes_order", false)) {
-        has_old_attributes_order_configs = true;
-        console.warn('Using old config key "ng2_attributes_order" use "ng_attributes_order" instead and specifiy the angular_version');
-    }
-
-    if (utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", false)) {
-        has_old_attributes_order_configs = true;
-        console.warn('Using old config key "ng2_attributes_order_pre_native" use "ng_attributes_order_pre_native" instead and specifiy the angular_version');
-    }
-
-    if (g__DEPRECATED__NG1_ATTRIBUTES_ORDER
-            || g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE
-            || g__DEPRECATED__NG2_ATTRIBUTES_ORDER
-            || g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE) {
-        has_old_attributes_order_configs = true;
-    }
-
-    if (!has_old_attributes_order_configs) {
-        return;
-    }
-
-    g__DEPRECATED__NG1_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng1_attributes_order", g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-    g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng1_attributes_order_pre_native", g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-    g__DEPRECATED__NG2_ATTRIBUTES_ORDER = utils.get_setup_property(in_config, "ng2_attributes_order", g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-    g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE = utils.get_setup_property(in_config, "ng2_attributes_order_pre_native", g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
-
-    var ng1_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER);
-    var ng1_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG1_ATTRIBUTES_ORDER_PRE_NATIVE);
-    var ng2_attributes_order = g_NG_ATTRIBUTES_ORDER.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER);
-    var ng2_attributes_order_pre_native = g_NG_ATTRIBUTES_ORDER_PRE_NATIVE.concat(g__DEPRECATED__NG2_ATTRIBUTES_ORDER_PRE_NATIVE);
-
-    if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
-        g_NG_ATTRIBUTES_ORDER = ng2_attributes_order;
-        g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng2_attributes_order_pre_native;
-    } else if (g_ANGULAR_VERSION < 2.0) {
-        g_NG_ATTRIBUTES_ORDER = ng1_attributes_order;
-        g_NG_ATTRIBUTES_ORDER_PRE_NATIVE = ng1_attributes_order_pre_native;
-    }
 }
 
 // ******************************

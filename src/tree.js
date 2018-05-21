@@ -15,7 +15,6 @@
 var FORMATTER_SCSS = require('../formatters/scss');
 
 var cprint = require('color-print');
-var grammar  = require('../grammars/_core');
 var parser = require('./parser');
 var utils = require('./utils');
 
@@ -43,10 +42,10 @@ function setup (in_config) {
     }
 
     // General:
-    g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
-    g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
-    g_INDENT = utils.get_setup_property(in_config, "indent", g_INDENT);
-    g_INDENT_COUNT = utils.get_setup_property(in_config, "indent_count", g_INDENT_COUNT);
+    g_DEBUG = utils.get_setup_property(in_config, 'debug', g_DEBUG);
+    g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
+    g_INDENT = utils.get_setup_property(in_config, 'indent', g_INDENT);
+    g_INDENT_COUNT = utils.get_setup_property(in_config, 'indent_count', g_INDENT_COUNT);
 }
 
 // ******************************
@@ -93,16 +92,15 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
     var output;
 
     switch(g_DEFINITION_TYPE) {
-        case parser.k_DEFINITION_TYPE_HTML:
-            throw 'HTML outputting not supported yet...';
-            break;
+    case parser.k_DEFINITION_TYPE_HTML:
+        throw 'HTML outputting not supported yet...';
 
-        case parser.k_DEFINITION_TYPE_SCSS:
-            output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
-            break;
+    case parser.k_DEFINITION_TYPE_SCSS:
+        output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
+        break;
 
-        default:
-            throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+    default:
+        throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
     }
 
     var append = output.append;
@@ -167,7 +165,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
 // ******************************
 
-function get_failed_output (in_tree, in_contents) {
+function get_failed_output (in_tree) {
     var failed_tree_output = get_failed_tree_output(in_tree);
 
     var result = get_recognized_chunk(in_tree);
@@ -223,21 +221,16 @@ function get_tree_output_structure (in_tree, in_config) {
 
     setup(config);
 
-    var structure;
     switch(g_DEFINITION_TYPE) {
-        case parser.k_DEFINITION_TYPE_HTML:
-            throw 'HTML structure not supported yet...';
-            break;
+    case parser.k_DEFINITION_TYPE_HTML:
+        throw 'HTML structure not supported yet...';
 
-        case parser.k_DEFINITION_TYPE_SCSS:
-            throw 'SCSS structure not supported yet...';
-            break;
+    case parser.k_DEFINITION_TYPE_SCSS:
+        throw 'SCSS structure not supported yet...';
 
-        default:
-            throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+    default:
+        throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
     }
-
-    return structure;
 }
 
 // ******************************

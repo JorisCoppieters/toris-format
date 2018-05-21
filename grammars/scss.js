@@ -246,7 +246,7 @@ module.exports = grammar.export_grammar({
     FROM: { OPERATOR: '==', VALUE: 'from' },
     THROUGH: { OPERATOR: '==', VALUE: 'through' },
     POUND_DEFAULT: { OPERATOR: '==', VALUE: '!default' },
-    PathIdentifier: { OPERATOR: '==', VALUE: '\/\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*\/' },
+    PathIdentifier: { OPERATOR: '==', VALUE: '\\/\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*\\/' },
     Identifier: { OPERATOR: '==', VALUE: '\\-*[a-zA-Z\\u0100-\\ufffe_][a-zA-Z\\u0100-\\ufffe0-9_-]*' },
     STRING: { OPERATOR: '||', SEGMENTS: ['STRING_SINGLE_QUOTED', 'STRING_DOUBLE_QUOTED'] },
     STRING_SINGLE_QUOTED: { OPERATOR: '==', VALUE: '\'[^\'\\n\\r]*\'' },
@@ -258,10 +258,10 @@ module.exports = grammar.export_grammar({
     Color: { OPERATOR: '==', VALUE: '#[0-9a-fA-F]+' },
     RGB_NUMERIC_VAL: { OPERATOR: '==', VALUE: '(?:[0-9]{0,3}\\.)?[0-9]+' },
     SL_COMMENT: { OPERATOR: '==', VALUE: '\\/\\/[^\\n\\r]*' },
-    COMMENT: { OPERATOR: '==', VALUE: '\/\\*[\\s\\S]*?\\*\/' },
+    COMMENT: { OPERATOR: '==', VALUE: '\\/\\*[\\s\\S]*?\\*\\/' },
     UrlEnd: { OPERATOR: '&&', SEGMENTS: ['RPAREN'] },
     Url: { OPERATOR: '||', SEGMENTS: ['STRING', 'UrlVal'] },
-    UrlVal: { OPERATOR: '==', VALUE: '[^\)]+' }
+    UrlVal: { OPERATOR: '==', VALUE: '[^\\)]+' }
 },
 // Dependant On:
 [
