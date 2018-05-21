@@ -3,9 +3,16 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.9
+// TORIS FORMAT v1.7.10
 //
 // Version History:
+//
+// 1.7.10
+// - Fixed various HTML formatting issues
+// - Fixed various SCSS formatting issues
+//
+// 1.7.9
+// - Fixed async pipe regex
 //
 // 1.7.8
 // - Added support for <?xml ?> header
@@ -91,7 +98,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.9';
+const k_VERSION = '1.7.10';
 
 // ******************************
 // TODO: DEPRECATE
