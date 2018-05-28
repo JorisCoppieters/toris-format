@@ -1,0 +1,12 @@
+{
+    "inputFile": "format-test-016-svg-preformatted.html",
+    "outputFile": "format-test-016-svg-formatted.html",
+    "setup": {
+        "ng_version": 2,
+        "self_closing_tags": [
+            "path",
+            "circle"
+        ]
+    },
+    "testName": "svg"
+}

@@ -1,5 +1,5 @@
 {
     "inputFile": "format-test-007-pseudo-preformatted.scss",
     "outputFile": "format-test-007-pseudo-formatted.scss",
-    "testName": "007-pseudo"
+    "testName": "pseudo"
 }

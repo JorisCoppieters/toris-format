@@ -66,7 +66,7 @@ function export_dependant_grammars(in_dependant_grammars) {
     in_dependant_grammars.forEach(function (dependant_grammars) {
         Object.keys(dependant_grammars).forEach(function (key) {
             exports[key] = dependant_grammars[key];
-        })
+        });
     });
     return exports;
 }

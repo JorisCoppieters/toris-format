@@ -1,5 +1,5 @@
 {
     "inputFile": "format-test-005-variables-preformatted.scss",
     "outputFile": "format-test-005-variables-formatted.scss",
-    "testName": "005-variables"
+    "testName": "variables"
 }

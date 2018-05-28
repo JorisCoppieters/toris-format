@@ -40,10 +40,10 @@ function setup (in_config) {
         return;
     }
 
-    g_BASE_PATH = utils.get_setup_property(in_config, "base_path", g_BASE_PATH);
-    g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
-    g_PRINT_TREE = utils.get_setup_property(in_config, "print_tree", g_PRINT_TREE);
-    g_RUN_CHECKS = utils.get_setup_property(in_config, "run_checks", g_RUN_CHECKS);
+    g_BASE_PATH = utils.get_setup_property(in_config, 'base_path', g_BASE_PATH);
+    g_DEBUG = utils.get_setup_property(in_config, 'debug', g_DEBUG);
+    g_PRINT_TREE = utils.get_setup_property(in_config, 'print_tree', g_PRINT_TREE);
+    g_RUN_CHECKS = utils.get_setup_property(in_config, 'run_checks', g_RUN_CHECKS);
 }
 
 // ******************************
@@ -55,6 +55,12 @@ function format_tests (tests_folder, format_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -71,7 +77,7 @@ function format_tests (tests_folder, format_function) {
             var setup_config = config.setup;
 
             _format_test_files(test_folder_name + '-' + test_name, config.ignore, input_file, output_file, setup_config, format_function);
-        })
+        });
     });
 }
 
@@ -82,6 +88,12 @@ function structure_tests (tests_folder, structure_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -98,7 +110,7 @@ function structure_tests (tests_folder, structure_function) {
             var setup_config = config.setup;
 
             _structure_test_files(test_folder_name + '-' + test_name, config.ignore, input_file, output_file, setup_config, structure_function);
-        })
+        });
     });
 }
 
@@ -109,6 +121,12 @@ function print_tests (tests_folder, print_function) {
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
+        var focusFiles = files.filter(function(file) {
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
                 return;
@@ -124,7 +142,7 @@ function print_tests (tests_folder, print_function) {
             var setup_config = config.setup;
 
             _print_test_contents(test_folder_name + '-' + test_name, config.ignore, input_file, setup_config, print_function);
-        })
+        });
     });
 }
 
@@ -155,7 +173,7 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
         var test_output_file = '_formatTest_' + test_name + '_output.txt';
 
         if (ignore) {
-            console.log(cprint.toDarkGrey('~ Ignored') + test_identifier);
+            process.stdout.write(cprint.toDarkGrey('~ Ignored') + test_identifier + '\n');
             return true;
         }
 
@@ -167,23 +185,23 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
         }
 
         if (output && expected_output && output.trim() == expected_output.trim()) {
-            console.log(cprint.toGreen('✔ Test') + test_identifier);
+            process.stdout.write(cprint.toGreen('✔ Test') + test_identifier + '\n');
             fs.exists(test_expected_output_file, function (exists) { if (exists) { fsp.remove(test_expected_output_file); } } );
             fs.exists(test_output_file, function (exists) { if (exists) { fsp.remove(test_output_file); } } );
         } else if (output) {
-            console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension));
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension) + '\n');
             printer.print_contents_diff(expected_output, output);
             fsp.write(test_expected_output_file, expected_output);
             fsp.write(test_output_file, output);
             g_TEST_FAILED = true;
             return false;
         } else {
-            console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Format function failed'));
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Format function failed') + '\n');
             g_TEST_FAILED = true;
             return false;
         }
     } catch (err) {
-        console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + file_extension + '\n'));
+        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + file_extension + '\n') + '\n');
         cprint.red(err);
         g_TEST_FAILED = true;
         return false;
@@ -212,28 +230,28 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
         }
 
         if (ignore) {
-            console.log(cprint.toDarkGrey('~ Ignored') + test_identifier);
+            process.stdout.write(cprint.toDarkGrey('~ Ignored') + test_identifier + '\n');
             return true;
         }
 
         if (output && expected_output && output.trim() == expected_output.trim()) {
-            console.log(cprint.toGreen('✔ Test') + test_identifier);
+            process.stdout.write(cprint.toGreen('✔ Test') + test_identifier + '\n');
             fs.exists(test_expected_output_file, function (exists) { if (exists) { fsp.remove(test_expected_output_file); } } );
             fs.exists(test_output_file, function (exists) { if (exists) { fsp.remove(test_output_file); } } );
         } else if (output) {
-            console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension));
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension) + '\n');
             printer.print_contents_diff(expected_output, output);
             fsp.write(test_expected_output_file, expected_output);
             fsp.write(test_output_file, output);
             g_TEST_FAILED = true;
             return false;
         } else {
-            console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Structure function failed'));
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Structure function failed') + '\n');
             g_TEST_FAILED = true;
             return false;
         }
     } catch (err) {
-        console.log(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse ' + file_extension + '\n'));
+        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse ' + file_extension + '\n') + '\n');
         cprint.red(err);
         g_TEST_FAILED = true;
         return false;
@@ -249,11 +267,11 @@ function _print_test_contents (test_name, ignore, input_file, setup_config, prin
     var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Printing of formatted ' + file_extension + ' output');
 
     if (ignore) {
-        console.log(cprint.toDarkGrey('~ Ignored') + test_identifier);
+        process.stdout.write(cprint.toDarkGrey('~ Ignored') + test_identifier + '\n');
         return true;
     }
 
-    console.log(cprint.toYellow(cprint.toBold('? Visual-Test', true)) + test_identifier + cprint.toBold(cprint.toYellow(' - Does this look good?', true)));
+    process.stdout.write(cprint.toYellow(cprint.toBold('? Visual-Test', true)) + test_identifier + cprint.toBold(cprint.toYellow(' - Does this look good?', true)) + '\n');
 
     if (print_function) {
         print_function(input_file, setup_config);

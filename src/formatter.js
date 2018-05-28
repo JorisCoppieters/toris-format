@@ -45,9 +45,9 @@ function setup (in_config) {
         return;
     }
 
-    g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
-    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, "convert_line_endings", g_CONVERT_LINE_ENDINGS);
-    g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
+    g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
+    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, 'convert_line_endings', g_CONVERT_LINE_ENDINGS);
+    g_NL = utils.get_setup_property(in_config, 'line_ending', g_NL);
 
     parser.setup(in_config);
 }
@@ -64,18 +64,18 @@ function format_file (in_file, in_config) {
     var file_extension = utils.get_file_extension(in_file);
 
     switch (file_extension) {
-        case 'htm':
-        case 'html':
-            definition_type = parser.k_DEFINITION_TYPE_HTML;
-            break;
+    case 'htm':
+    case 'html':
+        definition_type = parser.k_DEFINITION_TYPE_HTML;
+        break;
 
-        case 'css':
-        case 'scss':
-            definition_type = parser.k_DEFINITION_TYPE_SCSS;
-            break;
+    case 'css':
+    case 'scss':
+        definition_type = parser.k_DEFINITION_TYPE_SCSS;
+        break;
 
-        default:
-            throw 'Unhandeled file extension: ' + file_extension;
+    default:
+        throw 'Unhandeled file extension: ' + file_extension;
     }
 
     config.definition_type = definition_type;
@@ -94,8 +94,7 @@ function format_contents (in_contents, in_config) {
     }
 
     if (g_DEFINITION_TYPE === parser.k_DEFINITION_TYPE_HTML) {
-        var result = parserHtml.format_html_contents(contents, in_config.indent_count, in_config.wrap_with_divs);
-        return result;
+        return parserHtml.format_html_contents(contents, in_config.indent_count, in_config.wrap_with_divs);
     }
 
     var tree;
@@ -103,7 +102,6 @@ function format_contents (in_contents, in_config) {
         tree = parser.parse_contents(in_contents);
     } catch (err) {
         throw 'Failed to parse:\n' + err;
-        return;
     }
 
     if (tree === '') {
