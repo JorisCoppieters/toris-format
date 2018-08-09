@@ -26,6 +26,12 @@ var utils = require('./utils');
 var r_g = regexp_shorthand.r_g;
 
 // ******************************
+// Constants:
+// ******************************
+
+const FALSE = false;
+
+// ******************************
 // Globals:
 // ******************************
 
@@ -46,10 +52,10 @@ function setup (in_config) {
         return;
     }
 
-    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, "convert_line_endings", g_CONVERT_LINE_ENDINGS);
-    g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
-    g_NL = utils.get_setup_property(in_config, "line_ending", g_NL);
-    g_PRINT_TREE = utils.get_setup_property(in_config, "print_tree", g_PRINT_TREE);
+    g_CONVERT_LINE_ENDINGS = utils.get_setup_property(in_config, 'convert_line_endings', g_CONVERT_LINE_ENDINGS);
+    g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
+    g_NL = utils.get_setup_property(in_config, 'line_ending', g_NL);
+    g_PRINT_TREE = utils.get_setup_property(in_config, 'print_tree', g_PRINT_TREE);
 
     parser.setup(in_config);
 }
@@ -66,18 +72,18 @@ function print_file (in_file, in_config) {
     var file_extension = utils.get_file_extension(in_file);
 
     switch (file_extension) {
-        case 'htm':
-        case 'html':
-            definition_type = parser.k_DEFINITION_TYPE_HTML;
-            break;
+    case 'htm':
+    case 'html':
+        definition_type = parser.k_DEFINITION_TYPE_HTML;
+        break;
 
-        case 'css':
-        case 'scss':
-            definition_type = parser.k_DEFINITION_TYPE_SCSS;
-            break;
+    case 'css':
+    case 'scss':
+        definition_type = parser.k_DEFINITION_TYPE_SCSS;
+        break;
 
-        default:
-            throw 'Unhandeled file extension: ' + file_extension;
+    default:
+        throw 'Unhandeled file extension: ' + file_extension;
     }
 
     config.definition_type = definition_type;
@@ -89,11 +95,6 @@ function print_file (in_file, in_config) {
 
 function print_contents (in_contents, in_config) {
     setup(in_config || {});
-
-    var contents = in_contents || '';
-    if (g_CONVERT_LINE_ENDINGS) {
-        contents = contents.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
-    }
 
     var tree;
     try {
@@ -126,7 +127,7 @@ function print_contents (in_contents, in_config) {
         cprint.magenta(tree_output.values);
     }
 
-    console.log(result);
+    process.stdout.write(result + '\n');
 }
 
 // ******************************
@@ -159,7 +160,7 @@ function _print_node (in_node, in_indent) {
 
 function print_recognized_chunk (in_tree) {
     if (in_tree.FAILED) {
-        console.log(treeFn.get_recognized_chunk(in_tree));
+        process.stdout.write(treeFn.get_recognized_chunk(in_tree) + '\n');
         return;
     }
     cprint.green('Everything was recognized!');
@@ -186,28 +187,33 @@ function print_contents_diff (in_expected_contents, in_contents) {
     var diff_idx1 = diff_segments_100.diff1_start + diff_segments_1.diff1_start;
     var diff_idx2 = diff_segments_100.diff2_start + diff_segments_1.diff2_start;
 
+    var beginning_section_start = null;
+    var beginning_section_length = null;
+    var beginning_section = null;
+    var remaining_section = null;
+
     if (isNaN(diff_idx1)) {
         diff_idx2++;
-        var beginning_section_start = Math.max(0, diff_idx2 - padding);
-        var beginning_section_length = diff_idx2 - beginning_section_start;
-        var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
-        var remaining_section = contents.substr(diff_idx2);
-        console.log(cprint.toWhite(beginning_section) + cprint.toCyan(remaining_section));
+        beginning_section_start = Math.max(0, diff_idx2 - padding);
+        beginning_section_length = diff_idx2 - beginning_section_start;
+        beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+        remaining_section = contents.substr(diff_idx2);
+        process.stdout.write(cprint.toWhite(beginning_section) + cprint.toCyan(remaining_section) + '\n');
     } else if (isNaN(diff_idx2)) {
         diff_idx1++;
-        var beginning_section_start = Math.max(0, diff_idx1 - padding);
-        var beginning_section_length = diff_idx1 - beginning_section_start;
-        var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+        beginning_section_start = Math.max(0, diff_idx1 - padding);
+        beginning_section_length = diff_idx1 - beginning_section_start;
+        beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
         var removed_section = expected_contents.substr(diff_idx1);
-        console.log(cprint.toWhite(beginning_section) + cprint.toMagenta(removed_section));
+        process.stdout.write(cprint.toWhite(beginning_section) + cprint.toMagenta(removed_section) + '\n');
     } else {
-        var beginning_section_start = Math.max(0, diff_idx1 - padding);
-        var beginning_section_length = diff_idx1 - beginning_section_start;
+        beginning_section_start = Math.max(0, diff_idx1 - padding);
+        beginning_section_length = diff_idx1 - beginning_section_start;
 
         var remaining_section_start = diff_idx1 + 1;
         var remaining_section_length = Math.min(contents.length - remaining_section_start, padding);
 
-        var beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
+        beginning_section = expected_contents.substr(beginning_section_start, beginning_section_length);
         var correct_section = expected_contents.substr(diff_idx1, 1);
 
         var incorrect_section = contents.substr(diff_idx1, 1);
@@ -219,8 +225,8 @@ function print_contents_diff (in_expected_contents, in_contents) {
             diff_idx1--;
         }
 
-        var remaining_section = contents.substr(remaining_section_start, remaining_section_length);
-        console.log(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section));
+        remaining_section = contents.substr(remaining_section_start, remaining_section_length);
+        process.stdout.write(cprint.toWhite(beginning_section) + cprint.toRed(incorrect_section) + cprint.toYellow(remaining_section) + '\n');
     }
 }
 
@@ -233,11 +239,9 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
 
     var contents1 = in_contents1 || '';
     var contents1_segment_bound_start = 0;
-    var contents1_segment_bound_end = segment_size;
 
     var contents2 = in_contents2 || '';
     var contents2_segment_bound_start = 0;
-    var contents2_segment_bound_end = segment_size;
 
     do {
         var contents1_segment = contents1.substr(contents1_segment_bound_start, segment_size);
@@ -275,7 +279,7 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
         contents1_segment_bound_start += segment_size;
         contents2_segment_bound_start += segment_size;
     }
-    while (true);
+    while (FALSE);
 
     return result;
 }

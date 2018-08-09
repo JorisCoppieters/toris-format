@@ -18,7 +18,7 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
     }
 
     if (Array.isArray(in_field)) {
-        var valid_fields = in_field.filter(function (field) {return typeof(in_config[field]) !== "undefined";});
+        var valid_fields = in_field.filter(function (field) {return typeof(in_config[field]) !== 'undefined';});
         if (!valid_fields || !valid_fields.length) {
             return in_default_value;
         }
@@ -26,7 +26,7 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
         return in_config[field];
     }
 
-    if (typeof(in_config[in_field]) === "undefined") {
+    if (typeof(in_config[in_field]) === 'undefined') {
         return in_default_value;
     }
     var val = in_config[in_field];

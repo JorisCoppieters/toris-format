@@ -1,5 +1,5 @@
 {
     "inputFile": "format-test-006-urls-preformatted.scss",
     "outputFile": "format-test-006-urls-formatted.scss",
-    "testName": "006-urls"
+    "testName": "urls"
 }

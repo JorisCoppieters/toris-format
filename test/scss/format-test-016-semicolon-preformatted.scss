@@ -1,0 +1,18 @@
+.block {
+    width: 100%;;;
+};;;;
+
+.parent-block {
+    .child-block {
+        width: 100%;;;
+    };;;;
+};;;;
+
+
+.class {
+    &-subclass {
+       font-weight: 700
+    }
+
+
+}

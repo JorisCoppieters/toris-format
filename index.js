@@ -3,9 +3,22 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.7
+// TORIS FORMAT v1.7.11
 //
 // Version History:
+//
+// 1.7.11
+// - Code clean up
+//
+// 1.7.10
+// - Fixed various HTML formatting issues
+// - Fixed various SCSS formatting issues
+//
+// 1.7.9
+// - Fixed async pipe regex
+//
+// 1.7.8
+// - Added support for <?xml ?> header
 //
 // 1.7.5
 // - Added support for value=null in NG HTML bindings
@@ -87,7 +100,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.7';
+const k_VERSION = '1.7.11';
 
 // ******************************
 // TODO: DEPRECATE

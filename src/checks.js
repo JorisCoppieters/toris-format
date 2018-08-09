@@ -15,6 +15,12 @@
 var grammar = require('../grammars/_core');
 
 // ******************************
+// Constants:
+// ******************************
+
+const FALSE = false;
+
+// ******************************
 // Functions:
 // ******************************
 
@@ -22,17 +28,13 @@ function check_grammar (in_definition) {
     var result = false;
 
     do {
-        var left_most_definition_value;
-        var left_most_definition_value_seen_key;
-        var left_most_definition_values = [];
-
         var definition_value;
 
         var definition_keys = Object.keys(in_definition);
         definition_keys = definition_keys.filter(function (definition_key) {
             definition_value = in_definition[definition_key];
             if (!definition_value) {
-                throw 'Definition key "' + in_definition_key + '" isn\'t defined';
+                throw 'Definition key "' + definition_key + '" isn\'t defined';
             }
             return !definition_key.match(/[*+?]$/);
         });
@@ -66,7 +68,7 @@ function check_grammar (in_definition) {
             check_left_factored(in_definition, definition_key);
         });
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -111,7 +113,7 @@ function check_left_factored (in_definition, in_definition_key) {
 
         result = true;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -168,7 +170,7 @@ function get_left_most_definition_values (in_definition, in_definition_keys) {
 
         });
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }

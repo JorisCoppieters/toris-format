@@ -1,5 +1,5 @@
 {
     "inputFile": "format-test-004-selectors-preformatted.scss",
     "outputFile": "format-test-004-selectors-formatted.scss",
-    "testName": "004-selectors"
+    "testName": "selectors"
 }

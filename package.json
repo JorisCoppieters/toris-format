@@ -1,7 +1,7 @@
 {
   "name": "toris-format",
-  "version": "1.7.7",
-  "description": "Formatting tool for HTML",
+  "description": "Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML",
+  "version": "1.7.11",
   "main": "index.js",
   "scripts": {
     "test": "node test"

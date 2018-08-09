@@ -12,8 +12,8 @@
 // Requires:
 // ******************************
 
-var GRAMMAR_HTML = require('../grammars/html');
 var GRAMMAR_SCSS = require('../grammars/scss');
+var GRAMMAR_HTML = require('../grammars/html');
 
 var checks = require('./checks');
 var cprint = require('color-print');
@@ -25,19 +25,16 @@ var utils = require('./utils');
 // Exposing Functions:
 // ******************************
 
-var r_A = regexp_shorthand.r_A;
 var r_AG = regexp_shorthand.r_AG;
 var r_W = regexp_shorthand.r_W;
-var r_S = regexp_shorthand.r_S;
-var r_w = regexp_shorthand.r_w;
 var r_g = regexp_shorthand.r_g;
 var r_v = regexp_shorthand.r_v;
-var r_dq = regexp_shorthand.r_dq;
-var r_sq = regexp_shorthand.r_sq;
 
 // ******************************
 // Constants:
 // ******************************
+
+const FALSE = false;
 
 const k_DEFINITION_TYPE_HTML = 'HTML';
 const k_DEFINITION_TYPE_SCSS = 'SCSS';
@@ -63,11 +60,11 @@ function setup (in_config) {
     }
 
     // General:
-    g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, "allow_empty", g_ALLOW_EMPTY_CONTENT);
-    g_DEBUG = utils.get_setup_property(in_config, "debug", g_DEBUG);
-    g_DEFINITION_TYPE = utils.get_setup_property(in_config, "definition_type", g_DEFINITION_TYPE);
-    g_PRINT_TREE_CONSTRUCTION = utils.get_setup_property(in_config, "print_tree_construction", g_PRINT_TREE_CONSTRUCTION);
-    g_RUN_CHECKS = utils.get_setup_property(in_config, "run_checks", g_RUN_CHECKS);
+    g_ALLOW_EMPTY_CONTENT = utils.get_setup_property(in_config, 'allow_empty', g_ALLOW_EMPTY_CONTENT);
+    g_DEBUG = utils.get_setup_property(in_config, 'debug', g_DEBUG);
+    g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
+    g_PRINT_TREE_CONSTRUCTION = utils.get_setup_property(in_config, 'print_tree_construction', g_PRINT_TREE_CONSTRUCTION);
+    g_RUN_CHECKS = utils.get_setup_property(in_config, 'run_checks', g_RUN_CHECKS);
 }
 
 // ******************************
@@ -89,16 +86,16 @@ function parse_contents (in_contents) {
         var definition;
 
         switch(g_DEFINITION_TYPE) {
-            case k_DEFINITION_TYPE_HTML:
-                definition = GRAMMAR_HTML;
-                break;
+        case k_DEFINITION_TYPE_HTML:
+            definition = GRAMMAR_HTML;
+            break;
 
-            case k_DEFINITION_TYPE_SCSS:
-                definition = GRAMMAR_SCSS;
-                break;
+        case k_DEFINITION_TYPE_SCSS:
+            definition = GRAMMAR_SCSS;
+            break;
 
-            default:
-                throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+        default:
+            throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
         }
 
         if (!grammar.k_DEFINITION_KEY_START) {
@@ -117,11 +114,11 @@ function parse_contents (in_contents) {
             definition[grammar.k_DEFINITION_KEY_START].DEBUG = grammar.k_DEBUG_MATCH_VAL;
         }
 
-        var tree = {}
+        var tree = {};
         parse_definition_key(tree, contents, definition, grammar.k_DEFINITION_KEY_START);
         result = tree;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -160,29 +157,28 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         _log_debug_match(debug, cprint.toWhite(indent + definition_key));
 
         switch (definition_value.OPERATOR) {
-            case '||':
-                result = _parse_definition_or(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-                break;
+        case '||':
+            result = _parse_definition_or(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+            break;
 
-            case '&&':
-                result = _parse_definition_and(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-                break;
+        case '&&':
+            result = _parse_definition_and(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+            break;
 
-            case '*':
-                result = _parse_definition_multiple(tree, true, contents, in_definition, definition_key, definition_value, indent, debug);
-                break;
+        case '*':
+            result = _parse_definition_multiple(tree, true, contents, in_definition, definition_key, definition_value, indent, debug);
+            break;
 
-            case '+':
-                result = _parse_definition_multiple(tree, false, contents, in_definition, definition_key, definition_value, indent, debug);
-                break;
+        case '+':
+            result = _parse_definition_multiple(tree, false, contents, in_definition, definition_key, definition_value, indent, debug);
+            break;
 
-            case '==':
-                result = _parse_definition_equals(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-                break;
+        case '==':
+            result = _parse_definition_equals(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+            break;
 
-            default:
-                throw 'Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"';
-                break;
+        default:
+            throw 'Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"';
         }
 
         tree.DEFINITION_KEY = definition_key;
@@ -197,7 +193,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         }
 
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -249,7 +245,7 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -266,7 +262,6 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
         }
 
         var contents = in_contents;
-        var original_contents = contents;
 
         var remaining = '';
         var matched = true;
@@ -307,7 +302,7 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -373,7 +368,7 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
 
         result = contents;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -397,8 +392,8 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 
         if (in_definition_value.VALUE) {
             try {
-                var value = in_definition_value.VALUE || [];
-                regexp = new RegExp('^' + '(' + r_W + value + ')' + r_v(r_AG) + '$');
+                var definition_value = in_definition_value.VALUE || [];
+                regexp = new RegExp('^' + '(' + r_W + definition_value + ')' + r_v(r_AG) + '$');
             } catch (err) {
                 throw 'Failed to create RegExp for definition key "' + in_definition_key + '"';
             }
@@ -430,7 +425,7 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 
         result = remaining;
     }
-    while (false);
+    while (FALSE);
 
     return result;
 }
@@ -442,7 +437,7 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 function _log_debug_all (in_debug_mode, in_message) {
     if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_ALL))
         return;
-    console.log(in_message);
+    process.stdout.write(in_message + '\n');
 }
 
 // ******************************
@@ -450,7 +445,7 @@ function _log_debug_all (in_debug_mode, in_message) {
 function _log_debug_match (in_debug_mode, in_message) {
     if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH))
         return;
-    console.log(in_message);
+    process.stdout.write(in_message + '\n');
 }
 
 // ******************************
@@ -458,21 +453,21 @@ function _log_debug_match (in_debug_mode, in_message) {
 function _log_debug_match_val (in_debug_mode, in_message) {
     if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH_VAL))
         return;
-    console.log(in_message);
+    process.stdout.write(in_message + '\n');
 }
 
 // ******************************
 
-function _get_debug_level (in_debug_level, in_message) {
+function _get_debug_level (in_debug_level) {
     switch (in_debug_level) {
-        case grammar.k_DEBUG_OFF:
-            return 0;
-        case grammar.k_DEBUG_MATCH_VAL:
-            return 1;
-        case grammar.k_DEBUG_MATCH:
-            return 2;
-        case grammar.k_DEBUG_ALL:
-            return 3;
+    case grammar.k_DEBUG_OFF:
+        return 0;
+    case grammar.k_DEBUG_MATCH_VAL:
+        return 1;
+    case grammar.k_DEBUG_MATCH:
+        return 2;
+    case grammar.k_DEBUG_ALL:
+        return 3;
     }
 }
 

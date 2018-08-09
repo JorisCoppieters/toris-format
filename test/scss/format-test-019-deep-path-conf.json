@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-019-deep-path-preformatted.scss",
+    "outputFile": "format-test-019-deep-path-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "deep-path"
+}

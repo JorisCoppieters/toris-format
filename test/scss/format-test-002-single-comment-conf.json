@@ -4,5 +4,5 @@
     "setup": {
         "line_ending": "\r\n"
     },
-    "testName": "002-single-comment"
+    "testName": "single-comment"
 }

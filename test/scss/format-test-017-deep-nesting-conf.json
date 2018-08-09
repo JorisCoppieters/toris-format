@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-017-deep-nesting-preformatted.scss",
+    "outputFile": "format-test-017-deep-nesting-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "deep-nesting"
+}
