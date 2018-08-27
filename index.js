@@ -3,9 +3,12 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.11
+// TORIS FORMAT v1.7.12
 //
 // Version History:
+//
+// 1.7.12
+// - Changed SCSS formatter so it preserves space after @media statement
 //
 // 1.7.11
 // - Code clean up
@@ -101,7 +104,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.11';
+const k_VERSION = '1.7.12';
 
 // ******************************
 // TODO: DEPRECATE
