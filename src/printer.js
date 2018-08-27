@@ -30,7 +30,7 @@ var r_g = regexp_shorthand.r_g;
 // Constants:
 // ******************************
 
-const FALSE = false;
+const TRUE = true;
 
 // ******************************
 // Globals:
@@ -291,7 +291,7 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
         contents1_segment_bound_start += segment_size;
         contents2_segment_bound_start += segment_size;
     }
-    while (FALSE);
+    while (TRUE);
 
     return result;
 }

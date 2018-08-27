@@ -369,7 +369,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             space_before = false;
         }
 
-        if (['INCLUDE', 'MEDIA', 'MIXIN', 'PAGE', 'FUNCTION', 'RETURN'].indexOf(state.DECLARATION_TYPE) >= 0) {
+        if (['INCLUDE', 'MIXIN', 'PAGE', 'FUNCTION', 'RETURN'].indexOf(state.DECLARATION_TYPE) >= 0) {
             space_before = false;
         }
 

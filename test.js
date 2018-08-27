@@ -6,11 +6,9 @@
 
 var cprint = require('color-print');
 var fs = require('fs');
-var fsp = require('fs-process');
 var minimist = require('minimist');
 var path = require('path');
 var torisFormat = require('./index.js');
-var utils = require('./src/utils.js');
 
 // ******************************
 // Arguments:
@@ -53,7 +51,7 @@ function createTest() {
 
     let folder = path.resolve('./test', g_TYPE);
     if (!fs.existsSync(folder)) {
-        cprint.yellow(`Invalid folder : ${folder}`)
+        cprint.yellow(`Invalid folder : ${folder}`);
         return;
     }
 
@@ -71,11 +69,11 @@ function createTest() {
     let preformattedFile = `${testName}-preformatted.${g_TYPE}`;
 
     let config = {
-        "inputFile": preformattedFile,
-        "outputFile": formattedFile,
-        "setup": {},
-        "testName": g_NAME
-    }
+        'inputFile': preformattedFile,
+        'outputFile': formattedFile,
+        'setup': {},
+        'testName': g_NAME
+    };
 
     fs.writeFileSync(`${folder}/${configFile}`, JSON.stringify(config, null, 4));
     fs.writeFileSync(`${folder}/${formattedFile}`, '');

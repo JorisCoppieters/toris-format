@@ -29,13 +29,13 @@
 @mixin sprite($sprite, $display: block) {
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
     .o-accordion__item__header {
         width: 70px;
     }
 }
 
-@media screen and(-ms-high-contrast: none) {
+@media screen and (-ms-high-contrast: none) {
     position: relative;
 }
 
