@@ -1,0 +1,12 @@
+{
+    "inputFile": "format-test-019-self-closing-tags-preformatted.html",
+    "outputFile": "format-test-019-self-closing-tags-formatted.html",
+    "setup": {
+        "allow_arbitrary_closing_html_tags": true,
+        "self_closing_tags": [
+            "svg",
+            "path"
+        ]
+    },
+    "testName": "self-closing-tags"
+}

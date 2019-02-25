@@ -1,0 +1,6 @@
+{
+    "inputFile": "format-test-020-dot-attributes-preformatted.html",
+    "outputFile": "format-test-020-dot-attributes-formatted.html",
+    "setup": {},
+    "testName": "dot-attributes"
+}

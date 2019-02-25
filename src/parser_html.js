@@ -120,6 +120,7 @@ var g_INDENT = '    ';
 
 // Config - HTML:
 var g_ADD_NOOPENER_NOREFERRER = false;
+var g_ALLOW_ARBITRARY_CLOSING_HTML_TAGS = false;
 var g_ALLOW_EMPTY_FILES = false;
 var g_ANGULAR_VERSION = 1;
 var g_BLOCK_ELEMENTS = g_BLOCK_ELEMENTS_BASE;
@@ -144,7 +145,7 @@ var g_REGEX_HTML_STYLE = '<style' + r_A + '>' + r_v(r_A) + '<\\/style>';
 var g_REGEX_HTML_COMMENT = '<!--' + r_W + r_v(r_A) + r_W + '-->';
 var g_REGEX_HTML_CONTENT = '[^<]+?';
 var g_REGEX_HTML_ELEMENT = '[a-z0-9_-]+';
-var g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_-]+';
+var g_REGEX_HTML_ATTRIBUTE_KEY = '[:a-z0-9_.-]+';
 var g_REGEX_HTML_ATTRIBUTE_VALUE = r_A;
 var g_REGEX_XML_HEADER = r_v('<\\?xml' + r_A + '\\?>');
 
@@ -159,6 +160,7 @@ function setup (in_config) {
 
     g_ADD_NOOPENER_NOREFERRER = utils.get_setup_property(in_config, 'add_noopener_noreferrer', g_ADD_NOOPENER_NOREFERRER);
     g_ALLOW_EMPTY_FILES = utils.get_setup_property(in_config, 'allow_empty_files', g_ALLOW_EMPTY_FILES);
+    g_ALLOW_ARBITRARY_CLOSING_HTML_TAGS = utils.get_setup_property(in_config, 'allow_arbitrary_closing_html_tags', g_ALLOW_ARBITRARY_CLOSING_HTML_TAGS);
     g_ANGULAR_VERSION = utils.get_setup_property(in_config, ['angular_version', 'ng_version'], g_ANGULAR_VERSION);
     g_BLOCK_ELEMENTS = utils.get_setup_property(in_config, 'block_elements', g_BLOCK_ELEMENTS, g_BLOCK_ELEMENTS_BASE);
     g_FORCE_BLOCK_WHITESPACE_FORMATTING = utils.get_setup_property(in_config, 'force_block_whitespace_formatting', g_FORCE_BLOCK_WHITESPACE_FORMATTING);
@@ -688,6 +690,9 @@ function parse_html_open_element_end (in_html_content) {
         if (self_closing_tag) {
             if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
                 output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
+                indent = t_NL + get_indent();
+            } else if (g_ALLOW_ARBITRARY_CLOSING_HTML_TAGS) {
+                output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '/>';
                 indent = t_NL + get_indent();
             } else {
                 throw 'Not a self closing HTML tag: ' + g_CURRENT_ELEMENT;
