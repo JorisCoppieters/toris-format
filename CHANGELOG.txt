@@ -1,0 +1,85 @@
+Version History:
+
+1.7.13
+- Added support for allowing arbitrary closing tags and dot.attributes in elements
+- Shifted version history out of index file
+
+1.7.12
+- Changed SCSS formatter so it preserves space after @media statement
+
+1.7.11
+- Code clean up
+
+1.7.10
+- Fixed various HTML formatting issues
+- Fixed various SCSS formatting issues
+
+1.7.9
+- Fixed async pipe regex
+
+1.7.8
+- Added support for <?xml ?> header
+
+1.7.5
+- Added support for value=null in NG HTML bindings
+
+1.7.4
+- Added fix for the vw unit in CSS
+
+1.7.3
+- Added support for comment formatting in HTML
+
+1.7.2
+- Added support for some NG2 specific syntax
+
+1.7.0
+- Refactored grammars and formatters
+- Added test functions
+- Added grammar checks
+- Created new test files structure
+
+1.6.1
+- Added support for vh as a measurement in CSS grammar
+- Added support for >>> as a selector in CSS grammar
+- Added option to add noopener noreferrer to <a target="_blank"><a/> links
+
+1.6.0
+- Started work on refactoring into proper AST with Grammar files
+- Added support for scss files
+
+1.5.1
+- Bug fix around whitespace before content within block elements
+
+1.5.0
+- Refactored attribute value object parsing
+- Added proper class name parsing
+- Fixed bug with object values not being able to contain commas
+
+1.4.5
+- Replaced g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key with g_MULTI_CLASSES_ORDER
+
+1.4.4
+- Added g_ORDER_MULTI_CLASSES_ALPHABETICALLY config key
+
+1.4.3
+- Fixed config issue in get_setup_property
+
+1.4.2
+- Deprecated Config keys: NG1_ATTRIBUTES_ORDER, NG1_ATTRIBUTES_ORDER_PRE_NATIVE, NG2_ATTRIBUTES_ORDER, NG2_ATTRIBUTES_ORDER_PRE_NATIVE
+- Added g_NG_ATTRIBUTES_ORDER, g_NG_ATTRIBUTES_ORDER_PRE_NATIVE and require angular_version to be set
+- Added g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST opttion
+- Fixed object binding values not being able to have '<' & '>' characters
+- Split base test into NG1/non-NG1 tests
+- Improved tests
+- Some clean up
+
+1.4.1
+- Fixed key regex for binding property
+- Fixed key regex for binding two way property
+- Fixed key regex for binding event
+- Fixed key regex for binding custom directive
+- Added <div> wrapping as fallback to HTML content with multiple parent nodes
+- Added option to allow empty files
+
+1.4.0
+- Stable release
