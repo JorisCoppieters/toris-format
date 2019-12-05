@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-001-base-preformatted.ps1",
+    "outputFile": "format-test-001-base-formatted.ps1",
+    "setup": {
+        "definition_type": "POWERSHELL",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "base"
+}

@@ -74,6 +74,10 @@ function format_file (in_file, in_config) {
         definition_type = parser.k_DEFINITION_TYPE_SCSS;
         break;
 
+    case 'ps1':
+        definition_type = parser.k_DEFINITION_TYPE_POWERSHELL;
+        break;
+
     default:
         throw 'Unhandeled file extension: ' + file_extension;
     }

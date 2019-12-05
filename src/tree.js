@@ -13,6 +13,7 @@
 // ******************************
 
 var FORMATTER_SCSS = require('../formatters/scss');
+var FORMATTER_POWERSHELL = require('../formatters/powershell');
 
 var cprint = require('color-print');
 var parser = require('./parser');
@@ -97,6 +98,10 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     case parser.k_DEFINITION_TYPE_SCSS:
         output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
+        break;
+
+    case parser.k_DEFINITION_TYPE_POWERSHELL:
+        output = FORMATTER_POWERSHELL.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
         break;
 
     default:
@@ -227,6 +232,9 @@ function get_tree_output_structure (in_tree, in_config) {
 
     case parser.k_DEFINITION_TYPE_SCSS:
         throw 'SCSS structure not supported yet...';
+
+    case parser.k_DEFINITION_TYPE_POWERSHELL:
+        throw 'Powershell structure not supported yet...';
 
     default:
         throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';

@@ -13,6 +13,7 @@
 // ******************************
 
 var GRAMMAR_SCSS = require('../grammars/scss');
+var GRAMMAR_POWERSHELL = require('../grammars/powershell');
 
 var checks = require('./checks');
 var cprint = require('color-print');
@@ -38,6 +39,7 @@ const FALSE = false;
 
 const k_DEFINITION_TYPE_HTML = 'HTML';
 const k_DEFINITION_TYPE_SCSS = 'SCSS';
+const k_DEFINITION_TYPE_POWERSHELL = 'POWERSHELL';
 
 // ******************************
 // Globals:
@@ -99,6 +101,10 @@ function parse_contents (in_contents) {
             definition = GRAMMAR_SCSS;
             break;
 
+        case k_DEFINITION_TYPE_POWERSHELL:
+            definition = GRAMMAR_POWERSHELL;
+            break;
+
         default:
             throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
         }
@@ -137,10 +143,10 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         var contents = in_contents || '';
         var original_contents = contents;
 
-        if (contents.trim().length === 0) {
-            result = false;
-            break;
-        }
+        // if (contents.trim().length === 0) {
+        //     result = false;
+        //     break;
+        // }
 
         var definition_key = (in_definition_key) ? in_definition_key : grammar.k_DEFINITION_KEY_START;
         var definition_value = in_definition[definition_key];
@@ -482,6 +488,7 @@ function _get_debug_level (in_debug_level) {
 
 module.exports['k_DEFINITION_TYPE_HTML'] = k_DEFINITION_TYPE_HTML;
 module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
+module.exports['k_DEFINITION_TYPE_POWERSHELL'] = k_DEFINITION_TYPE_POWERSHELL;
 
 module.exports['parse_contents'] = parse_contents;
 module.exports['setup'] = setup;

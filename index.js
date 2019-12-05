@@ -46,6 +46,7 @@ function setup (in_config) {
 module.exports['k_VERSION'] = k_VERSION;
 module.exports['k_DEFINITION_TYPE_SCSS'] = parser.k_DEFINITION_TYPE_SCSS;
 module.exports['k_DEFINITION_TYPE_HTML'] = parser.k_DEFINITION_TYPE_HTML;
+module.exports['k_DEFINITION_TYPE_POWERSHELL'] = parser.k_DEFINITION_TYPE_POWERSHELL;
 
 module.exports['setup_parser'] = parser.setup;
 module.exports['setupParser'] = parser.setup;
