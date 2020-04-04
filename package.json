@@ -21,6 +21,6 @@
     "fs-process": "^1.0.1"
   },
   "devDependencies": {
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.5"
   }
 }
