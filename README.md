@@ -2,6 +2,10 @@
 
 toris-format is a Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML
 
+### Trello Board
+
+https://trello.com/b/2mSSarol/product-toris-format
+
 ### Installation
 (requires [Node.js](https://nodejs.org/) v4+)
 ```sh
