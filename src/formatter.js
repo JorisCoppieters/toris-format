@@ -75,11 +75,11 @@ function format_file (in_file, in_config) {
         break;
 
     case 'ps1':
-        definition_type = parser.k_DEFINITION_TYPE_POWERSHELL;
+        definition_type = parser.k_DEFINITION_TYPE_PS1;
         break;
 
     default:
-        throw 'Unhandeled file extension: ' + file_extension;
+        throw 'Unhandled file extension: ' + file_extension;
     }
 
     config.definition_type = definition_type;

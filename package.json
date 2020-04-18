@@ -1,26 +1,26 @@
 {
-  "name": "toris-format",
-  "description": "Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML",
-  "version": "1.7.13",
-  "main": "index.js",
-  "scripts": {
-    "test": "node test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JorisCoppieters/toris-format.git"
-  },
   "author": "Joris Coppieters",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/JorisCoppieters/toris-format/issues"
   },
-  "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
   "dependencies": {
     "color-print": "^1.0.2",
     "fs-process": "^1.0.1"
   },
+  "description": "Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML",
   "devDependencies": {
     "minimist": "^1.2.0"
-  }
+  },
+  "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "toris-format",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JorisCoppieters/toris-format.git"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "version": "1.7.13"
 }

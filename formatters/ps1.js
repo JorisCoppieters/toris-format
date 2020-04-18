@@ -75,11 +75,14 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
 
     switch (definition_key) {
 
-    case 'IF':
+    case 'VAL__ifKeyword':
+    case 'VAL__elseifKeyword':
+    case 'VAL__elseKeyword':
         double_newline = whitespace_before_includes_double_newline;
-        newline = whitespace_before_includes_newline;
+        newline = true;
         color_func = cprint.toCyan;
         last_token = definition_value;
+        append = definition_value.toLowerCase();
         break;
 
     case 'VAL__DQUOTE':
@@ -120,26 +123,6 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         space_before = ['('].indexOf(state.LAST_TOKEN) < 0;
         last_token = definition_value;
         break;
-
-    case 'VARIABLE_NAME':
-        color_func = cprint.toBlue;
-        space_before = false;
-        last_token = definition_value;
-        break;
-
-    case 'FUNCTION_NAME':
-        color_func = cprint.toGreen;
-        newline = true;
-        space_before = false;
-        last_token = definition_value;
-        break;
-
-    case 'ARGUMENT_DQUOTE_STRING_VALUE':
-        color_func = cprint.toWhite;
-        space_before = false;
-        last_token = 'STRING';
-        break;
-
     }
 
     return {

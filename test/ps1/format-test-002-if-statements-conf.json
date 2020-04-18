@@ -1,0 +1,6 @@
+{
+    "inputFile": "format-test-002-if-statements-preformatted.ps1",
+    "outputFile": "format-test-002-if-statements-formatted.ps1",
+    "setup": {},
+    "testName": "if-statements"
+}

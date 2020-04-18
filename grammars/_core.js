@@ -28,11 +28,11 @@ const k_DEFINITION_KEY_START = 'START';
 // Functions:
 // ******************************
 
-function export_grammar(in_grammar, in_dependant_grammars) {
+function export_grammar(in_grammar, in_dependent_grammars) {
     var exports = [];
 
-    if (in_dependant_grammars && in_dependant_grammars.length) {
-        exports = export_dependant_grammars(in_dependant_grammars);
+    if (in_dependent_grammars && in_dependent_grammars.length) {
+        exports = export_dependent_grammars(in_dependent_grammars);
     }
 
     Object.keys(in_grammar).forEach(function (key) {
@@ -61,11 +61,11 @@ function export_grammar(in_grammar, in_dependant_grammars) {
 
 // ******************************
 
-function export_dependant_grammars(in_dependant_grammars) {
+function export_dependent_grammars(in_dependent_grammars) {
     var exports = [];
-    in_dependant_grammars.forEach(function (dependant_grammars) {
-        Object.keys(dependant_grammars).forEach(function (key) {
-            exports[key] = dependant_grammars[key];
+    in_dependent_grammars.forEach(function (dependent_grammars) {
+        Object.keys(dependent_grammars).forEach(function (key) {
+            exports[key] = dependent_grammars[key];
         });
     });
     return exports;

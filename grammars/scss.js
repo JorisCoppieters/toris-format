@@ -263,7 +263,7 @@ module.exports = grammar.export_grammar({
     Url: { OPERATOR: '||', SEGMENTS: ['STRING', 'UrlVal'] },
     UrlVal: { OPERATOR: '==', VALUE: '[^\\)]+' }
 },
-// Dependant On:
+// Dependent On:
 [
     require('./base')
 ]);

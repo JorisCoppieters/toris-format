@@ -14,8 +14,10 @@
 
 var r_A = '[\\s\\S]*?'; // RegEx: Any (Not Greedy)
 var r_AG = '[\\s\\S]*'; // RegEx: Any (Greedy)
-var r_W = '[\\s]*'; // RegEx: Optional Whitepsace
-var r_S = '[\\s]+'; // RegEx: Whitepsace
+var r_LW = '[ \t]*'; // RegEx: Optional line whitespace
+var r_LS = '[ \t]+'; // RegEx: Line whitespace
+var r_W = '[\\s]*'; // RegEx: Optional Whitespace
+var r_S = '[\\s]+'; // RegEx: Whitespace
 
 // ******************************
 
@@ -55,6 +57,8 @@ module.exports['r_A'] = r_A;
 module.exports['r_AG'] = r_AG;
 module.exports['r_W'] = r_W;
 module.exports['r_S'] = r_S;
+module.exports['r_LW'] = r_LW;
+module.exports['r_LS'] = r_LS;
 module.exports['r_w'] = r_w;
 module.exports['r_g'] = r_g;
 module.exports['r_v'] = r_v;

@@ -13,7 +13,7 @@
 // ******************************
 
 var GRAMMAR_SCSS = require('../grammars/scss');
-var GRAMMAR_POWERSHELL = require('../grammars/powershell');
+var GRAMMAR_PS1 = require('../grammars/ps1');
 
 var checks = require('./checks');
 var cprint = require('color-print');
@@ -28,6 +28,7 @@ var utils = require('./utils');
 
 var r_AG = regexp_shorthand.r_AG;
 var r_W = regexp_shorthand.r_W;
+var r_LW = regexp_shorthand.r_LW;
 var r_g = regexp_shorthand.r_g;
 var r_v = regexp_shorthand.r_v;
 
@@ -39,7 +40,7 @@ const FALSE = false;
 
 const k_DEFINITION_TYPE_HTML = 'HTML';
 const k_DEFINITION_TYPE_SCSS = 'SCSS';
-const k_DEFINITION_TYPE_POWERSHELL = 'POWERSHELL';
+const k_DEFINITION_TYPE_PS1 = 'PS1';
 
 // ******************************
 // Globals:
@@ -51,6 +52,8 @@ var g_DEBUG = false;
 var g_DEFINITION_TYPE = k_DEFINITION_TYPE_HTML;
 var g_PRINT_TREE_CONSTRUCTION = false;
 var g_RUN_CHECKS = false;
+var g_CASE_INSENSITIVE = false;
+var g_PARSE_AS_SEPARATE_LINES = false;
 
 // ******************************
 // Setup Functions:
@@ -67,11 +70,12 @@ function setup (in_config) {
     g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
     g_PRINT_TREE_CONSTRUCTION = utils.get_setup_property(in_config, 'print_tree_construction', g_PRINT_TREE_CONSTRUCTION);
     g_RUN_CHECKS = utils.get_setup_property(in_config, 'run_checks', g_RUN_CHECKS);
+    g_CASE_INSENSITIVE = true;
+    g_PARSE_AS_SEPARATE_LINES = true;
 
     if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
         // HTML:
         parserHtml.setup(in_config);
-
     }
 }
 
@@ -101,8 +105,8 @@ function parse_contents (in_contents) {
             definition = GRAMMAR_SCSS;
             break;
 
-        case k_DEFINITION_TYPE_POWERSHELL:
-            definition = GRAMMAR_POWERSHELL;
+        case k_DEFINITION_TYPE_PS1:
+            definition = GRAMMAR_PS1;
             break;
 
         default:
@@ -404,7 +408,12 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
         if (in_definition_value.VALUE) {
             try {
                 var definition_value = in_definition_value.VALUE || [];
-                regexp = new RegExp('^' + '(' + r_W + definition_value + ')' + r_v(r_AG) + '$');
+                var options = '';
+                if (in_definition_value.CASE_INSENSITIVE || g_CASE_INSENSITIVE) {
+                    options += 'i';
+                }
+                var whitespaceRegexp = g_PARSE_AS_SEPARATE_LINES ? r_LW : r_W;
+                regexp = new RegExp('^' + '(' + whitespaceRegexp + definition_value + ')' + r_v(r_AG) + '$', options);
             } catch (err) {
                 throw 'Failed to create RegExp for definition key "' + in_definition_key + '"';
             }
@@ -488,7 +497,7 @@ function _get_debug_level (in_debug_level) {
 
 module.exports['k_DEFINITION_TYPE_HTML'] = k_DEFINITION_TYPE_HTML;
 module.exports['k_DEFINITION_TYPE_SCSS'] = k_DEFINITION_TYPE_SCSS;
-module.exports['k_DEFINITION_TYPE_POWERSHELL'] = k_DEFINITION_TYPE_POWERSHELL;
+module.exports['k_DEFINITION_TYPE_PS1'] = k_DEFINITION_TYPE_PS1;
 
 module.exports['parse_contents'] = parse_contents;
 module.exports['setup'] = setup;
