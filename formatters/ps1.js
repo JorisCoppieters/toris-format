@@ -246,9 +246,12 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
             break;
 
         case 'VAL__PAREN_L':
+            var declaration = in_state.STACK.indexOf('FunctionDeclare') >= 0;
             color_func = cprint.toWhite;
             last_token = definition_value;
-            space_before = ['FUNCTION', '@'].indexOf(in_state.LAST_TOKEN) < 0;
+            space_before = declaration ?
+                ['@'].indexOf(in_state.LAST_TOKEN) < 0 :
+                ['FUNCTION', '@'].indexOf(in_state.LAST_TOKEN) < 0;
             break;
 
         case 'VAL__PAREN_R':

@@ -86,6 +86,7 @@ module.exports = grammar.export_grammar(
                 'NL*',
                 'statementBlock',
             ],
+            STACK: 'FunctionDeclare'
         },
         functionParamDeclaration: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'functionParams?', 'VAL__PAREN_R'] },
         functionParams: { OPERATOR: '&&', SEGMENTS: ['functionParam', 'functionParamExtra*'] },
@@ -99,7 +100,7 @@ module.exports = grammar.export_grammar(
         variableCast: { OPERATOR: '&&', SEGMENTS: ['VAL__SQBRAC_L', 'variableType', 'VAL__SQBRAC_R'] },
         variableType: { OPERATOR: '||', SEGMENTS: ['VAL__guidKeyword', 'VAL__stringKeyword', 'VAL__intKeyword', 'VAL__switchKeyword'] },
 
-        functionExpression: { OPERATOR: '&&', SEGMENTS: ['functionName', 'functionArgs'] },
+        functionExpression: { OPERATOR: '&&', SEGMENTS: ['functionName', 'functionArgs'], STACK: 'FunctionInvoke' },
         functionArgs: { OPERATOR: '||', SEGMENTS: ['functionArgsInParen', 'functionArgsInline'] },
         functionArgsInParen: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'functionParenArgs?', 'VAL__PAREN_R'] },
         functionArgsInline: { OPERATOR: '&&', SEGMENTS: ['functionArg*', 'functionNamedArg*'] },
