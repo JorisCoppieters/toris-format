@@ -221,26 +221,26 @@ Function _Set-IISBindings($siteName, $bindings) {
             }
             # $protocol, $IPAddress, $port, $domain = $existingBinding -replace '(.+)/(.+):(.+):(.*)', '$1;$2;$3;$4' -split ';'
             $bindingStr = "$($protocol)://$($domain):$($port)"
-            if ($bindings -notcontains $bindingStr) {
-                $bindingStr = "$($protocol)/\*:$($port):$($domain)"
-                Write-Host "  [IIS] Removing https binding '$($existingBinding)' for $($siteName) Site..." -f red
-                Remove-WebBinding -Name $siteName -Port $port -Protocol $protocol -HostHeader $domain -ErrorAction Ignore
-                # $existingBindings = $existingBindings -replace $bindingStr, ""
-            }
+            # if ($bindings -notcontains $bindingStr) {
+            #     $bindingStr = "$($protocol)/\*:$($port):$($domain)"
+            #     Write-Host "  [IIS] Removing https binding '$($existingBinding)' for $($siteName) Site..." -f red
+            #     Remove-WebBinding -Name $siteName -Port $port -Protocol $protocol -HostHeader $domain -ErrorAction Ignore
+            #     # $existingBindings = $existingBindings -replace $bindingStr, ""
+            # }
         }
 
         foreach ($binding in $bindings) {
             # $protocol, $domain, $port = $binding -replace '(.+)://(.+):(.+)', '$1;$2;$3' -split ';'
             $bindingStr = "$($protocol)/\*:$($port):$($domain)"
-            if (-not($existingBindings -match $bindingStr)) {
-                if ($protocol -eq "https") {
-                    Write-Host "  [IIS] Adding https binding '$($binding)' to $($siteName) Site..." -f green
-                    New-WebBinding -Name $siteName -IPAddress "*" -Port $port -HostHeader $domain -Protocol $protocol -SslFlags 1
-                } else {
-                    Write-Host "  [IIS] Adding http binding '$($binding)' to $($siteName) Site..." -f green
-                    New-WebBinding -Name $siteName -IPAddress "*" -Port $port -HostHeader $domain -Protocol $protocol
-                }
-            }
+            # if (-not($existingBindings -match $bindingStr)) {
+            #     if ($protocol -eq "https") {
+            #         Write-Host "  [IIS] Adding https binding '$($binding)' to $($siteName) Site..." -f green
+            #         New-WebBinding -Name $siteName -IPAddress "*" -Port $port -HostHeader $domain -Protocol $protocol -SslFlags 1
+            #     } else {
+            #         Write-Host "  [IIS] Adding http binding '$($binding)' to $($siteName) Site..." -f green
+            #         New-WebBinding -Name $siteName -IPAddress "*" -Port $port -HostHeader $domain -Protocol $protocol
+            #     }
+            # }
         }
     }
 }
@@ -315,7 +315,7 @@ Function Add-IISSite($site) {
                 $path = [string]$virtualDirectory.Path
                 $physicalPath = Get-ResolvedPath $virtualDirectory.PhysicalPath
                 Write-Host "  [IIS] Adding Virtual Directory $($path)..." -f white
-                $newVirtualDirectory = $newSite.Applications['/'].VirtualDirectories.Add($path, $physicalPath)
+                # $newVirtualDirectory = $newSite.Applications['/'].VirtualDirectories.Add($path, $physicalPath)
             }
 
             foreach ($application in $site.Applications) {
@@ -324,7 +324,7 @@ Function Add-IISSite($site) {
                 $appPool = [string]$application.AppPool
                 Write-Host "  [IIS] Adding Application $($path) $($physicalPath)..." -f white
 
-                $newApplication = $newSite.Applications.Add($path, $physicalPath)
+                # $newApplication = $newSite.Applications.Add($path, $physicalPath)
                 $newApplication.ApplicationPoolName = $appPool
             }
         } else {
@@ -339,10 +339,10 @@ Function Add-IISSite($site) {
             $existingAppPool = $existingSite.Applications['/'].ApplicationPoolName
             $appPool = [string]$site.AppPool
 
-            if (-not($existingAppPool -match "^$appPool$")) {
-                Write-Host "  [IIS] Setting AppPool to '$($appPool)' for $($siteName) Site..." -f green
-                $existingSite.Applications['/'].ApplicationPoolName = $appPool
-            }
+            # if (-not($existingAppPool -match "^$appPool$")) {
+            #     Write-Host "  [IIS] Setting AppPool to '$($appPool)' for $($siteName) Site..." -f green
+            #     $existingSite.Applications['/'].ApplicationPoolName = $appPool
+            # }
 
             foreach ($virtualDirectory in $site.VirtualDirectories) {
 
@@ -358,7 +358,7 @@ Function Add-IISSite($site) {
                     }
                 } else {
                     Write-Host "  [IIS] Adding Virtual Directory $($path)..." -f white
-                    $newVirtualDirectory = $existingSite.Applications['/'].VirtualDirectories.Add($path, $physicalPath)
+                    # $newVirtualDirectory = $existingSite.Applications['/'].VirtualDirectories.Add($path, $physicalPath)
                 }
             }
 
@@ -381,7 +381,7 @@ Function Add-IISSite($site) {
                     }
                 } else {
                     Write-Host "  [IIS] Adding Application $($path)..." -f white
-                    $newApplication = $existingSite.Applications.Add($path, $physicalPath)
+                    # $newApplication = $existingSite.Applications.Add($path, $physicalPath)
                     $newApplication.ApplicationPoolName = $appPool
                 }
             }
@@ -392,7 +392,7 @@ Function Add-IISSite($site) {
 
         $existingSite = App-Cmd list Site $siteName
         if ($existingSite) {
-            $correctId = $existingSite -as "string" -match "id:$siteId,"
+            # $correctId = $existingSite -as "string" -match "id:$siteId,"
             if (-not($correctId)) {
                 if ($site.Overwrite) {
                     Write-Host "[IIS] $($siteName) Site already exists with a different Id, removing this..." -f red
@@ -409,7 +409,7 @@ Function Add-IISSite($site) {
             New-Website -Name $siteName -Id $siteId -PhysicalPath $physicalPath -ApplicationPool $appPool -Force
 
             # New-Website adds a shitty catch all binding that needs to be removed if it exists
-            $hasEmptyBinding = ((Get-Website -Name $siteName).Bindings.Collection | foreach { $_.bindingInformation }) -contains "*:80:"
+            # $hasEmptyBinding = ((Get-Website -Name $siteName).Bindings.Collection # | foreach { $_.bindingInformation }) -contains "*:80:"
             if ($hasEmptyBinding) {
                 Remove-WebBinding -Name $siteName -Port 80 -Protocol "http" -IPAddress "*"
             }
@@ -418,7 +418,7 @@ Function Add-IISSite($site) {
                 $path = [string]$virtualDirectory.Path
                 # $physicalPath = [string]$virtualDirectory.PhysicalPath -replace '/', '\';
                 Write-Host "  [IIS] Adding Virtual Directory $($path)..." -f white
-                App-Cmd add VDir /app.name:$siteName"/" /path:$path /physicalPath:$physicalPath
+                # App-Cmd add VDir /app.name:$siteName"/" /path:$path /physicalPath:$physicalPath
             }
 
             foreach ($application in $site.Applications) {
@@ -426,41 +426,41 @@ Function Add-IISSite($site) {
                 # $physicalPath = [string]$application.PhysicalPath -replace '/', '\';
                 $appPool = [string]$application.AppPool
                 Write-Host "  [IIS] Adding Application $($path)..." -f white
-                App-Cmd add App /site.name:$siteName /path:$path /physicalPath:$physicalPath /applicationPool:$appPool
+                # App-Cmd add App /site.name:$siteName /path:$path /physicalPath:$physicalPath /applicationPool:$appPool
             }
         } else {
             Write-Host "[IIS] Checking $($siteName) Site settings..." -f cyan
 
-            $existingSitePath = [string](Get-Item "IIS:\Sites\$($siteName)").PhysicalPath
+            # $existingSitePath = [string](Get-Item "IIS:\Sites\$($siteName)").PhysicalPath
             # $physicalPath = [string]$site.PhysicalPath -replace '/', '\';
 
             if ($existingSitePath -ne $physicalPath) {
                 Write-Host "  [IIS] Setting Physical Path to '$($physicalPath)' for $($siteName) Site..." -f green
-                Set-ItemProperty "IIS:\Sites\$siteName" physicalPath $physicalPath
+                # Set-ItemProperty "IIS:\Sites\$siteName" physicalPath $physicalPath
             }
 
-            $existingAppPool = [string](Get-ChildItem IIS:\Sites | foreach-Object { if ($_.Name -eq $siteName) { $_.applicationPool } })
+            # $existingAppPool = [string](Get-ChildItem IIS:\Sites # | foreach-Object { if ($_.Name -eq $siteName) { $_.applicationPool } })
             $appPool = [string]$site.AppPool
 
-            if (-not($existingAppPool -match "^$appPool$")) {
-                Write-Host "  [IIS] Setting AppPool to '$($appPool)' for $($siteName) Site..." -f green
-                Set-ItemProperty "IIS:\Sites\$siteName" applicationPool $appPool
-            }
+            # if (-not($existingAppPool -match "^$appPool$")) {
+            #     Write-Host "  [IIS] Setting AppPool to '$($appPool)' for $($siteName) Site..." -f green
+            #     Set-ItemProperty "IIS:\Sites\$siteName" applicationPool $appPool
+            # }
 
             foreach ($virtualDirectory in $site.VirtualDirectories) {
                 $path = [string]$virtualDirectory.Path
                 # $searchPath = $path -replace '^[/\\]', '' -replace '/', '\'
                 # $physicalPath = [string]$virtualDirectory.PhysicalPath -replace '/', '\';
-                $existingSitePath = Get-ChildItem "IIS:\Sites\$siteName" | Where { $_.GetType().Name -eq "ConfigurationElement" -and "/$($_.Name)" -eq "/$searchPath" }
+                # $existingSitePath = Get-ChildItem "IIS:\Sites\$siteName" | Where { $_.GetType().Name -eq "ConfigurationElement" -and "/$($_.Name)" -eq "/$searchPath" }
                 if ($existingSitePath) {
                     $existingPhysicalPath = $existingSitePath.physicalPath
                     if ($existingPhysicalPath -ne $physicalPath) {
                         Write-Host "  [IIS] Setting Physical Path to '$($physicalPath)' for $($siteName) Site $($path) VirtualDirectory..." -f green
-                        Set-ItemProperty "IIS:\Sites\$siteName$path" physicalPath $physicalPath
+                        # Set-ItemProperty "IIS:\Sites\$siteName$path" physicalPath $physicalPath
                     }
                 } else {
                     Write-Host "  [IIS] Adding Virtual Directory $($path)..." -f white
-                    App-Cmd add VDir /app.name:$siteName"/" /path:"$path" /physicalPath:$physicalPath
+                    # App-Cmd add VDir /app.name:$siteName"/" /path:"$path" /physicalPath:$physicalPath
                 }
             }
 
@@ -469,22 +469,22 @@ Function Add-IISSite($site) {
                 # $searchPath = $path -replace '^[/\\]', '' -replace '/', '\'
                 # $physicalPath = [string]$application.PhysicalPath -replace '/', '\';
                 $appPool = [string]$application.AppPool
-                $existingSitePath = Get-ChildItem "IIS:\Sites\$siteName" | Where { $_.GetType().Name -eq "ConfigurationElement" -and "/$($_.Name)" -eq "/$searchPath" }
+                # $existingSitePath = Get-ChildItem "IIS:\Sites\$siteName" | Where { $_.GetType().Name -eq "ConfigurationElement" -and "/$($_.Name)" -eq "/$searchPath" }
                 if ($existingSitePath) {
                     $existingAppPool = $existingSitePath.applicationPool
                     if ($existingAppPool -ne $appPool) {
                         Write-Host "  [IIS] Setting AppPool to '$($appPool)' for $($siteName) Site $($path) Application..." -f green
-                        Set-ItemProperty "IIS:\Sites\$siteName$path" applicationPool $appPool
+                        # Set-ItemProperty "IIS:\Sites\$siteName$path" applicationPool $appPool
                     }
 
                     $existingPhysicalPath = $existingSitePath.physicalPath
                     if ($existingPhysicalPath -ne $physicalPath) {
                         Write-Host "  [IIS] Setting Physical Path to '$($physicalPath)' for $($siteName) Site $($path) Application..." -f green
-                        Set-ItemProperty "IIS:\Sites\$siteName$path" physicalPath $physicalPath
+                        # Set-ItemProperty "IIS:\Sites\$siteName$path" physicalPath $physicalPath
                     }
                 } else {
                     Write-Host "  [IIS] Adding Application $($path)..." -f white
-                    App-Cmd add App /site.name:$siteName /path:$path /physicalPath:$physicalPath /applicationPool:$appPool
+                    # App-Cmd add App /site.name:$siteName /path:$path /physicalPath:$physicalPath /applicationPool:$appPool
                 }
             }
         }
@@ -510,19 +510,19 @@ Function Remove-IISSite($siteId, $siteName) {
     if ($USE_POWERSHELL_7_COMMANDS) {
         $existingSite = Get-ActualIISSite $siteName -WarningAction SilentlyContinue
         if ($existingSite) {
-            if (([int]$siteId -lt 0) -or $existingSite.Id -eq $siteId) {
+            # if (([int]$siteId -lt 0) -or $existingSite.Id -eq $siteId) {
                 Write-Host "[IIS] Removing $($siteName) Site..." -f red
                 Remove-ActualIISSite $siteName -Confirm:$false
-            }
+            # }
         }
     } else {
         $existingSite = App-Cmd list Site $siteName
         if ($existingSite) {
-            $correctId = $existingSite -as "string" -match "id:$siteId,"
-            if (([int]$siteId -lt 0) -or $correctId) {
+            # $correctId = $existingSite -as "string" -match "id:$siteId,"
+            # if (([int]$siteId -lt 0) -or $correctId) {
                 Write-Host "[IIS] Removing $($siteName) Site..." -f red
                 App-Cmd delete Sites $siteName
-            }
+            # }
         }
     }
 }
@@ -616,8 +616,8 @@ Function _Add-IISAppPool($appPool) {
 
         $existingAppPool = Get-ActualIISAppPool $appPoolName -WarningAction SilentlyContinue
         if (-not($existingAppPool)) {
-            Write-Host "[IIS] Creating new $($appPoolName) AppPool..." -f cyan
-            $iisManager.ApplicationPools.Add($appPoolName) | Out-Null
+            # Write-Host "[IIS] Creating new $($appPoolName) AppPool..." -f cyan
+            # $iisManager.ApplicationPools.Add($appPoolName) | Out-Null
             $iisManager.CommitChanges()
 
             $existingAppPool = Get-ActualIISAppPool $appPoolName
@@ -629,17 +629,17 @@ Function _Add-IISAppPool($appPool) {
             $iisManager.CommitChanges()
         }
     } else {
-        $existingAppPool = (Get-Item IIS:\AppPools\$appPoolName -ErrorAction Ignore)
+        # $existingAppPool = (Get-Item IIS:\AppPools\$appPoolName -ErrorAction Ignore)
         if (-not($existingAppPool)) {
-            Write-Host "[IIS] Creating new $($appPoolName) AppPool..." -f cyan
-            (New-WebAppPool -Name $appPoolName -force) | Out-Null
-            $existingAppPool = Get-Item IIS:\AppPools\$appPoolName
+            # Write-Host "[IIS] Creating new $($appPoolName) AppPool..." -f cyan
+            # (New-WebAppPool -Name $appPoolName -force) | Out-Null
+            # $existingAppPool = Get-Item IIS:\AppPools\$appPoolName
         }
 
         if ($desiredAppPoolState) {
             Write-Host "[IIS] Checking $($appPoolName) AppPool settings..." -f cyan
             _Set-KeysOnObject -ObjectName $appPoolName -Object $existingAppPool -KeyValues $desiredAppPoolState -ShowWarning
-            $existingAppPool | Set-Item
+            # $existingAppPool | Set-Item
         }
     }
 }
@@ -669,7 +669,7 @@ Function Remove-IISAppPool($appPool) {
             $existingAppPool.Delete()
         }
     } else {
-        $existingAppPool = (Get-Item IIS:\AppPools\$appPoolName -ErrorAction Ignore)
+        # $existingAppPool = (Get-Item IIS:\AppPools\$appPoolName -ErrorAction Ignore)
         if ($existingAppPool) {
             Write-Host "[IIS] Removing $($appPoolName) AppPool..." -f red
             Remove-WebAppPool -Name $appPoolName
@@ -711,14 +711,14 @@ Function Restore-IISAppPool($site) {
                 if ($existingAppPool -ne $appPoolOnRestore) {
                     Write-Host "[IIS] Restoring AppPool to '$($appPoolOnRestore)' for $($siteName) Site..." -f yellow
 
-                    $existingAppPool = $existingSite.Application['/'].ApplicationPoolName = $appPoolOnRestore
+                    # $existingAppPool = $existingSite.Application['/'].ApplicationPoolName = $appPoolOnRestore
                     $changedSite = $true
                 }
             }
 
             foreach ($application in $site.Applications) { # | ?{$_.AppPoolOnRestore}) {
                 $path = [string]$application.Path
-                $existingApplication = $existingSite.Application[$path]
+                # $existingApplication = $existingSite.Application[$path]
 
                 if($existingApplication) {
                     $appPoolOnRestore = [string]$application.AppPoolOnRestore
@@ -740,27 +740,27 @@ Function Restore-IISAppPool($site) {
         }
     } else {
         if (App-Cmd list Site $siteName) {
-            $existingAppPool = [string](Get-ChildItem IIS:\Sites | foreach-Object { if ($_.Name -eq $siteName) { $_.applicationPool } })
+            # $existingAppPool = [string](Get-ChildItem IIS:\Sites # | foreach-Object { if ($_.Name -eq $siteName) { $_.applicationPool } })
             $appPoolOnRestore = [string]$site.AppPoolOnRestore
-            if ($appPoolOnRestore -and (Get-Item IIS:\AppPools\$appPoolOnRestore -ErrorAction Ignore)) {
-                if (-not($existingAppPool -match "^$appPoolOnRestore$")) {
-                    Write-Host "[IIS] Restoring AppPool to '$($appPoolOnRestore)' for $($siteName) Site..." -f yellow
-                    Set-ItemProperty "IIS:\Sites\$siteName" applicationPool $appPoolOnRestore
-                    $changedSite = $true
-                }
-            }
+            # if ($appPoolOnRestore -and (Get-Item IIS:\AppPools\$appPoolOnRestore -ErrorAction Ignore)) {
+                # if (-not($existingAppPool -match "^$appPoolOnRestore$")) {
+                #     Write-Host "[IIS] Restoring AppPool to '$($appPoolOnRestore)' for $($siteName) Site..." -f yellow
+                #     Set-ItemProperty "IIS:\Sites\$siteName" applicationPool $appPoolOnRestore
+                #     $changedSite = $true
+                # }
+            # }
 
             foreach ($application in $site.Applications) {
                 $path = [string]$application.Path
-                $existingAppPool = [string](Get-ChildItem "IIS:\Sites\$siteName" | foreach-Object { if ("/$($_.Name)" -eq "$path") { $_.applicationPool } })
+                # $existingAppPool = [string](Get-ChildItem "IIS:\Sites\$siteName"  # | foreach-Object { if ("/$($_.Name)" -eq "$path") { $_.applicationPool } })
                 $appPoolOnRestore = [string]$application.AppPoolOnRestore
-                if ($appPoolOnRestore -and (Get-Item IIS:\AppPools\$appPoolOnRestore -ErrorAction Ignore)) {
-                    if (-not($existingAppPool -match "^$appPoolOnRestore$")) {
-                        Write-Host "[IIS] Restoring AppPool to '$($appPoolOnRestore)' for $($siteName) Site $($path) Application..." -f yellow
-                        Set-ItemProperty "IIS:\Sites\$siteName$path" applicationPool $appPoolOnRestore
-                        $changedSite = $true
-                    }
-                }
+                # if ($appPoolOnRestore -and (Get-Item IIS:\AppPools\$appPoolOnRestore -ErrorAction Ignore)) {
+                    # if (-not($existingAppPool -match "^$appPoolOnRestore$")) {
+                    #     Write-Host "[IIS] Restoring AppPool to '$($appPoolOnRestore)' for $($siteName) Site $($path) Application..." -f yellow
+                    #     Set-ItemProperty "IIS:\Sites\$siteName$path" applicationPool $appPoolOnRestore
+                    #     $changedSite = $true
+                    # }
+                # }
             }
         }
 

@@ -51,12 +51,7 @@ module.exports = grammar.export_grammar(
 
         pipeExpression: {
             OPERATOR: '&&',
-            SEGMENTS: ['VAL__pipeKeyword', 'pipeOutput'],
-        },
-
-        pipeOutput: {
-            OPERATOR: '||',
-            SEGMENTS: ['VAL__outNullKeyword', 'VAL__outDefaultKeyword'],
+            SEGMENTS: ['VAL__PIPE', 'functionExpression'],
         },
 
         tryCatchExpression: {
@@ -109,7 +104,8 @@ module.exports = grammar.export_grammar(
         functionArgsInParen: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'functionParenArgs?', 'VAL__PAREN_R'] },
         functionArgsInline: { OPERATOR: '&&', SEGMENTS: ['functionArg*', 'functionNamedArg*'] },
         functionArg: { OPERATOR: '&&', SEGMENTS: ['argumentValue'] },
-        functionNamedArg: { OPERATOR: '&&', SEGMENTS: ['FNL*', 'VAL__DASH?', 'argumentName', 'functionNamedArgValue?'] },
+        functionNamedArg: { OPERATOR: '&&', SEGMENTS: ['FNL*', 'functionNamedArgMarker?', 'argumentName', 'functionNamedArgValue?'] },
+        functionNamedArgMarker: { OPERATOR: '||', SEGMENTS: ['VAL__DASH', 'VAL__SLASH'] },
         functionNamedArgValue: { OPERATOR: '&&', SEGMENTS: ['argumentSeparator?', 'argumentValue'] },
         functionName: { OPERATOR: '&&', SEGMENTS: ['VAL__functionName'] },
 
@@ -161,7 +157,8 @@ module.exports = grammar.export_grammar(
         variableName: { OPERATOR: '&&', SEGMENTS: ['VAL__DOLLAR', 'variableGlobalModifier?', 'VAL__variableName'] },
         variableGlobalModifier: { OPERATOR: '&&', SEGMENTS: ['VAL__globalKeyword', 'VAL__COLON'] },
         variableObjectAccess: { OPERATOR: '||', SEGMENTS: ['variableIndexAccess', 'variableKeyAccess'] },
-        variableIndexAccess: { OPERATOR: '&&', SEGMENTS: ['VAL__SQBRAC_L', 'intLiteral', 'VAL__SQBRAC_R'] },
+        variableIndexAccess: { OPERATOR: '&&', SEGMENTS: ['VAL__SQBRAC_L', 'variableIndexAccessExpression', 'VAL__SQBRAC_R'] },
+        variableIndexAccessExpression: { OPERATOR: '||', SEGMENTS: ['literal'] },
         variableKeyAccess: { OPERATOR: '&&', SEGMENTS: ['VAL__DOT', 'variableKeyAccessExpression'] },
         variableKeyAccessExpression: { OPERATOR: '||', SEGMENTS: ['conditionalExpression', 'VAL__reference'] },
 
@@ -181,6 +178,7 @@ module.exports = grammar.export_grammar(
         singleQuotedStringLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__SQUOTE', 'VAL__singleQuotedString', 'VAL__SQUOTE'] },
         doubleQuotedStringLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__DQUOTE', 'VAL__doubleQuotedString', 'VAL__DQUOTE'] },
         booleanLiteral: { OPERATOR: '||', SEGMENTS: ['VAL__trueKeyword', 'VAL__falseKeyword'] },
+        intLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__int'] },
         numericLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__numeric'] },
         versionLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__version'] },
         nullLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__nullKeyword'] },
@@ -205,13 +203,13 @@ module.exports = grammar.export_grammar(
         VAL__argumentName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_-]+' },
         VAL__variableName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_-]+' },
         VAL__numeric: { OPERATOR: '==', VALUE: '-?[1-9][0-9]*(?:.[0-9]+)' },
+        VAL__int: { OPERATOR: '==', VALUE: '-?[1-9][0-9]*' },
         VAL__version: { OPERATOR: '==', VALUE: '[0-9.]+' },
         VAL__singleQuotedString: { OPERATOR: '==', VALUE: "[^']+" },
         VAL__doubleQuotedString: { OPERATOR: '==', VALUE: '[^"]+' },
 
         VAL__outNullKeyword: { OPERATOR: '==', VALUE: 'Out-Null', CASE_INSENSITIVE: true },
         VAL__outDefaultKeyword: { OPERATOR: '==', VALUE: 'Out-Default', CASE_INSENSITIVE: true },
-        VAL__pipeKeyword: { OPERATOR: '==', VALUE: '[|]', CASE_INSENSITIVE: true },
         VAL__notKeyword: { OPERATOR: '==', VALUE: '-not', CASE_INSENSITIVE: true },
         VAL__tryKeyword: { OPERATOR: '==', VALUE: 'try', CASE_INSENSITIVE: true },
         VAL__catchKeyword: { OPERATOR: '==', VALUE: 'catch', CASE_INSENSITIVE: true },

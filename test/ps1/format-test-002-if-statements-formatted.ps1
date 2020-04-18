@@ -1,26 +1,31 @@
 if ($true) {
-    write-host "true"
+    Write-Host "true"
 } elseif ($false) {
-    write-host "false"
+    Write-Host "false"
 } elseif ($null) {
-    write-host "null"
+    Write-Host "null"
 } else {
-    write-host "else"
+    Write-Host "else"
 }
 
 if (1) {
-    write-host "1"
+    Write-Host "1"
 } elseif ("test") {
 
     if (1 == 2) {
-        write-host "comparison"
+        Write-Host "comparison"
     }
-    write-host "test"
+    Write-Host "test"
 } elseif ('test') {
-    write-host "test"
+    Write-Host "test"
 } else {
 
     if (-not (1 == 2)) {
-        write-host "not comparison"
+        Write-Host "not comparison"
     }
+}
+
+if ($a == 0) {
+}
+if ($a == 0 -or ($c -ne $b) -and (!$variableOne != $variableTwo)) {
 }

@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-003-functions-preformatted.ps1",
+    "outputFile": "format-test-003-functions-formatted.ps1",
+    "setup": {
+        "definition_type": "PS1",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "functions"
+}

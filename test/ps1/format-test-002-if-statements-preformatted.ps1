@@ -30,3 +30,6 @@ if (1) {
     }
 
 }
+
+if ($a == 0) {}
+if ($a == 0 -or ($c -ne $b) -and (!$variableOne != $variableTwo)) {}

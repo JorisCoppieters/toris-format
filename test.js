@@ -56,9 +56,10 @@ function createTest() {
         return;
     }
 
-    let latestTestNumber = fs.readdirSync(folder)
-        .filter(file => file.match(/format-test-.*-conf.json/))
-        .map(file => file.replace(/format-test-([0-9]+)-.*/, '$1'))
+    let latestTestNumber = fs
+        .readdirSync(folder)
+        .filter((file) => file.match(/format-test-.*-conf.json/))
+        .map((file) => file.replace(/format-test-([0-9]+)-.*/, '$1'))
         .reduce((max, v) => Math.max(max, parseInt(v)), 0);
 
     let nextTestNumber = latestTestNumber + 1;
@@ -70,10 +71,14 @@ function createTest() {
     let preformattedFile = `${testName}-preformatted.${g_TYPE}`;
 
     let config = {
-        'inputFile': preformattedFile,
-        'outputFile': formattedFile,
-        'setup': {},
-        'testName': g_NAME
+        inputFile: preformattedFile,
+        outputFile: formattedFile,
+        setup: {
+            definition_type: g_TYPE,
+            line_ending: '\n',
+            convert_line_endings: true,
+        },
+        testName: g_NAME,
     };
 
     fs.writeFileSync(`${folder}/${configFile}`, JSON.stringify(config, null, 4));
@@ -83,14 +88,12 @@ function createTest() {
 
 // ******************************
 
-function runTests () {
-    torisFormat.setupTest(
-        {
-            debug: g_DEBUG,
-            print_tree: g_PRINT_TREE,
-            run_checks: g_RUN_CHECKS
-        }
-    );
+function runTests() {
+    torisFormat.setupTest({
+        debug: g_DEBUG,
+        print_tree: g_PRINT_TREE,
+        run_checks: g_RUN_CHECKS,
+    });
 
     if (g_PS1) {
         torisFormat.formatTests('test/ps1');
@@ -109,4 +112,3 @@ function runTests () {
 }
 
 // ******************************
-
