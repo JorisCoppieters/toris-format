@@ -149,11 +149,6 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         var contents = in_contents || '';
         var original_contents = contents;
 
-        // if (contents.trim().length === 0) {
-        //     result = false;
-        //     break;
-        // }
-
         var definition_key = (in_definition_key) ? in_definition_key : grammar.k_DEFINITION_KEY_START;
         var definition_value = in_definition[definition_key];
 

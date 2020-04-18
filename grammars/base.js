@@ -77,7 +77,6 @@ module.exports = grammar.export_grammar({
     VAL__TRUE: { OPERATOR: '==', VALUE: 'true' },
     VAL__UNDERSCORE: { OPERATOR: '==', VALUE: '[_]' },
     VAL__WHITESPACE: { OPERATOR: '==', VALUE: re.r_W },
-    VAL__NON_EMPTY_WHITESPACE: { OPERATOR: '==', VALUE: re.r_S },
 });
 
 // ******************************
