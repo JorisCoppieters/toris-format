@@ -15,6 +15,7 @@ var torisFormat = require('./index.js');
 // ******************************
 
 var g_ARGV = minimist(process.argv.slice(2));
+var g_PS1 = g_ARGV['ps1'] !== false;
 var g_SCSS = g_ARGV['scss'] !== false;
 var g_HTML = g_ARGV['html'] !== false;
 var g_DEBUG = g_ARGV['debug'];
@@ -91,6 +92,11 @@ function runTests () {
         }
     );
 
+    if (g_PS1) {
+        torisFormat.formatTests('test/ps1');
+        torisFormat.printTests('test/ps1');
+    }
+
     if (g_SCSS) {
         torisFormat.formatTests('test/scss');
         torisFormat.printTests('test/scss');
@@ -98,6 +104,7 @@ function runTests () {
 
     if (g_HTML) {
         torisFormat.formatTests('test/html');
+        torisFormat.printTests('test/html');
     }
 }
 

@@ -114,7 +114,7 @@ module.exports = grammar.export_grammar(
         functionName: { OPERATOR: '&&', SEGMENTS: ['VAL__functionName'] },
 
         functionParenArgs: { OPERATOR: '&&', SEGMENTS: ['functionParenArg', 'functionParenArgExtra'] },
-        functionParenArg: { OPERATOR: '||', SEGMENTS: ['variableName', 'literal'] },
+        functionParenArg: { OPERATOR: '||', SEGMENTS: ['literal', 'variableName'] },
         functionParenArgExtra: { OPERATOR: '&&', SEGMENTS: ['VAL__COMMA', 'functionParenArg'] },
 
         argumentName: { OPERATOR: '&&', SEGMENTS: ['VAL__argumentName'] },
@@ -149,11 +149,11 @@ module.exports = grammar.export_grammar(
         extraCondition: { OPERATOR: '&&', SEGMENTS: ['conditionSeparator', 'condition'] },
         conditionSeparator: { OPERATOR: '||', SEGMENTS: ['VAL__orKeyword', 'VAL__andKeyword'] },
         notComparisonExpression: { OPERATOR: '&&', SEGMENTS: ['notOperator', 'conditionalExpression'] },
-        comparisonExpression: { OPERATOR: '&&', SEGMENTS: ['comparisonArgument', 'comparisonExpressRight?'] },
-        comparisonExpressRight: { OPERATOR: '&&', SEGMENTS: ['comparisonOperator', 'comparisonArgument'] },
+        comparisonExpression: { OPERATOR: '&&', SEGMENTS: ['comparisonArgument', 'comparisonExpressionRight?'] },
+        comparisonExpressionRight: { OPERATOR: '&&', SEGMENTS: ['comparisonOperator', 'comparisonArgument'] },
         comparisonArgument: {
             OPERATOR: '||',
-            SEGMENTS: ['conditionalExpressionInParen', 'variableReference', 'literal', 'functionExpression'],
+            SEGMENTS: ['conditionalExpressionInParen', 'literal', 'variableReference', 'functionExpression'],
         },
         comparisonOperator: { OPERATOR: '||', SEGMENTS: ['eqOperator', 'neOperator'] },
 
@@ -167,7 +167,7 @@ module.exports = grammar.export_grammar(
 
         literal: {
             OPERATOR: '||',
-            SEGMENTS: ['pathLiteral', 'arrayLiteral', 'stringLiteral', 'booleanLiteral', 'versionLiteral', 'numericLiteral', 'nullLiteral'],
+            SEGMENTS: ['booleanLiteral', 'pathLiteral', 'arrayLiteral', 'stringLiteral', 'versionLiteral', 'numericLiteral', 'nullLiteral'],
         },
         pathLiteral: { OPERATOR: '&&', SEGMENTS: ['pathRoot', 'VAL__COLON', 'pathChild*', 'VAL__SLASH?'] },
         pathRoot: { OPERATOR: '&&', SEGMENTS: ['VAL__driveName'] },
@@ -230,9 +230,9 @@ module.exports = grammar.export_grammar(
         VAL__elseKeyword: { OPERATOR: '==', VALUE: 'else', CASE_INSENSITIVE: true },
         VAL__orKeyword: { OPERATOR: '==', VALUE: '-or', CASE_INSENSITIVE: true },
         VAL__andKeyword: { OPERATOR: '==', VALUE: '-and', CASE_INSENSITIVE: true },
-        VAL__trueKeyword: { OPERATOR: '==', VALUE: '$true', CASE_INSENSITIVE: true },
-        VAL__falseKeyword: { OPERATOR: '==', VALUE: '$false', CASE_INSENSITIVE: true },
-        VAL__nullKeyword: { OPERATOR: '==', VALUE: '$null', CASE_INSENSITIVE: true },
+        VAL__trueKeyword: { OPERATOR: '==', VALUE: '[$]true', CASE_INSENSITIVE: true },
+        VAL__falseKeyword: { OPERATOR: '==', VALUE: '[$]false', CASE_INSENSITIVE: true },
+        VAL__nullKeyword: { OPERATOR: '==', VALUE: '[$]null', CASE_INSENSITIVE: true },
     },
     // Dependent On:
     [require('./base')]

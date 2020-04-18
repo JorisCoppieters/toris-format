@@ -1,3 +1,3 @@
 if ($true) {
-    Write-Host "hello"
+    write-host "hello"
 }

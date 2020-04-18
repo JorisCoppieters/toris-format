@@ -1,6 +1,10 @@
 {
     "inputFile": "format-test-002-if-statements-preformatted.ps1",
     "outputFile": "format-test-002-if-statements-formatted.ps1",
-    "setup": {},
+    "setup": {
+        "definition_type": "PS1",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
     "testName": "if-statements"
 }
