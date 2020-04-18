@@ -9,7 +9,7 @@
   },
   "description": "Node utility for formatting SASS, HTML, Angular1 HTML and Angular2 HTML",
   "devDependencies": {
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.5"
   },
   "homepage": "https://github.com/JorisCoppieters/toris-format#readme",
   "license": "ISC",
