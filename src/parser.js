@@ -70,8 +70,6 @@ function setup (in_config) {
     g_DEFINITION_TYPE = utils.get_setup_property(in_config, 'definition_type', g_DEFINITION_TYPE);
     g_PRINT_TREE_CONSTRUCTION = utils.get_setup_property(in_config, 'print_tree_construction', g_PRINT_TREE_CONSTRUCTION);
     g_RUN_CHECKS = utils.get_setup_property(in_config, 'run_checks', g_RUN_CHECKS);
-    g_CASE_INSENSITIVE = true;
-    g_PARSE_AS_SEPARATE_LINES = true;
 
     if (g_DEFINITION_TYPE === k_DEFINITION_TYPE_HTML) {
         // HTML:
@@ -103,10 +101,14 @@ function parse_contents (in_contents) {
 
         case k_DEFINITION_TYPE_SCSS:
             definition = GRAMMAR_SCSS;
+            g_CASE_INSENSITIVE = false;
+            g_PARSE_AS_SEPARATE_LINES = false;
             break;
 
         case k_DEFINITION_TYPE_PS1:
             definition = GRAMMAR_PS1;
+            g_CASE_INSENSITIVE = true;
+            g_PARSE_AS_SEPARATE_LINES = true;
             break;
 
         default:
