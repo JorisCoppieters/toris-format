@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.13
+// TORIS FORMAT v1.7.14-powershell-to-python-grammar
 //
 //
 // ******************************
@@ -23,7 +23,7 @@ var test = require('./src/test');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.13';
+const k_VERSION = '1.7.14-powershell-to-python-grammar';
 
 // ******************************
 // TODO: DEPRECATE
