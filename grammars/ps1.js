@@ -39,6 +39,8 @@ module.exports = grammar.export_grammar(
         statementOptions: {
             OPERATOR: '||',
             SEGMENTS: [
+                'literalExpression',
+                'switchExpression',
                 'tryCatchExpression',
                 'forEachExpression',
                 'functionDeclaration',
@@ -49,22 +51,61 @@ module.exports = grammar.export_grammar(
             ],
         },
 
-        pipeExpression: {
+        literalExpression: {
             OPERATOR: '&&',
-            SEGMENTS: ['VAL__PIPE', 'functionExpression'],
+            SEGMENTS: ['literal'],
+        },
+        switchExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__switchKeyword', 'switchVariableDeclaration', 'switchBlockDeclaration'],
+        },
+        switchVariableDeclaration: {
+            OPERATOR: '&&',
+            SEGMENTS: ['NL*', 'VAL__PAREN_L', 'variableName', 'NL*', 'VAL__PAREN_R'],
+        },
+        switchBlockDeclaration: {
+            OPERATOR: '&&',
+            SEGMENTS: ['NL*', 'VAL__CURLY_L', 'switchConditionDeclaration*', 'NL*', 'VAL__CURLY_R'],
+            STACK: 'SwitchBlock',
+        },
+        switchConditionDeclaration: {
+            OPERATOR: '&&',
+            SEGMENTS: ['NL*', 'switchCondition', 'statementBlock'],
+        },
+        switchCondition: {
+            OPERATOR: '||',
+            SEGMENTS: ['VAL__reference', 'literal'],
         },
 
         tryCatchExpression: {
             OPERATOR: '&&',
-            SEGMENTS: [
-                'VAL__tryKeyword',
-                'NL*',
-                'statementBlock',
-                'NL*',
-                'VAL__catchKeyword',
-                'NL*',
-                'statementBlock',
-            ],
+            SEGMENTS: ['VAL__tryKeyword', 'NL*', 'statementBlock', 'NL*', 'VAL__catchKeyword', 'NL*', 'statementBlock'],
+        },
+
+        pipeExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__PIPE', 'pipeDestinationExpression'],
+            STACK: 'PipeExpression',
+        },
+        pipeDestinationExpression: {
+            OPERATOR: '||',
+            SEGMENTS: ['pipeLoopExpression', 'functionExpression'],
+        },
+        pipeLoopExpression: {
+            OPERATOR: '||',
+            SEGMENTS: ['pipeWhereExpression', 'pipeForEachExpression', 'pipeSelectObjectExpression'],
+        },
+        pipeWhereExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__whereKeyword', 'statementBlock'],
+        },
+        pipeForEachExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__forEachKeyword', 'statementBlock'],
+        },
+        pipeSelectObjectExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__selectObjectKeyword', 'statementBlock'],
         },
 
         forEachExpression: {
@@ -78,15 +119,8 @@ module.exports = grammar.export_grammar(
 
         functionDeclaration: {
             OPERATOR: '&&',
-            SEGMENTS: [
-                'VAL__functionKeyword',
-                'functionName',
-                'NL*',
-                'functionParamDeclaration',
-                'NL*',
-                'statementBlock',
-            ],
-            STACK: 'FunctionDeclare'
+            SEGMENTS: ['VAL__functionKeyword', 'functionName', 'NL*', 'functionParamDeclaration', 'NL*', 'statementBlock'],
+            STACK: 'FunctionDeclare',
         },
         functionParamDeclaration: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'functionParams?', 'VAL__PAREN_R'] },
         functionParams: { OPERATOR: '&&', SEGMENTS: ['functionParam', 'functionParamExtra*'] },
@@ -105,7 +139,11 @@ module.exports = grammar.export_grammar(
         functionArgsInParen: { OPERATOR: '&&', SEGMENTS: ['VAL__PAREN_L', 'functionParenArgs?', 'VAL__PAREN_R'] },
         functionArgsInline: { OPERATOR: '&&', SEGMENTS: ['functionArg*', 'functionNamedArg*'] },
         functionArg: { OPERATOR: '&&', SEGMENTS: ['argumentValue'] },
-        functionNamedArg: { OPERATOR: '&&', SEGMENTS: ['FNL*', 'functionNamedArgMarker?', 'argumentName', 'functionNamedArgValue?'] },
+        functionNamedArg: {
+            OPERATOR: '&&',
+            SEGMENTS: ['FNL*', 'functionNamedArgMarker?', 'argumentName', 'functionNamedArgValue?'],
+            STACK: 'FunctionNamedArg',
+        },
         functionNamedArgMarker: { OPERATOR: '||', SEGMENTS: ['VAL__DASH', 'VAL__SLASH'] },
         functionNamedArgValue: { OPERATOR: '&&', SEGMENTS: ['argumentSeparator?', 'argumentValue'] },
         functionName: { OPERATOR: '&&', SEGMENTS: ['VAL__functionName'] },
@@ -120,15 +158,7 @@ module.exports = grammar.export_grammar(
 
         ifStatement: {
             OPERATOR: '&&',
-            SEGMENTS: [
-                'VAL__ifKeyword',
-                'NL*',
-                'statementCondition',
-                'NL*',
-                'statementBlock',
-                'elseIfStatement*',
-                'elseStatement?',
-            ],
+            SEGMENTS: ['VAL__ifKeyword', 'NL*', 'statementCondition', 'NL*', 'statementBlock', 'elseIfStatement*', 'elseStatement?'],
         },
         elseIfStatement: {
             OPERATOR: '&&',
@@ -179,7 +209,6 @@ module.exports = grammar.export_grammar(
         singleQuotedStringLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__SQUOTE', 'VAL__singleQuotedString', 'VAL__SQUOTE'] },
         doubleQuotedStringLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__DQUOTE', 'VAL__doubleQuotedString', 'VAL__DQUOTE'] },
         booleanLiteral: { OPERATOR: '||', SEGMENTS: ['VAL__trueKeyword', 'VAL__falseKeyword'] },
-        intLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__int'] },
         numericLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__numeric'] },
         versionLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__version'] },
         nullLiteral: { OPERATOR: '&&', SEGMENTS: ['VAL__nullKeyword'] },
@@ -217,6 +246,8 @@ module.exports = grammar.export_grammar(
         VAL__eqKeyword: { OPERATOR: '==', VALUE: '-eq', CASE_INSENSITIVE: true },
         VAL__neKeyword: { OPERATOR: '==', VALUE: '-ne', CASE_INSENSITIVE: true },
         VAL__inKeyword: { OPERATOR: '==', VALUE: 'in', CASE_INSENSITIVE: true },
+        VAL__selectObjectKeyword: { OPERATOR: '==', VALUE: 'Select-Object', CASE_INSENSITIVE: true },
+        VAL__whereKeyword: { OPERATOR: '==', VALUE: 'where', CASE_INSENSITIVE: true },
         VAL__forEachKeyword: { OPERATOR: '==', VALUE: 'foreach', CASE_INSENSITIVE: true },
         VAL__functionKeyword: { OPERATOR: '==', VALUE: 'function', CASE_INSENSITIVE: true },
         VAL__switchKeyword: { OPERATOR: '==', VALUE: 'switch', CASE_INSENSITIVE: true },

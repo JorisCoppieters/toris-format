@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-004-for-statement-preformatted.ps1",
+    "outputFile": "format-test-004-for-statement-formatted.ps1",
+    "setup": {
+        "definition_type": "ps1",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "for-statement"
+}

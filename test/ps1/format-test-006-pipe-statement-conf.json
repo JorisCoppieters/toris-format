@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-006-pipe-statement-preformatted.ps1",
+    "outputFile": "format-test-006-pipe-statement-formatted.ps1",
+    "setup": {
+        "definition_type": "ps1",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "pipe-statement"
+}

@@ -79,6 +79,8 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
         case 'VAL__neKeyword':
         case 'VAL__inKeyword':
         case 'VAL__forEachKeyword':
+        case 'VAL__selectObjectKeyword':
+        case 'VAL__whereKeyword':
         case 'VAL__functionKeyword':
         case 'VAL__switchKeyword':
         case 'VAL__intKeyword':
@@ -119,7 +121,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
                     break;
 
                 case 'VAL__tryKeyword':
-                    double_newline = in_state.LAST_TOKEN === 'NLx2';
+                    double_newline = ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
                     newline = true;
                     break;
 
@@ -127,9 +129,16 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
                     space_before = true;
                     break;
 
+                case 'VAL__selectObjectKeyword':
+                case 'VAL__whereKeyword':
+                    space_before = true;
+                    break;
+
                 case 'VAL__forEachKeyword':
-                    double_newline = in_state.LAST_TOKEN === 'NLx2';
-                    newline = true;
+                    var pipeExpression = in_state.STACK.slice(-1)[0] === 'PipeExpression';
+                    double_newline = !pipeExpression && ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+                    newline = !pipeExpression;
+                    space_before = pipeExpression;
                     break;
 
                 case 'VAL__inKeyword':
@@ -137,7 +146,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
                     break;
 
                 case 'VAL__ifKeyword':
-                    double_newline = in_state.LAST_TOKEN === 'NLx2';
+                    double_newline = ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
                     newline = true;
                     break;
 
@@ -155,6 +164,12 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
                     space_before = true;
                     break;
             }
+            break;
+
+        case 'VAL__reference':
+            var switchBlock = in_state.STACK.slice(-1)[0] === 'SwitchBlock';
+            color_func = cprint.toBlue;
+            newline = switchBlock;
             break;
 
         case 'VAL__version':
@@ -210,11 +225,23 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
         case 'VAL__DASH':
             color_func = cprint.toRed;
             last_token = '-';
+            newline = ['`', 'NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+            var functionNamedArg = in_state.STACK.slice(-1)[0] === 'FunctionNamedArg';
+            if (functionNamedArg && newline) {
+                pre_indent++;
+                post_indent--;
+            }
             break;
 
         case 'VAL__SLASH':
             color_func = cprint.toRed;
             last_token = '/';
+            newline = ['`', 'NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+            var functionNamedArg = in_state.STACK.slice(-1)[0] === 'FunctionNamedArg';
+            if (functionNamedArg && newline) {
+                pre_indent++;
+                post_indent--;
+            }
             break;
 
         case 'VAL__DOT':
@@ -231,11 +258,15 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
 
         case 'VAL__HASH':
             color_func = cprint.toDarkGray;
+            newline = ['NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+            double_newline =  ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
             last_token = '#';
             break;
 
         case 'VAL__AT':
             color_func = cprint.toRed;
+            newline = ['NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+            double_newline =  ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
             last_token = '@';
             break;
 
@@ -246,17 +277,17 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
             break;
 
         case 'VAL__PAREN_L':
-            var declaration = in_state.STACK.indexOf('FunctionDeclare') >= 0;
+            var declaration = in_state.STACK.slice(-1)[0] === 'FunctionDeclare';
             color_func = cprint.toWhite;
-            last_token = definition_value;
+            last_token = '(';
             space_before = declaration ?
-                ['@'].indexOf(in_state.LAST_TOKEN) < 0 :
-                ['FUNCTION', '@'].indexOf(in_state.LAST_TOKEN) < 0;
+                ['@', '(', 'NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) < 0 :
+                ['FUNCTION', '@', '(', 'NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) < 0;
             break;
 
         case 'VAL__PAREN_R':
             color_func = cprint.toWhite;
-            last_token = definition_value;
+            last_token = ')';
             space_before = false;
             break;
 
@@ -277,13 +308,13 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
 
         case 'VAL__SQBRAC_L':
             color_func = cprint.toCyan;
-            last_token = definition_value;
+            last_token = '[';
             space_before = [',', '='].indexOf(in_state.LAST_TOKEN) >= 0;
             break;
 
         case 'VAL__SQBRAC_R':
             color_func = cprint.toCyan;
-            last_token = definition_value;
+            last_token = ']';
             space_before = false;
             break;
 

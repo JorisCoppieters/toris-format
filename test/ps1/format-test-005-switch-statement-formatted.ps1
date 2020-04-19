@@ -1,0 +1,6 @@
+switch ($x) {
+    condition {
+    }
+    Default {
+    }
+}

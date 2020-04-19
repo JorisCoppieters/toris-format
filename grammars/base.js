@@ -26,7 +26,7 @@ module.exports = grammar.export_grammar({
     VAL__AND: { OPERATOR: '==', VALUE: '[&][&]' },
     VAL__AT: { OPERATOR: '==', VALUE: '@' },
     VAL__BACKSLASH: { OPERATOR: '==', VALUE: '[\\]' },
-    VAL__BACKTICK: { OPERATOR: '==', VALUE: '`' },
+    VAL__BACKTICK: { OPERATOR: '==', VALUE: '[`]' },
     VAL__COLON: { OPERATOR: '==', VALUE: ':' },
     VAL__COMMA: { OPERATOR: '==', VALUE: ',' },
     VAL__CURLY_L: { OPERATOR: '==', VALUE: '[{]' },
