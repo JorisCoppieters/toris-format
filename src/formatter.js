@@ -116,8 +116,7 @@ function format_contents (in_contents, in_config) {
     var tree_output = treeFn.get_tree_output(tree, in_config);
     if (!tree_output.output) {
         var failed_output = treeFn.get_failed_output(tree, logger.CONFIG.logColour);
-        logger.error('Failed to parse:\n' + failed_output)
-        throw new Error('Failed to parse');
+        throw new Error('Failed to parse:\n' + failed_output)
     }
 
     var result = tree_output.output;
