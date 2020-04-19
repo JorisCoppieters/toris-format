@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.20-powershell-to-python-grammar
+// TORIS FORMAT v1.7.21
 //
 //
 // ******************************
@@ -24,7 +24,7 @@ var logger = require('./src/logger');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.20-powershell-to-python-grammar';
+const k_VERSION = '1.7.21';
 
 // ******************************
 // TODO: DEPRECATE
