@@ -170,11 +170,10 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
 // ******************************
 
-function get_failed_output (in_tree) {
-    var failed_tree_output = get_failed_tree_output(in_tree);
-
-    var result = get_recognized_chunk(in_tree);
+function get_failed_output (in_tree, in_colour) {
+    var result = get_recognized_chunk(in_tree, in_colour);
     if (g_DEBUG) {
+        var failed_tree_output = get_failed_tree_output(in_tree);
         result += '\n' + cprint.toYellow('Best Path:\n' + failed_tree_output.best_path);
     }
 
@@ -243,7 +242,7 @@ function get_tree_output_structure (in_tree, in_config) {
 
 // ******************************
 
-function get_recognized_chunk (in_tree) {
+function get_recognized_chunk (in_tree, in_colour) {
     if (in_tree.FAILED) {
         var failed_tree_output = get_failed_tree_output(in_tree);
         var recognised_contents = _get_recognized_contents(failed_tree_output, in_tree.INPUT);
@@ -257,7 +256,10 @@ function get_recognized_chunk (in_tree) {
             unrecognised_contents = unrecognised_contents.substr(0, 100) + '...';
         }
 
-        return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+        if (in_colour) {
+            return cprint.toGreen(recognised_contents) + cprint.toRed(unrecognised_contents);
+        }
+        return recognised_contents + '>>> ' + unrecognised_contents;
     }
 
     return false;
