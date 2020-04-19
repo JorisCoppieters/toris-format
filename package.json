@@ -22,5 +22,5 @@
   "scripts": {
     "test": "node test"
   },
-  "version": "1.7.15-powershell-to-python-grammar"
+  "version": "1.7.16-powershell-to-python-grammar"
 }
