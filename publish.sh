@@ -68,7 +68,7 @@ if [[ `ask "Do you want to publish $VERSION?" && echo true` == true ]]; then
   git add .
   git commit -m "Set version to $VERSION"
   git tag -a v$VERSION -m "Published v$VERSION"
-  git push origin v$VERSION
+  git push
 else
   echo "Ok...";
 fi
