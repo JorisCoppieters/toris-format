@@ -24,7 +24,7 @@ module.exports = grammar.export_grammar(
         PS1: { OPERATOR: '&&', SEGMENTS: ['statementSeparator*', 'statementList*', 'statementSeparator*'] },
 
         statementList: { OPERATOR: '&&', SEGMENTS: ['statement', 'statementListExtra*'] },
-        statementListExtra: { OPERATOR: '&&', SEGMENTS: ['statementSeparator+', 'statement'] },
+        statementListExtra: { OPERATOR: '&&', SEGMENTS: ['statementSeparator*', 'statement'] },
         statementSeparator: { OPERATOR: '||', SEGMENTS: ['VAL__SEMI', 'VAL__NEW_LINE'] },
         statementBlock: {
             OPERATOR: '&&',
@@ -33,12 +33,13 @@ module.exports = grammar.export_grammar(
 
         statement: {
             OPERATOR: '&&',
-            SEGMENTS: ['statementOptions', 'pipeExpression*', 'inlineComment?'],
+            SEGMENTS: ['statementOptions', 'pipeExpression*', 'statementSeparator?', 'inlineComment?'],
         },
 
         statementOptions: {
             OPERATOR: '||',
             SEGMENTS: [
+                'keywordExpression',
                 'literalExpression',
                 'switchExpression',
                 'tryCatchExpression',
@@ -49,6 +50,19 @@ module.exports = grammar.export_grammar(
                 'variableExpression',
                 'inlineComment',
             ],
+        },
+
+        keywordExpression: {
+            OPERATOR: '||',
+            SEGMENTS: ['returnExpression', 'continueExpression'],
+        },
+        returnExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__returnKeyword', 'conditionalExpression?'],
+        },
+        continueExpression: {
+            OPERATOR: '&&',
+            SEGMENTS: ['VAL__continueKeyword', 'conditionalExpression?'],
         },
 
         literalExpression: {
@@ -229,15 +243,17 @@ module.exports = grammar.export_grammar(
         VAL__pathChildName: { OPERATOR: '==', VALUE: '[A-Za-z0-9!$*._-]+' },
         VAL__comment: { OPERATOR: '==', VALUE: '.*' },
         VAL__reference: { OPERATOR: '==', VALUE: '[A-Za-z0-9._-]+' },
-        VAL__functionName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_-]+' },
+        VAL__functionName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_][A-Za-z0-9_-]+' },
         VAL__argumentName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_-]+' },
         VAL__variableName: { OPERATOR: '==', VALUE: '[A-Za-z0-9_-]+' },
-        VAL__numeric: { OPERATOR: '==', VALUE: '-?[1-9][0-9]*(?:.[0-9]+)' },
+        VAL__numeric: { OPERATOR: '==', VALUE: '-?[1-9][0-9]*(?:.[0-9]+)?' },
         VAL__int: { OPERATOR: '==', VALUE: '-?[1-9][0-9]*' },
         VAL__version: { OPERATOR: '==', VALUE: '[0-9.]+' },
         VAL__singleQuotedString: { OPERATOR: '==', VALUE: "[^']+" },
         VAL__doubleQuotedString: { OPERATOR: '==', VALUE: '[^"]+' },
 
+        VAL__returnKeyword: { OPERATOR: '==', VALUE: 'return', CASE_INSENSITIVE: true },
+        VAL__continueKeyword: { OPERATOR: '==', VALUE: 'continue', CASE_INSENSITIVE: true },
         VAL__outNullKeyword: { OPERATOR: '==', VALUE: 'Out-Null', CASE_INSENSITIVE: true },
         VAL__outDefaultKeyword: { OPERATOR: '==', VALUE: 'Out-Default', CASE_INSENSITIVE: true },
         VAL__notKeyword: { OPERATOR: '==', VALUE: '-not', CASE_INSENSITIVE: true },

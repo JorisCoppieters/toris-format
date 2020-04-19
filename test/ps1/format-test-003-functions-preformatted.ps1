@@ -32,8 +32,8 @@ Function MyFunction3([string] $ThisOne, [guid] $and_that_one) {
 
 Function Get-Something($Param) {
     if($a -and $b.AAAA -ne $c.BBB) {
-        return 2
+        return 2;
     } else {
-        return 1
+        return -1
     }
 }

@@ -87,6 +87,8 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
         case 'VAL__stringKeyword':
         case 'VAL__guidKeyword':
         case 'VAL__globalKeyword':
+        case 'VAL__returnKeyword':
+        case 'VAL__continueKeyword':
         case 'VAL__ifKeyword':
         case 'VAL__elseIfKeyword':
         case 'VAL__elseKeyword':
@@ -145,6 +147,12 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
                     space_before = true;
                     break;
 
+                case 'VAL__returnKeyword':
+                case 'VAL__continueKeyword':
+                    double_newline = ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+                    newline = true;
+                    break;
+
                 case 'VAL__ifKeyword':
                     double_newline = ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
                     newline = true;
@@ -170,12 +178,13 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
             var switchBlock = in_state.STACK.slice(-1)[0] === 'SwitchBlock';
             color_func = cprint.toBlue;
             newline = switchBlock;
+            space_before = false;
             break;
 
         case 'VAL__version':
         case 'VAL__numeric':
             color_func = cprint.toBlue;
-            space_before = ['=', 'VAL__eqKeyword', 'VAL__neKeyword', 'FUNCTION'].indexOf(in_state.LAST_TOKEN) >= 0;
+            space_before = ['=', 'VAL__eqKeyword', 'VAL__neKeyword', 'FUNCTION', 'VAL__returnKeyword'].indexOf(in_state.LAST_TOKEN) >= 0;
             break;
 
         case 'VAL__doubleQuotedString':
@@ -189,13 +198,18 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
         case 'VAL__SQUOTE':
             color_func = cprint.toYellow;
             last_token = definition_value;
-            space_before = ['ARGUMENT', 'FUNCTION', 'VAL__neKeyword', 'VAL__eqKeyword', '='].indexOf(state.LAST_TOKEN) >= 0;
+            space_before = ['ARGUMENT', 'FUNCTION', 'VAL__neKeyword', 'VAL__eqKeyword', '=', 'VAL__returnKeyword'].indexOf(state.LAST_TOKEN) >= 0;
             break;
 
         case 'VAL__EXCLAM':
             color_func = cprint.toRed;
             space_before = ['VARIABLE'].indexOf(state.LAST_TOKEN) >= 0;
             last_token = '!';
+            break;
+
+        case 'VAL__SEMI':
+            color_func = cprint.toRed;
+            space_before = false;
             break;
 
         case 'VAL__PIPE':
@@ -267,6 +281,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state)
             color_func = cprint.toRed;
             newline = ['NL', 'NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
             double_newline =  ['NLx2'].indexOf(in_state.LAST_TOKEN) >= 0;
+            space_before = false;
             last_token = '@';
             break;
 
