@@ -19,6 +19,7 @@ var fsp = require('fs-process');
 var path = require('path');
 var printer = require('./printer');
 var utils = require('./utils.js');
+var logger = require('./logger.js');
 
 // ******************************
 // Globals:
@@ -202,7 +203,7 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
         }
     } catch (err) {
         process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + file_extension + '\n') + '\n');
-        cprint.red(err);
+        logger.error(err);
         g_TEST_FAILED = true;
         return false;
     }
@@ -252,7 +253,7 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
         }
     } catch (err) {
         process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse ' + file_extension + '\n') + '\n');
-        cprint.red(err);
+        logger.error(err);
         g_TEST_FAILED = true;
         return false;
     }

@@ -90,14 +90,14 @@ function parse_contents (in_contents) {
             if (g_ALLOW_EMPTY_CONTENT) {
                 return '';
             }
-            throw 'No content to parse!';
+            throw new Error('No content to parse!');
         }
 
         var definition;
 
         switch(g_DEFINITION_TYPE) {
         case k_DEFINITION_TYPE_HTML:
-            throw 'HTML parsing not supported yet...';
+            throw new Error('HTML parsing not supported yet...');
 
         case k_DEFINITION_TYPE_SCSS:
             definition = GRAMMAR_SCSS;
@@ -112,18 +112,18 @@ function parse_contents (in_contents) {
             break;
 
         default:
-            throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+            throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
         }
 
         if (!grammar.k_DEFINITION_KEY_START) {
-            throw 'Definition doesn\'t have starting element "' + g_DEFINITION_TYPE + '"';
+            throw new Error('Definition doesn\'t have starting element "' + g_DEFINITION_TYPE + '"');
         }
 
         if (g_RUN_CHECKS) {
             try {
                 checks.check_grammar(definition);
             } catch (err) {
-                throw err;
+                throw new Error(err);
             }
         }
 
@@ -153,7 +153,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         var definition_value = in_definition[definition_key];
 
         if (!definition_value) {
-            throw 'Couldn\'t find definition key "' + definition_key + '"';
+            throw new Error('Couldn\'t find definition key "' + definition_key + '"');
         }
 
         var tree = out_tree || {};
@@ -190,7 +190,7 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
             break;
 
         default:
-            throw 'Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"';
+            throw new Error('Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"');
         }
 
         tree.DEFINITION_KEY = definition_key;
@@ -218,7 +218,7 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
     do {
         var segments = in_definition_value.SEGMENTS || [];
         if (!segments) {
-            throw 'Segments haven\'t been defined for definition key "' + in_definition_key + '"';
+            throw new Error('Segments haven\'t been defined for definition key "' + in_definition_key + '"');
         }
 
         var remaining = false;
@@ -270,7 +270,7 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
     do {
         var segments = in_definition_value.SEGMENTS || [];
         if (!segments) {
-            throw 'Segments haven\'t been defined for definition key "' + in_definition_key + '"';
+            throw new Error('Segments haven\'t been defined for definition key "' + in_definition_key + '"');
         }
 
         var contents = in_contents;
@@ -327,7 +327,7 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
     do {
         var segments = in_definition_value.SEGMENTS || [];
         if (!segments) {
-            throw 'Segments haven\'t been defined for definition key "' + in_definition_key + '"';
+            throw new Error('Segments haven\'t been defined for definition key "' + in_definition_key + '"');
         }
 
         var contents = in_contents;
@@ -412,12 +412,12 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
                 var whitespaceRegexp = g_PARSE_AS_SEPARATE_LINES ? r_LW : r_W;
                 regexp = new RegExp('^' + '(' + whitespaceRegexp + definition_value + ')' + r_v(r_AG) + '$', options);
             } catch (err) {
-                throw 'Failed to create RegExp for definition key "' + in_definition_key + '"';
+                throw new Error('Failed to create RegExp for definition key "' + in_definition_key + '"');
             }
         }
 
         if (!regexp) {
-            throw 'RegExp hasn\'t been defined for definition key "' + in_definition_key + '"';
+            throw new Error('RegExp hasn\'t been defined for definition key "' + in_definition_key + '"');
         }
 
         var matches = contents.match(regexp);

@@ -192,7 +192,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
             if (g_ALLOW_EMPTY_FILES) {
                 return '';
             }
-            throw 'Empty file!';
+            throw new Error('Empty file!');
         }
 
         reset_html_variables();
@@ -210,7 +210,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
                 return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
             }
 
-            throw 'Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ';
+            throw new Error('Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ');
         }
 
         while(g_ELEMENT_STACK.length) {
@@ -223,7 +223,7 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
                 return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
             }
 
-            throw 'HTML stack still contained element: ' + top_element;
+            throw new Error('HTML stack still contained element: ' + top_element);
         }
 
         result = '';
@@ -290,13 +290,13 @@ function parse_html (in_html_content) {
             });
 
             if (parse_run > max_parse_runs) {
-                throw 'Too many parse runs!';
+                throw new Error('Too many parse runs!');
             }
         }
 
     } catch (err) {
         g_HTML_INVALID = html_content.substr(0, 200);
-        throw 'Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err;
+        throw new Error('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
     }
 
     return result;
@@ -695,7 +695,7 @@ function parse_html_open_element_end (in_html_content) {
                 output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '/>';
                 indent = t_NL + get_indent();
             } else {
-                throw 'Not a self closing HTML tag: ' + g_CURRENT_ELEMENT;
+                throw new Error('Not a self closing HTML tag: ' + g_CURRENT_ELEMENT);
             }
 
         } else if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
@@ -924,7 +924,7 @@ function parse_classes_content (in_classes_content) {
         }
 
         if (classes_content_remaining) {
-            throw 'Cannot parse classes: ' + classes_content.substr(0, 100).trim() + '...\n@' + classes_content_remaining.substr(0, 100).trim() + '...';
+            throw new Error('Cannot parse classes: ' + classes_content.substr(0, 100).trim() + '...\n@' + classes_content_remaining.substr(0, 100).trim() + '...');
         }
 
         result = g_CURRENT_ELEMENT_CLASSES;
@@ -1124,7 +1124,7 @@ function parse_attribute_block_content (in_attribute_block_content) {
         }
 
         if (attribute_block_content_remaining) {
-            throw 'Cannot parse attribute object: ' + attribute_block_content.substr(0, 1000).trim() + '...\n@' + attribute_block_content_remaining.substr(0, 1000).trim() + '...';
+            throw new Error('Cannot parse attribute object: ' + attribute_block_content.substr(0, 1000).trim() + '...\n@' + attribute_block_content_remaining.substr(0, 1000).trim() + '...');
         }
 
         result = {
@@ -1422,11 +1422,11 @@ function parse_html_close_element (in_html_content) {
 
         var top_element_info = get_top_element_info(true);
         if (!top_element_info.top_element) {
-            throw 'Closing "' + element + '" but there is no matching open element';
+            throw new Error('Closing "' + element + '" but there is no matching open element');
         }
 
         if (top_element_info.top_element !== element) {
-            throw 'expected "' + top_element_info.top_element + '" but got "' + element + '"';
+            throw new Error('expected "' + top_element_info.top_element + '" but got "' + element + '"');
         }
 
         var top_element_is_empty = (
@@ -1565,7 +1565,7 @@ function parse_temporary_content (in_html_content, in_indent_count) {
             }
 
             if (!parse_html(html_content)) {
-                throw 'get out';
+                throw new Error('get out');
             }
 
             while(g_ELEMENT_STACK.length) {
@@ -1573,7 +1573,7 @@ function parse_temporary_content (in_html_content, in_indent_count) {
                 if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN].indexOf(top_element) >= 0) {
                     continue;
                 }
-                throw 'get out';
+                throw new Error('get out');
             }
 
             contents = '';

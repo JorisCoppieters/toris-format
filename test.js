@@ -4,11 +4,11 @@
 // Requires:
 // ******************************
 
-var cprint = require('color-print');
 var fs = require('fs');
 var minimist = require('minimist');
 var path = require('path');
 var torisFormat = require('./index.js');
+var logger = require('./src/logger');
 
 // ******************************
 // Arguments:
@@ -29,6 +29,9 @@ var g_TYPE = g_ARGV['type'];
 // Script:
 // ******************************
 
+logger.CONFIG.logColour = true;
+logger.CONFIG.logLevel = 5;
+
 if (g_CREATE_TEST) {
     createTest();
 } else {
@@ -41,18 +44,18 @@ if (g_CREATE_TEST) {
 
 function createTest() {
     if (!g_NAME) {
-        cprint.yellow('Please specify a name');
+        logger.warning('Please specify a name');
         return;
     }
 
     if (!g_TYPE) {
-        cprint.yellow('Please specify a type');
+        logger.warning('Please specify a type');
         return;
     }
 
     let folder = path.resolve('./test', g_TYPE);
     if (!fs.existsSync(folder)) {
-        cprint.yellow(`Invalid folder : ${folder}`);
+        logger.warning(`Invalid folder : ${folder}`);
         return;
     }
 

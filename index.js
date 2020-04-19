@@ -18,6 +18,7 @@ var parserHtml = require('./src/parser_html');
 var printer = require('./src/printer');
 var tree = require('./src/tree');
 var test = require('./src/test');
+var logger = require('./src/logger');
 
 // ******************************
 // Constants:
@@ -30,6 +31,9 @@ const k_VERSION = '1.7.16-powershell-to-python-grammar';
 // ******************************
 
 function setup (in_config) {
+    logger.CONFIG.logColour = typeof(in_config.log_colour) === 'undefined' ? true : !!in_config.log_colour;
+    logger.CONFIG.logLevel = typeof(in_config.log_level) === 'undefined' ? logger.c_LOG_LEVEL_ERROR : in_config.log_level;
+
     formatter.setup(in_config);
     printer.setup(in_config);
     tree.setup(in_config);

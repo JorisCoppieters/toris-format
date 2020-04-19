@@ -34,7 +34,7 @@ function check_grammar (in_definition) {
         definition_keys = definition_keys.filter(function (definition_key) {
             definition_value = in_definition[definition_key];
             if (!definition_value) {
-                throw 'Definition key "' + definition_key + '" isn\'t defined';
+                throw new Error('Definition key "' + definition_key + '" isn\'t defined');
             }
             return !definition_key.match(/[*+?]$/);
         });
@@ -60,7 +60,7 @@ function check_grammar (in_definition) {
                     && used_definition_keys.indexOf(definition_key+'+') < 0
                     && used_definition_keys.indexOf(definition_key+'*') < 0
                     && used_definition_keys.indexOf(definition_key+'?') < 0) {
-                throw 'Definition key "' + definition_key + '" is never used';
+                throw new Error('Definition key "' + definition_key + '" is never used');
             }
         });
 
@@ -81,11 +81,11 @@ function check_left_factored (in_definition, in_definition_key) {
     do {
         var definition_value = in_definition[in_definition_key];
         if (!definition_value.SEGMENTS) {
-            throw 'Definition key "' + in_definition_key + '" has no defined SEGMENTS';
+            throw new Error('Definition key "' + in_definition_key + '" has no defined SEGMENTS');
         }
 
         if (!definition_value.SEGMENTS.length) {
-            throw 'Definition key "' + in_definition_key + '" has 0 SEGMENTS';
+            throw new Error('Definition key "' + in_definition_key + '" has 0 SEGMENTS');
         }
 
         var left_most_definition_values_for_key;
@@ -103,7 +103,7 @@ function check_left_factored (in_definition, in_definition_key) {
                 left_most_definition_value_seen_key = left_most_definition_values[left_most_definition_value];
 
                 if (left_most_definition_value_seen_key && left_most_definition_value_seen_key !== sub_definition_key) {
-                    throw 'Definition keys "' + sub_definition_key + '" and "' + left_most_definition_value_seen_key + '" share left-most definition value "' + left_most_definition_value + '" in the context of "' + in_definition_key + '"';
+                    throw new Error('Definition keys "' + sub_definition_key + '" and "' + left_most_definition_value_seen_key + '" share left-most definition value "' + left_most_definition_value + '" in the context of "' + in_definition_key + '"');
                 }
 
                 left_most_definition_values[left_most_definition_value] = sub_definition_key;
@@ -134,7 +134,7 @@ function get_left_most_definition_values (in_definition, in_definition_keys) {
 
             definition_value = in_definition[definition_key];
             if (!definition_value) {
-                throw 'Definition key "' + definition_key + '" isn\'t defined';
+                throw new Error('Definition key "' + definition_key + '" isn\'t defined');
             }
 
             if (definition_value.VALUE !== undefined) {
@@ -148,11 +148,11 @@ function get_left_most_definition_values (in_definition, in_definition_keys) {
             }
 
             if (!definition_value.SEGMENTS) {
-                throw 'Definition key "' + definition_key + '" has no defined SEGMENTS or VALUE';
+                throw new Error('Definition key "' + definition_key + '" has no defined SEGMENTS or VALUE');
             }
 
             if (!definition_value.SEGMENTS.length) {
-                throw 'Definition key "' + definition_key + '" has 0 SEGMENTS';
+                throw new Error('Definition key "' + definition_key + '" has 0 SEGMENTS');
             }
 
             left_most_definition_key = definition_value.SEGMENTS[0];

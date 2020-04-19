@@ -94,7 +94,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     switch(g_DEFINITION_TYPE) {
     case parser.k_DEFINITION_TYPE_HTML:
-        throw 'HTML outputting not supported yet...';
+        throw new Error('HTML outputting not supported yet...');
 
     case parser.k_DEFINITION_TYPE_SCSS:
         output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
@@ -105,7 +105,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
         break;
 
     default:
-        throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+        throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
     }
 
     var append = output.append;
@@ -228,16 +228,16 @@ function get_tree_output_structure (in_tree, in_config) {
 
     switch(g_DEFINITION_TYPE) {
     case parser.k_DEFINITION_TYPE_HTML:
-        throw 'HTML structure not supported yet...';
+        throw new Error('HTML structure not supported yet...');
 
     case parser.k_DEFINITION_TYPE_SCSS:
-        throw 'SCSS structure not supported yet...';
+        throw new Error('SCSS structure not supported yet...');
 
     case parser.k_DEFINITION_TYPE_PS1:
-        throw 'PS1 structure not supported yet...';
+        throw new Error('PS1 structure not supported yet...');
 
     default:
-        throw 'Unhandled definition type "' + g_DEFINITION_TYPE + '"';
+        throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
     }
 }
 

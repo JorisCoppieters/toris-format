@@ -19,6 +19,7 @@ var parserHtml = require('./parser_html');
 var regexp_shorthand = require('../regexp/shorthand');
 var treeFn = require('./tree');
 var utils = require('./utils');
+var logger = require('./logger');
 
 // ******************************
 // Exposing Functions:
@@ -88,7 +89,7 @@ function print_file (in_file, in_config) {
         break;
 
     default:
-        throw 'Unhandled file extension: ' + file_extension;
+        throw new Error('Unhandled file extension: ' + file_extension);
     }
 
     config.definition_type = definition_type;
@@ -116,21 +117,21 @@ function print_contents (in_contents, in_config) {
     try {
         tree = parser.parse_contents(in_contents);
     } catch (err) {
-        cprint.red('Failed to parse:');
-        cprint.red(err);
+        logger.error('Failed to parse:');
+        logger.error(err);
         return;
     }
 
     if (tree === '') {
-        cprint.yellow('Empty Contents');
+        logger.warning('Empty Contents');
         return;
     }
 
     var tree_output = treeFn.get_tree_output(tree, in_config);
     if (!tree_output.output) {
         var failed_output = treeFn.get_failed_output(tree);
-        cprint.red('Failed to parse:');
-        cprint.red(failed_output);
+        logger.error('Failed to parse:');
+        logger.error(failed_output);
         return;
     }
 
@@ -163,11 +164,11 @@ function _print_node (in_node, in_indent) {
     var definitionVal = (in_node.VALUE || '').trim();
 
     if (definitionVal && definitionVal.length > 50)
-        cprint.yellow(in_indent + definitionKey + '===>' + definitionVal.substr(0, 50) + '...');
+        logger.warning(in_indent + definitionKey + '===>' + definitionVal.substr(0, 50) + '...');
     else if (definitionVal)
-        cprint.green(in_indent + definitionKey + '===>' + definitionVal);
+        logger.success(in_indent + definitionKey + '===>' + definitionVal);
     else
-        cprint.cyan(in_indent + definitionKey);
+        logger.info(in_indent + definitionKey);
 
     (in_node.CHILDREN || []).forEach(function (child) { _print_node(child, in_indent + '  '); });
 }
@@ -179,7 +180,7 @@ function print_recognized_chunk (in_tree) {
         process.stdout.write(treeFn.get_recognized_chunk(in_tree) + '\n');
         return;
     }
-    cprint.green('Everything was recognized!');
+    logger.success('Everything was recognized!');
 }
 
 // ******************************

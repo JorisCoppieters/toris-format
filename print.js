@@ -4,12 +4,12 @@
 // Requires:
 // ******************************
 
-var cprint = require('color-print');
 var fs = require('fs');
 var minimist = require('minimist');
 var path = require('path');
 var torisFormat = require('./index.js');
 var utils = require('./src/utils');
+var logger = require('./src/logger');
 
 // ******************************
 // Arguments:
@@ -26,6 +26,9 @@ var g_RUN_CHECKS = g_ARGV['run-checks'];
 // Script:
 // ******************************
 
+logger.CONFIG.logColour = true;
+logger.CONFIG.logLevel = 5;
+
 printTestFile();
 
 // ******************************
@@ -34,12 +37,12 @@ printTestFile();
 
 function printTestFile () {
     if (!g_FILE) {
-        cprint.red('Please specify a file');
+        logger.error('Please specify a file');
         return;
     }
 
     if (!fs.existsSync(g_FILE)){
-        cprint.red('File doesn\'t exist');
+        logger.error('File doesn\'t exist');
         return;
     }
 
