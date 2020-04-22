@@ -666,6 +666,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
                 space_before = (state.LAST_TOKEN !== '(');
                 last_token = 'MINUS';
             }
+
+            if (definition_key === 'Identifier' && state.SECOND_TO_LAST_TOKEN === ':') {
+                space_before = false;
+            }
             break;
 
         case 'SELECTOR':

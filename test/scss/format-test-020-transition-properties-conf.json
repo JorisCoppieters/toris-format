@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-020-transition-properties-preformatted.scss",
+    "outputFile": "format-test-020-transition-properties-formatted.scss",
+    "setup": {
+        "definition_type": "SCSS",
+        "line_ending": "\r\n",
+        "convert_line_endings": true
+    },
+    "testName": "transition-properties"
+}
