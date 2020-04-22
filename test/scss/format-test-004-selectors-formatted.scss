@@ -149,7 +149,7 @@ tg-rack ~ tg-rack ~ * > .refine-height-filler-helper {
 }
 
 tg-rack-item-primary,
-.o-rack-item__primary, // remove
+.o-rack-item__primary, // comment
 tg-rack-item-note {
 }
 
@@ -176,4 +176,12 @@ tg-rack-item-note {
 .h-#{$spacing-property}#{$unit-variation-classname-partial}#{$breakpoint-classname-partial} {
     #{$spacing-property}-left: $unit * $unit-multiplier !important;
     #{$spacing-property}-right: $unit * $unit-multiplier !important;
+}
+
+div.checkbox .child {
+    font-size: 10pt;
+}
+
+div.checkbox[checked="true"] .child {
+    font-size: 10pt;
 }

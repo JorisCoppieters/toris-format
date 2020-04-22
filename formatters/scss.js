@@ -217,6 +217,10 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         state.DECLARATION_TYPE = 'MAP_ENTRY_VALUES';
         state.VALUE_TYPE = false;
         break;
+    case 'selectorPart':
+        state.DECLARATION_TYPE = "SELECTOR"
+        state.VALUE_TYPE = "SELECTOR"
+        break;
     case 'selector':
     case 'property':
         state.DECLARATION_TYPE = definition_key.toUpperCase();
