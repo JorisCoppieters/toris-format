@@ -585,6 +585,9 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
 
         // Value Types For Generic Values:
     case 'MEASUREMENT':
+        state.VALUE_TYPE = definition_key;
+        break;
+
     case 'BOOLEAN':
         state.VALUE_TYPE = definition_key;
         break;
@@ -645,7 +648,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             if (['FUNCTION_CALL_ARGUMENTS'].indexOf(state.DECLARATION_TYPE) >= 0) {
                 if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
                     space_before = false;
-                } else if (['(', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0) {
+                } else if (['('].indexOf(state.LAST_TOKEN) >= 0) {
                     space_before = false;
                 }
             } else if (['(', 'MINUS', 'OPERATOR'].indexOf(state.LAST_TOKEN) >= 0) {
