@@ -45,7 +45,7 @@ function update_version {
 
 BRANCH=$(git branch --show-current)
 
-if [[ $BRANCH != "master" ]]; then
+if [[ $BRANCH != "main" ]]; then
   VERSION="$(update_version)-$BRANCH"
 elif [[ "$1" == "m" || "$1" == "-m" ]]; then
   VERSION=$(update_version "m")
