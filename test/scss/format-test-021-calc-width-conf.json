@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-021-calc-width-preformatted.scss",
+    "outputFile": "format-test-021-calc-width-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "calc-width"
+}
