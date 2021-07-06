@@ -23,7 +23,7 @@
     "create-html-test": "node test --create --type=html --name",
     "create-ps1-test": "node test --create --type=ps1 --name",
     "create-scss-test": "node test --create --type=scss --name",
-    "print": "node print --file",
+    "print": "node print --debug --print-tree-construction --file",
     "test": "node test"
   },
   "version": "1.7.25"

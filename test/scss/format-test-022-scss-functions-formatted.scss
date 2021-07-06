@@ -1,5 +1,6 @@
 .thing {
     border-bottom: 2px solid darken($color-2, 10%);
+    border-bottom: 2px solid lighten($color-2, -10%);
 }
 
 .thing2 {
