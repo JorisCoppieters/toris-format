@@ -1,10 +1,10 @@
-name: Checks for release
+name: Checks for main
 
 on:
   push:
-    branches: ['release']
+    branches: ['main']
   pull_request:
-    branches: ['release']
+    branches: ['main']
 
 jobs:
   run-tests:
