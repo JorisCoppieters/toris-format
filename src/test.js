@@ -64,7 +64,7 @@ function format_tests (tests_folder, format_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);
@@ -80,10 +80,6 @@ function format_tests (tests_folder, format_function) {
             _format_test_files(test_folder_name + '-' + test_name, config.ignore, input_file, output_file, setup_config, format_function);
         });
     });
-
-    if (g_TEST_FAILED) {
-        process.exit(-1);
-    }
 }
 
 // ******************************
@@ -101,7 +97,7 @@ function structure_tests (tests_folder, structure_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);
@@ -117,10 +113,6 @@ function structure_tests (tests_folder, structure_function) {
             _structure_test_files(test_folder_name + '-' + test_name, config.ignore, input_file, output_file, setup_config, structure_function);
         });
     });
-
-    if (g_TEST_FAILED) {
-        process.exit(-1);
-    }
 }
 
 // ******************************
@@ -138,7 +130,7 @@ function print_tests (tests_folder, print_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);
@@ -153,10 +145,6 @@ function print_tests (tests_folder, print_function) {
             _print_test_contents(test_folder_name + '-' + test_name, config.ignore, input_file, setup_config, print_function);
         });
     });
-
-    if (g_TEST_FAILED) {
-        process.exit(-1);
-    }
 }
 
 // ******************************
