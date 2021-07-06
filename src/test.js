@@ -64,7 +64,7 @@ function format_tests (tests_folder, format_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);
@@ -97,7 +97,7 @@ function structure_tests (tests_folder, structure_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);
@@ -130,7 +130,7 @@ function print_tests (tests_folder, print_function) {
         files = focusFiles.length ? focusFiles : files;
         files.forEach(function (file) {
             if (g_TEST_FAILED) {
-                return;
+                process.exit(-1);
             }
 
             var dirname = path.dirname(file);

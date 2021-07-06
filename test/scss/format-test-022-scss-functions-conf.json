@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-022-scss-functions-preformatted.scss",
+    "outputFile": "format-test-022-scss-functions-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "scss-functions"
+}

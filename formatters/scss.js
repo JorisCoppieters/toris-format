@@ -369,7 +369,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
         break;
 
     case 'LPAREN':
-        if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL'].indexOf(state.LAST_TOKEN) >= 0) {
+        if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL', 'MEASUREMENT'].indexOf(state.LAST_TOKEN) >= 0) {
             space_before = false;
         }
 
@@ -646,7 +646,7 @@ function get_definition_output (in_definition_key, in_definition_value, in_state
             color_func = cprint.toLightGray;
 
             if (['FUNCTION_CALL_ARGUMENTS'].indexOf(state.DECLARATION_TYPE) >= 0) {
-                if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['('].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
+                if (['MINUS'].indexOf(state.LAST_TOKEN) >= 0 && ['MEASUREMENT'].indexOf(state.SECOND_TO_LAST_TOKEN) < 0) {
                     space_before = false;
                 } else if (['('].indexOf(state.LAST_TOKEN) >= 0) {
                     space_before = false;

@@ -63,7 +63,7 @@ module.exports = grammar.export_grammar({
     commandStatementInParens: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'commandStatement', 'RPAREN'] },
     mathCharacter: { OPERATOR: '||', SEGMENTS: ['TIMES', 'PLUS', 'DIV', 'MINUS', 'PERC'] },
     mathStatement: { OPERATOR: '&&', SEGMENTS: ['mathCharacter', 'commandStatement'] },
-    expression: { OPERATOR: '||', SEGMENTS: ['url', 'functionCall', 'expressionsInParens', 'mapExpression', 'SL_COMMENT', 'COMMENT', 'mathCharacter', 'MEASUREMENT', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'variableName'] },
+    expression: { OPERATOR: '||', SEGMENTS: ['url', 'functionCall', 'expressionsInParens', 'mapExpression', 'SL_COMMENT', 'COMMENT', 'mathCharacter', 'MEASUREMENT', 'Number', 'identifier', 'RGB', 'Color', 'StringLiteral', 'NULL', 'param'] },
     IdentifierOrMathCharacter: { OPERATOR: '||', SEGMENTS: ['Identifier', 'PERC'] },
     mapExpression: { OPERATOR: '&&', SEGMENTS: ['mapExpressionStart', 'mapEntry', 'commaMapEntry*', 'extraComma?', 'comment?', 'mapExpressionEnd'] },
     mapExpressionStart: { OPERATOR: '&&', SEGMENTS: ['LPAREN'] },
