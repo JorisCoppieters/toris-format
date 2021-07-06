@@ -26,5 +26,5 @@
     "print": "node print --debug --print-tree-construction --file",
     "test": "node test"
   },
-  "version": "1.7.25"
+  "version": "1.7.26"
 }
