@@ -1,0 +1,9 @@
+
+.thing {
+    border-bottom: 2px solid darken($color-2, 10%);
+    }
+
+
+    .thing2 {
+        background: adjust-color($banner-backcolor, $red: 160%, $blue: 200%, $green: 200%, $alpha: -0.2%);
+    }
