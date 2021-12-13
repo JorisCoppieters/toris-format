@@ -75,6 +75,8 @@ module.exports['structure_tests'] = test.structure_tests;
 module.exports['structureTests'] = test.structure_tests;
 module.exports['print_tests'] = test.print_tests;
 module.exports['printTests'] = test.print_tests;
+module.exports['diff_tests'] = test.diff_tests;
+module.exports['diffTests'] = test.diff_tests;
 
 module.exports['setup'] = setup; // TODO: Deprecate
 module.exports['format_sass_contents'] = formatter.format_sass_contents; // TODO: Deprecate

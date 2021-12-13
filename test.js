@@ -22,6 +22,7 @@ var g_DEBUG = g_ARGV['debug'];
 var g_PRINT_TREE = g_ARGV['print-tree'];
 var g_RUN_CHECKS = g_ARGV['run-checks'];
 var g_CREATE_TEST = g_ARGV['create'];
+var g_DIFF_TESTS = g_ARGV['diff'];
 var g_NAME = g_ARGV['name'];
 var g_TYPE = g_ARGV['type'];
 
@@ -34,6 +35,8 @@ logger.CONFIG.logLevel = 5;
 
 if (g_CREATE_TEST) {
     createTest();
+} else if (g_DIFF_TESTS) {
+    diffTests();
 } else {
     runTests();
 }
@@ -87,6 +90,20 @@ function createTest() {
     fs.writeFileSync(`${folder}/${configFile}`, JSON.stringify(config, null, 4));
     fs.writeFileSync(`${folder}/${formattedFile}`, '');
     fs.writeFileSync(`${folder}/${preformattedFile}`, '');
+}
+
+// ******************************
+
+function diffTests() {
+    torisFormat.setupTest({
+        debug: g_DEBUG,
+        print_tree: g_PRINT_TREE,
+        run_checks: g_RUN_CHECKS,
+    });
+
+    if (g_HTML) {
+        torisFormat.diffTests('test/html');
+    }
 }
 
 // ******************************

@@ -104,6 +104,7 @@ var g_CURRENT_ELEMENT_CLASSES = [];
 var g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
 var g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
 
+var g_DIFF_CONTENT = '';
 var g_HTML_CONTENT = '';
 var g_HTML_INVALID = '';
 var g_HTML_LINE_NUMBER = 1;
@@ -747,6 +748,118 @@ function parse_html_open_element_end (in_html_content) {
         result = remaining;
     }
     while (FALSE);
+
+    return result;
+}
+
+// ******************************
+
+function diff_html_contents (in_contents_a, in_contents_b) {
+    var result = false;
+
+    do {
+        var html_content_a = in_contents_a || '';
+        var html_content_b = in_contents_b || '';
+
+        if (html_content_a.trim().length === 0) {
+            if (g_ALLOW_EMPTY_FILES) {
+                return '';
+            }
+            throw new Error('Empty file!');
+        }
+
+        if (html_content_b.trim().length === 0) {
+            if (g_ALLOW_EMPTY_FILES) {
+                return '';
+            }
+            throw new Error('Empty file!');
+        }
+
+        reset_html_variables();
+
+        if (g_CONVERT_LINE_ENDINGS) {
+            html_content_a = html_content_a.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+            html_content_b = html_content_b.replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
+        }
+
+        if (!diff_html(html_content_a, html_content_b)) {
+            throw new Error('Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ');
+        }
+
+        while(g_ELEMENT_STACK.length) {
+            var top_element = g_ELEMENT_STACK.pop();
+            if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN, k_CONTENT_TOKEN].indexOf(top_element) >= 0) {
+                continue;
+            }
+
+            throw new Error('HTML stack still contained element: ' + top_element);
+        }
+
+        result = g_DIFF_CONTENT;
+
+        reset_html_variables();
+    }
+    while (FALSE);
+
+    return result;
+}
+
+// ******************************
+
+function diff_html (in_html_content_a, in_html_content_b) {
+    var result = false;
+
+    var html_content_a = in_html_content_a || '';
+    var html_content_b = in_html_content_b || '';
+
+    var functions = [
+        parse_xml_header,
+        parse_style,
+        parse_html_open_element,
+        parse_html_close_element,
+        parse_comment,
+        parse_content
+    ];
+
+    var parse_run = 0;
+    var max_parse_runs = 5000;
+
+    try {
+
+        var parsed = true;
+        while (parsed) {
+            parsed = false;
+            parse_run++;
+
+            if (html_content_a.trim().length === 0) {
+                result = true;
+                break;
+            }
+
+            functions.forEach(function(fn) {
+                if (parsed) {
+                    return;
+                }
+
+                var remaining = fn(html_content_a);
+                if (remaining !== false) {
+                    g_HTML_LINE_NUMBER += num_lines(html_content_a) - num_lines(remaining);
+                    html_content_a = remaining;
+                    parsed = true;
+                }
+            });
+
+            if (parse_run > max_parse_runs) {
+                throw new Error('Too many parse runs!');
+            }
+        }
+
+    } catch (err) {
+        g_HTML_INVALID = html_content_a.substr(0, 200);
+        throw new Error('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
+    }
+
+    g_DIFF_CONTENT = g_HTML_CONTENT;
 
     return result;
 }
@@ -1764,6 +1877,7 @@ function parse_style (in_html_content) {
 
 function reset_html_variables () {
     do {
+        g_DIFF_CONTENT = '';
         g_HTML_CONTENT = '';
         g_HTML_INVALID = '';
         g_HTML_LINE_NUMBER = 1;
@@ -1921,5 +2035,7 @@ function str_repeat (s, n) {
 module.exports['setup'] = setup;
 module.exports['format_html_contents'] = format_html_contents; // TODO: Deprecate
 module.exports['format_html_file'] = format_html_contents; // TODO: Deprecate
+module.exports['diff_html_contents'] = diff_html_contents; // TODO: Deprecate
+module.exports['diff_html_file'] = diff_html_contents; // TODO: Deprecate
 
 // ******************************

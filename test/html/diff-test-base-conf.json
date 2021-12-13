@@ -1,0 +1,10 @@
+{
+    "inputFileA": "diff-test-base.a.html",
+    "inputFileB": "diff-test-base.b.html",
+    "outputFile": "diff-test-base.d.html",
+    "setup": {
+        "definition_type": "HTML",
+        "line_ending": "\r\n"
+    },
+    "testName": "base"
+}

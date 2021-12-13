@@ -14,6 +14,7 @@
 
 var cprint = require('color-print');
 var formatter = require('./formatter');
+var differ = require('./differ');
 var fs = require('fs');
 var fsp = require('fs-process');
 var path = require('path');
@@ -149,6 +150,40 @@ function print_tests (tests_folder, print_function) {
 
 // ******************************
 
+function diff_tests (tests_folder, diff_function) {
+    var filter = 'diff-test-.*\\-conf.json';
+    var test_folder_name = path.basename(tests_folder);
+    fsp.list(tests_folder, filter).then(function (files) {
+        files.sort();
+        var focusFiles = files.filter(function(file) {
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+            return config.focus;
+        });
+        files = focusFiles.length ? focusFiles : files;
+        files.forEach(function (file) {
+            if (g_TEST_FAILED) {
+                process.exit(-1);
+            }
+
+            var dirname = path.dirname(file);
+
+            var config_file = path.resolve(g_BASE_PATH, file);
+            var config = _load_config_file(config_file);
+
+            var test_name = config.testName;
+            var input_file_a = path.resolve(g_BASE_PATH, dirname, config.inputFileA);
+            var input_file_b = path.resolve(g_BASE_PATH, dirname, config.inputFileB);
+            var output_file = path.resolve(g_BASE_PATH, dirname, config.outputFile);
+            var setup_config = config.setup;
+
+            _diff_test_files(test_folder_name + '-' + test_name, config.ignore, input_file_a, input_file_b, output_file, setup_config, diff_function);
+        });
+    });
+}
+
+// ******************************
+
 function _load_config_file (config_file) {
     if (fs.existsSync(config_file)) {
         var config = require(config_file);
@@ -263,6 +298,56 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
 
 // ******************************
 
+function _diff_test_files (test_name, ignore, input_file_a, input_file_b, output_file, setup_config, diff_function) {
+    var file_extension = utils.get_file_extension(input_file_a);
+    var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Diffing ' + file_extension);
+
+    try {
+        var expected_output = fs.readFileSync(output_file, 'utf8');
+
+        var test_expected_output_file = '_formatTest_' + test_name + '_expected_output.txt';
+        var test_output_file = '_formatTest_' + test_name + '_output.txt';
+
+        if (ignore) {
+            process.stdout.write(cprint.toDarkGrey('~ Ignored') + test_identifier + '\n');
+            return true;
+        }
+
+        var output;
+        if (diff_function) {
+            output = diff_function(input_file_a, input_file_b, setup_config);
+        } else {
+            output = differ.diff_file(input_file_a, input_file_b, setup_config);
+        }
+
+        if (output && expected_output && output.trim() == expected_output.trim()) {
+            process.stdout.write(cprint.toGreen('✔ Test') + test_identifier + '\n');
+            fs.exists(test_expected_output_file, function (exists) { if (exists) { fsp.remove(test_expected_output_file); } } );
+            fs.exists(test_output_file, function (exists) { if (exists) { fsp.remove(test_output_file); } } );
+        } else if (output) {
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension) + '\n');
+            printer.print_contents_diff(expected_output, output);
+            fsp.write(test_expected_output_file, expected_output);
+            fsp.write(test_output_file, output);
+            g_TEST_FAILED = true;
+            return false;
+        } else {
+            process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Diff function failed') + '\n');
+            g_TEST_FAILED = true;
+            return false;
+        }
+    } catch (err) {
+        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse file ' + file_extension + '\n') + '\n');
+        logger.error(err);
+        g_TEST_FAILED = true;
+        return false;
+    }
+
+    return true;
+}
+
+// ******************************
+
 function _print_test_contents (test_name, ignore, input_file, setup_config, print_function) {
     var file_extension = utils.get_file_extension(input_file);
     var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Printing of formatted ' + file_extension + ' output');
@@ -294,5 +379,7 @@ module.exports['structure_tests'] = structure_tests;
 module.exports['structureTests'] = structure_tests;
 module.exports['print_tests'] = print_tests;
 module.exports['printTests'] = print_tests;
+module.exports['diffTests'] = diff_tests;
+module.exports['diff_tests'] = diff_tests;
 
 // ******************************
