@@ -35,14 +35,14 @@ printTestFile();
 // Functions:
 // ******************************
 
-function printTestFile () {
+function printTestFile() {
     if (!g_FILE) {
         logger.error('Please specify a file');
         return;
     }
 
-    if (!fs.existsSync(g_FILE)){
-        logger.error('File doesn\'t exist');
+    if (!fs.existsSync(g_FILE)) {
+        logger.error("File doesn't exist");
         return;
     }
 
@@ -70,7 +70,7 @@ function printTestFile () {
 
 // ******************************
 
-function loadConfigFile (configFile) {
+function loadConfigFile(configFile) {
     if (fs.existsSync(configFile)) {
         var config = require(configFile);
         config.setup = config.setup || {};
@@ -85,10 +85,9 @@ function loadConfigFile (configFile) {
             debug: !!g_DEBUG,
             print_tree: !!g_PRINT_TREE,
             print_tree_construction: !!g_PRINT_TREE_CONSTRUCTION,
-            run_checks: !!g_RUN_CHECKS
-        }
+            run_checks: !!g_RUN_CHECKS,
+        },
     };
 }
 
 // ******************************
-

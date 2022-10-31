@@ -36,7 +36,7 @@ var g_RUN_CHECKS = false;
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -51,12 +51,12 @@ function setup (in_config) {
 // Test Functions:
 // ******************************
 
-function format_tests (tests_folder, format_function) {
+function format_tests(tests_folder, format_function) {
     var filter = 'format-test-.*\\-conf.json';
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
-        var focusFiles = files.filter(function(file) {
+        var focusFiles = files.filter(function (file) {
             var config_file = path.resolve(g_BASE_PATH, file);
             var config = _load_config_file(config_file);
             return config.focus;
@@ -84,12 +84,12 @@ function format_tests (tests_folder, format_function) {
 
 // ******************************
 
-function structure_tests (tests_folder, structure_function) {
+function structure_tests(tests_folder, structure_function) {
     var filter = 'structure-test-.*\\-conf.json';
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
-        var focusFiles = files.filter(function(file) {
+        var focusFiles = files.filter(function (file) {
             var config_file = path.resolve(g_BASE_PATH, file);
             var config = _load_config_file(config_file);
             return config.focus;
@@ -117,12 +117,12 @@ function structure_tests (tests_folder, structure_function) {
 
 // ******************************
 
-function print_tests (tests_folder, print_function) {
+function print_tests(tests_folder, print_function) {
     var filter = 'print-test-.*\\-conf.json';
     var test_folder_name = path.basename(tests_folder);
     fsp.list(tests_folder, filter).then(function (files) {
         files.sort();
-        var focusFiles = files.filter(function(file) {
+        var focusFiles = files.filter(function (file) {
             var config_file = path.resolve(g_BASE_PATH, file);
             var config = _load_config_file(config_file);
             return config.focus;
@@ -149,7 +149,7 @@ function print_tests (tests_folder, print_function) {
 
 // ******************************
 
-function _load_config_file (config_file) {
+function _load_config_file(config_file) {
     if (fs.existsSync(config_file)) {
         var config = require(config_file);
         config.setup = config.setup || {};
@@ -163,9 +163,10 @@ function _load_config_file (config_file) {
 
 // ******************************
 
-function _format_test_files (test_name, ignore, input_file, output_file, setup_config, format_function) {
+function _format_test_files(test_name, ignore, input_file, output_file, setup_config, format_function) {
     var file_extension = utils.get_file_extension(input_file);
-    var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Formatting preformatted ' + file_extension + ' outputs to formatted ' + file_extension);
+    var test_identifier =
+        cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Formatting preformatted ' + file_extension + ' outputs to formatted ' + file_extension);
 
     try {
         var expected_output = fs.readFileSync(output_file, 'utf8');
@@ -187,8 +188,16 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
 
         if (output && expected_output && output.trim() == expected_output.trim()) {
             process.stdout.write(cprint.toGreen('✔ Test') + test_identifier + '\n');
-            fs.exists(test_expected_output_file, function (exists) { if (exists) { fsp.remove(test_expected_output_file); } } );
-            fs.exists(test_output_file, function (exists) { if (exists) { fsp.remove(test_output_file); } } );
+            fs.exists(test_expected_output_file, function (exists) {
+                if (exists) {
+                    fsp.remove(test_expected_output_file);
+                }
+            });
+            fs.exists(test_output_file, function (exists) {
+                if (exists) {
+                    fsp.remove(test_output_file);
+                }
+            });
         } else if (output) {
             process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension) + '\n');
             printer.print_contents_diff(expected_output, output);
@@ -202,7 +211,7 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
             return false;
         }
     } catch (err) {
-        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse preformatted ' + file_extension + '\n') + '\n');
+        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed("Couldn't parse preformatted " + file_extension + '\n') + '\n');
         logger.error(err);
         g_TEST_FAILED = true;
         return false;
@@ -213,7 +222,7 @@ function _format_test_files (test_name, ignore, input_file, output_file, setup_c
 
 // ******************************
 
-function _structure_test_files (test_name, ignore, input_file, output_file, setup_config, structure_function) {
+function _structure_test_files(test_name, ignore, input_file, output_file, setup_config, structure_function) {
     var file_extension = utils.get_file_extension(input_file);
     var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Source ' + file_extension + ' outputs to correct structure');
 
@@ -237,8 +246,16 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
 
         if (output && expected_output && output.trim() == expected_output.trim()) {
             process.stdout.write(cprint.toGreen('✔ Test') + test_identifier + '\n');
-            fs.exists(test_expected_output_file, function (exists) { if (exists) { fsp.remove(test_expected_output_file); } } );
-            fs.exists(test_output_file, function (exists) { if (exists) { fsp.remove(test_output_file); } } );
+            fs.exists(test_expected_output_file, function (exists) {
+                if (exists) {
+                    fsp.remove(test_expected_output_file);
+                }
+            });
+            fs.exists(test_output_file, function (exists) {
+                if (exists) {
+                    fsp.remove(test_output_file);
+                }
+            });
         } else if (output) {
             process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Unexpected ' + file_extension) + '\n');
             printer.print_contents_diff(expected_output, output);
@@ -252,7 +269,7 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
             return false;
         }
     } catch (err) {
-        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed('Couldn\'t parse ' + file_extension + '\n') + '\n');
+        process.stdout.write(cprint.toRed('✘ Test') + test_identifier + '\n' + cprint.toRed("Couldn't parse " + file_extension + '\n') + '\n');
         logger.error(err);
         g_TEST_FAILED = true;
         return false;
@@ -263,7 +280,7 @@ function _structure_test_files (test_name, ignore, input_file, output_file, setu
 
 // ******************************
 
-function _print_test_contents (test_name, ignore, input_file, setup_config, print_function) {
+function _print_test_contents(test_name, ignore, input_file, setup_config, print_function) {
     var file_extension = utils.get_file_extension(input_file);
     var test_identifier = cprint.toWhite(' : ') + cprint.toCyan(test_name) + cprint.toWhite(' : ') + cprint.toMagenta('Printing of formatted ' + file_extension + ' output');
 

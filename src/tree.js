@@ -37,7 +37,7 @@ var g_INDENT = '    ';
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -53,7 +53,7 @@ function setup (in_config) {
 // Tree Functions:
 // ******************************
 
-function get_tree_output (in_tree, in_config) {
+function get_tree_output(in_tree, in_config) {
     var state = { LAST_TOKEN: '' };
     var config = in_config || {};
     var tree_output = {};
@@ -68,7 +68,7 @@ function get_tree_output (in_tree, in_config) {
 
 // ******************************
 
-function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in_config) {
+function _populate_tree_output(in_tree, in_state, in_tree_output, in_indent, in_config) {
     var state = in_state || {};
     state.LAST_TOKEN = state.LAST_TOKEN || '';
     state.STACK = state.STACK || [];
@@ -92,20 +92,20 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
     var output;
 
-    switch(g_DEFINITION_TYPE) {
-    case parser.k_DEFINITION_TYPE_HTML:
-        throw new Error('HTML outputting not supported yet...');
+    switch (g_DEFINITION_TYPE) {
+        case parser.k_DEFINITION_TYPE_HTML:
+            throw new Error('HTML outputting not supported yet...');
 
-    case parser.k_DEFINITION_TYPE_SCSS:
-        output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
-        break;
+        case parser.k_DEFINITION_TYPE_SCSS:
+            output = FORMATTER_SCSS.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
+            break;
 
-    case parser.k_DEFINITION_TYPE_PS1:
-        output = FORMATTER_PS1.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
-        break;
+        case parser.k_DEFINITION_TYPE_PS1:
+            output = FORMATTER_PS1.get_definition_output(in_tree.DEFINITION_KEY, in_tree.VALUE, state, in_config);
+            break;
 
-    default:
-        throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
+        default:
+            throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
     }
 
     var append = output.append;
@@ -153,7 +153,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
         tree_output.color_output = utils.str_append(tree_output.color_output, color_func(append), delim);
     }
 
-    var definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
+    var definition_key_value = definition_key + (definition_value ? ' ===> ' + definition_value : '');
     tree_output.values = utils.str_append(tree_output.values, definition_key_value, g_NL + indent);
     tree_output.structure = utils.str_append(tree_output.structure, definition_key, g_NL + indent);
 
@@ -170,7 +170,7 @@ function _populate_tree_output (in_tree, in_state, in_tree_output, in_indent, in
 
 // ******************************
 
-function get_failed_output (in_tree, in_colour) {
+function get_failed_output(in_tree, in_colour) {
     var result = get_recognized_chunk(in_tree, in_colour);
     if (g_DEBUG) {
         var failed_tree_output = get_failed_tree_output(in_tree);
@@ -182,7 +182,7 @@ function get_failed_output (in_tree, in_colour) {
 
 // ******************************
 
-function get_failed_tree_output (in_tree) {
+function get_failed_tree_output(in_tree) {
     var tree_output = {};
     var tree_path = '';
     var indent = '';
@@ -194,7 +194,7 @@ function get_failed_tree_output (in_tree) {
 
 // ******************************
 
-function _populate_tree_failed_output (in_tree, in_tree_output, in_tree_path, in_indent) {
+function _populate_tree_failed_output(in_tree, in_tree_output, in_tree_path, in_indent) {
     var tree_output = in_tree_output || {};
     var tree_path = in_tree_path || '';
     var indent = in_indent || '';
@@ -202,7 +202,7 @@ function _populate_tree_failed_output (in_tree, in_tree_output, in_tree_path, in
     var definition_key = in_tree.DEFINITION_KEY || 'Root';
     var definition_value = (in_tree.VALUE || '').trim();
 
-    var definition_key_value = definition_key + (definition_value ? (' ===> ' + definition_value) : '');
+    var definition_key_value = definition_key + (definition_value ? ' ===> ' + definition_value : '');
     tree_output.values = utils.str_append(tree_output.values, definition_key_value, g_NL + indent);
     tree_output.structure = utils.str_append(tree_output.structure, definition_key, g_NL + indent);
 
@@ -220,29 +220,29 @@ function _populate_tree_failed_output (in_tree, in_tree_output, in_tree_path, in
 
 // ******************************
 
-function get_tree_output_structure (in_tree, in_config) {
+function get_tree_output_structure(in_tree, in_config) {
     var config = in_config || {};
 
     setup(config);
 
-    switch(g_DEFINITION_TYPE) {
-    case parser.k_DEFINITION_TYPE_HTML:
-        throw new Error('HTML structure not supported yet...');
+    switch (g_DEFINITION_TYPE) {
+        case parser.k_DEFINITION_TYPE_HTML:
+            throw new Error('HTML structure not supported yet...');
 
-    case parser.k_DEFINITION_TYPE_SCSS:
-        throw new Error('SCSS structure not supported yet...');
+        case parser.k_DEFINITION_TYPE_SCSS:
+            throw new Error('SCSS structure not supported yet...');
 
-    case parser.k_DEFINITION_TYPE_PS1:
-        throw new Error('PS1 structure not supported yet...');
+        case parser.k_DEFINITION_TYPE_PS1:
+            throw new Error('PS1 structure not supported yet...');
 
-    default:
-        throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
+        default:
+            throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
     }
 }
 
 // ******************************
 
-function get_recognized_chunk (in_tree, in_colour) {
+function get_recognized_chunk(in_tree, in_colour) {
     if (in_tree.FAILED) {
         var failed_tree_output = get_failed_tree_output(in_tree);
         var recognised_contents = _get_recognized_contents(failed_tree_output, in_tree.INPUT);
@@ -267,7 +267,7 @@ function get_recognized_chunk (in_tree, in_colour) {
 
 // ******************************
 
-function _get_recognized_contents (in_failed_tree_output, in_contents) {
+function _get_recognized_contents(in_failed_tree_output, in_contents) {
     var contents = in_contents.replace(new RegExp('(\\r\\n|\\r|\\n)', 'g'), '\n');
 
     var recognised_contents_length = Math.max(0, contents.length - in_failed_tree_output.least_remaining);
@@ -282,7 +282,7 @@ function _get_recognized_contents (in_failed_tree_output, in_contents) {
 
 // ******************************
 
-function _get_unrecognized_contents (in_failed_tree_output, in_contents) {
+function _get_unrecognized_contents(in_failed_tree_output, in_contents) {
     var contents = in_contents.replace(new RegExp('(\\r\\n|\\r|\\n)', 'g'), '\n');
 
     var recognised_contents_length = Math.max(0, contents.length - in_failed_tree_output.least_remaining);
@@ -301,13 +301,13 @@ function _get_unrecognized_contents (in_failed_tree_output, in_contents) {
 // Indent Functions:
 // ******************************
 
-function _get_indent (in_inc) {
+function _get_indent(in_inc) {
     return utils.str_repeat(g_INDENT, g_INDENT_COUNT + (in_inc || 0));
 }
 
 // ******************************
 
-function _inc_indent (in_inc) {
+function _inc_indent(in_inc) {
     g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + (in_inc || 0));
 }
 

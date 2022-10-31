@@ -17,7 +17,7 @@ var GRAMMAR_PS1 = require('../grammars/ps1');
 
 var checks = require('./checks');
 var cprint = require('color-print');
-var grammar  = require('../grammars/_core');
+var grammar = require('../grammars/_core');
 var parserHtml = require('./parser_html');
 var regexp_shorthand = require('../regexp/shorthand');
 var utils = require('./utils');
@@ -59,7 +59,7 @@ var g_PARSE_AS_SEPARATE_LINES = false;
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -81,7 +81,7 @@ function setup (in_config) {
 // Parsing Functions:
 // ******************************
 
-function parse_contents (in_contents) {
+function parse_contents(in_contents) {
     var result = false;
 
     do {
@@ -95,24 +95,24 @@ function parse_contents (in_contents) {
 
         var definition;
 
-        switch(g_DEFINITION_TYPE) {
-        case k_DEFINITION_TYPE_HTML:
-            throw new Error('HTML parsing not supported yet...');
+        switch (g_DEFINITION_TYPE) {
+            case k_DEFINITION_TYPE_HTML:
+                throw new Error('HTML parsing not supported yet...');
 
-        case k_DEFINITION_TYPE_SCSS:
-            definition = GRAMMAR_SCSS;
-            g_CASE_INSENSITIVE = false;
-            g_PARSE_AS_SEPARATE_LINES = false;
-            break;
+            case k_DEFINITION_TYPE_SCSS:
+                definition = GRAMMAR_SCSS;
+                g_CASE_INSENSITIVE = false;
+                g_PARSE_AS_SEPARATE_LINES = false;
+                break;
 
-        case k_DEFINITION_TYPE_PS1:
-            definition = GRAMMAR_PS1;
-            g_CASE_INSENSITIVE = true;
-            g_PARSE_AS_SEPARATE_LINES = true;
-            break;
+            case k_DEFINITION_TYPE_PS1:
+                definition = GRAMMAR_PS1;
+                g_CASE_INSENSITIVE = true;
+                g_PARSE_AS_SEPARATE_LINES = true;
+                break;
 
-        default:
-            throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
+            default:
+                throw new Error('Unhandled definition type "' + g_DEFINITION_TYPE + '"');
         }
 
         if (!grammar.k_DEFINITION_KEY_START) {
@@ -134,22 +134,21 @@ function parse_contents (in_contents) {
         var tree = {};
         parse_definition_key(tree, contents, definition, grammar.k_DEFINITION_KEY_START);
         result = tree;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_definition_key (out_tree, in_contents, in_definition, in_definition_key, in_indent, in_debug) {
+function parse_definition_key(out_tree, in_contents, in_definition, in_definition_key, in_indent, in_debug) {
     var result = false;
 
     do {
         var contents = in_contents || '';
         var original_contents = contents;
 
-        var definition_key = (in_definition_key) ? in_definition_key : grammar.k_DEFINITION_KEY_START;
+        var definition_key = in_definition_key ? in_definition_key : grammar.k_DEFINITION_KEY_START;
         var definition_value = in_definition[definition_key];
 
         if (!definition_value) {
@@ -158,9 +157,9 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
 
         var tree = out_tree || {};
         var indent = in_indent || '';
-        var debug = (definition_value.DEBUG || in_debug || grammar.k_DEBUG_OFF);
+        var debug = definition_value.DEBUG || in_debug || grammar.k_DEBUG_OFF;
 
-        var is_start = (definition_key === grammar.k_DEFINITION_KEY_START);
+        var is_start = definition_key === grammar.k_DEFINITION_KEY_START;
         if (is_start) {
             tree.INPUT = original_contents;
             contents = contents.replace(new RegExp(r_g('\\r\\n|\\r|\\n'), 'g'), '\n');
@@ -169,28 +168,28 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
         _log_debug_match(debug, cprint.toWhite(indent + definition_key));
 
         switch (definition_value.OPERATOR) {
-        case '||':
-            result = _parse_definition_or(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-            break;
+            case '||':
+                result = _parse_definition_or(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+                break;
 
-        case '&&':
-            result = _parse_definition_and(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-            break;
+            case '&&':
+                result = _parse_definition_and(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+                break;
 
-        case '*':
-            result = _parse_definition_multiple(tree, true, contents, in_definition, definition_key, definition_value, indent, debug);
-            break;
+            case '*':
+                result = _parse_definition_multiple(tree, true, contents, in_definition, definition_key, definition_value, indent, debug);
+                break;
 
-        case '+':
-            result = _parse_definition_multiple(tree, false, contents, in_definition, definition_key, definition_value, indent, debug);
-            break;
+            case '+':
+                result = _parse_definition_multiple(tree, false, contents, in_definition, definition_key, definition_value, indent, debug);
+                break;
 
-        case '==':
-            result = _parse_definition_equals(tree, contents, in_definition, definition_key, definition_value, indent, debug);
-            break;
+            case '==':
+                result = _parse_definition_equals(tree, contents, in_definition, definition_key, definition_value, indent, debug);
+                break;
 
-        default:
-            throw new Error('Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"');
+            default:
+                throw new Error('Invalid operator "' + definition_value.OPERATOR + '" for definition key "' + definition_key + '"');
         }
 
         tree.DEFINITION_KEY = definition_key;
@@ -203,16 +202,14 @@ function parse_definition_key (out_tree, in_contents, in_definition, in_definiti
             }
             break;
         }
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function _parse_definition_or (out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
+function _parse_definition_or(out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
     var result = false;
 
     do {
@@ -256,15 +253,14 @@ function _parse_definition_or (out_tree, in_contents, in_definition, in_definiti
         }
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function _parse_definition_and (out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
+function _parse_definition_and(out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
     var result = false;
 
     do {
@@ -313,15 +309,14 @@ function _parse_definition_and (out_tree, in_contents, in_definition, in_definit
         }
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function _parse_definition_multiple (out_tree, in_optional, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
+function _parse_definition_multiple(out_tree, in_optional, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
     var result = false;
 
     do {
@@ -379,15 +374,14 @@ function _parse_definition_multiple (out_tree, in_optional, in_contents, in_defi
         }
 
         result = contents;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function _parse_definition_equals (out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
+function _parse_definition_equals(out_tree, in_contents, in_definition, in_definition_key, in_definition_value, in_indent, in_debug) {
     var result = false;
 
     do {
@@ -441,8 +435,7 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
         out_tree.REMAINING_LENGTH = remaining.length;
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
@@ -451,40 +444,37 @@ function _parse_definition_equals (out_tree, in_contents, in_definition, in_defi
 // Debug Functions:
 // ******************************
 
-function _log_debug_all (in_debug_mode, in_message) {
-    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_ALL))
-        return;
+function _log_debug_all(in_debug_mode, in_message) {
+    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_ALL)) return;
     process.stdout.write(in_message + '\n');
 }
 
 // ******************************
 
-function _log_debug_match (in_debug_mode, in_message) {
-    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH))
-        return;
+function _log_debug_match(in_debug_mode, in_message) {
+    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH)) return;
     process.stdout.write(in_message + '\n');
 }
 
 // ******************************
 
-function _log_debug_match_val (in_debug_mode, in_message) {
-    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH_VAL))
-        return;
+function _log_debug_match_val(in_debug_mode, in_message) {
+    if (_get_debug_level(in_debug_mode) < _get_debug_level(grammar.k_DEBUG_MATCH_VAL)) return;
     process.stdout.write(in_message + '\n');
 }
 
 // ******************************
 
-function _get_debug_level (in_debug_level) {
+function _get_debug_level(in_debug_level) {
     switch (in_debug_level) {
-    case grammar.k_DEBUG_OFF:
-        return 0;
-    case grammar.k_DEBUG_MATCH_VAL:
-        return 1;
-    case grammar.k_DEBUG_MATCH:
-        return 2;
-    case grammar.k_DEBUG_ALL:
-        return 3;
+        case grammar.k_DEBUG_OFF:
+            return 0;
+        case grammar.k_DEBUG_MATCH_VAL:
+            return 1;
+        case grammar.k_DEBUG_MATCH:
+            return 2;
+        case grammar.k_DEBUG_ALL:
+            return 3;
     }
 }
 

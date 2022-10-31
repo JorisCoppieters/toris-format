@@ -1,4 +1,4 @@
-const cprint = require("color-print");
+const cprint = require('color-print');
 
 // ******************************
 // State:
@@ -6,8 +6,8 @@ const cprint = require("color-print");
 
 const CONFIG = {
     logLevel: 2,
-    logColour: true
-}
+    logColour: true,
+};
 
 const c_LOG_LEVEL_VERBOSE = 5;
 const c_LOG_LEVEL_INFO = 4;

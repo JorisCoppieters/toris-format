@@ -41,7 +41,7 @@ var g_DEFINITION_TYPE = parser.k_DEFINITION_TYPE_HTML;
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -57,7 +57,7 @@ function setup (in_config) {
 // Formatter Functions:
 // ******************************
 
-function format_file (in_file, in_config) {
+function format_file(in_file, in_config) {
     var definition_type = null;
     var config = in_config || {};
 
@@ -65,22 +65,22 @@ function format_file (in_file, in_config) {
     var file_extension = utils.get_file_extension(in_file);
 
     switch (file_extension) {
-    case 'htm':
-    case 'html':
-        definition_type = parser.k_DEFINITION_TYPE_HTML;
-        break;
+        case 'htm':
+        case 'html':
+            definition_type = parser.k_DEFINITION_TYPE_HTML;
+            break;
 
-    case 'css':
-    case 'scss':
-        definition_type = parser.k_DEFINITION_TYPE_SCSS;
-        break;
+        case 'css':
+        case 'scss':
+            definition_type = parser.k_DEFINITION_TYPE_SCSS;
+            break;
 
-    case 'ps1':
-        definition_type = parser.k_DEFINITION_TYPE_PS1;
-        break;
+        case 'ps1':
+            definition_type = parser.k_DEFINITION_TYPE_PS1;
+            break;
 
-    default:
-        throw new Error('Unhandled file extension: ' + file_extension);
+        default:
+            throw new Error('Unhandled file extension: ' + file_extension);
     }
 
     config.definition_type = definition_type;
@@ -90,7 +90,7 @@ function format_file (in_file, in_config) {
 
 // ******************************
 
-function format_contents (in_contents, in_config) {
+function format_contents(in_contents, in_config) {
     setup(in_config);
 
     var contents = in_contents || '';
@@ -116,7 +116,7 @@ function format_contents (in_contents, in_config) {
     var tree_output = treeFn.get_tree_output(tree, in_config);
     if (!tree_output.output) {
         var failed_output = treeFn.get_failed_output(tree, logger.CONFIG.logColour);
-        throw new Error('Failed to parse:\n' + failed_output)
+        throw new Error('Failed to parse:\n' + failed_output);
     }
 
     var result = tree_output.output;
@@ -131,11 +131,11 @@ function format_contents (in_contents, in_config) {
 // TODO: DEPRECATE
 // ******************************
 
-function format_sass_contents (in_contents, in_indent_count, in_convert_Line_endings) {
+function format_sass_contents(in_contents, in_indent_count, in_convert_Line_endings) {
     return format_contents(in_contents, {
         convert_line_endings: in_convert_Line_endings,
         indent_count: in_indent_count,
-        definition_type: parser.k_DEFINITION_TYPE_SCSS
+        definition_type: parser.k_DEFINITION_TYPE_SCSS,
     });
 }
 

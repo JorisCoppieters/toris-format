@@ -30,16 +30,18 @@ const k_VERSION = '1.7.26';
 // TODO: DEPRECATE
 // ******************************
 
-function setup (in_config) {
-    logger.CONFIG.logColour = typeof(in_config.log_colour) === 'undefined' ? true : !!in_config.log_colour;
-    logger.CONFIG.logLevel = typeof(in_config.log_level) === 'undefined' ? logger.c_LOG_LEVEL_ERROR : in_config.log_level;
+function setup(in_config) {
+    logger.CONFIG.logColour = typeof in_config.log_colour === 'undefined' ? true : !!in_config.log_colour;
+    logger.CONFIG.logLevel = typeof in_config.log_level === 'undefined' ? logger.c_LOG_LEVEL_ERROR : in_config.log_level;
 
     formatter.setup(in_config);
     printer.setup(in_config);
     tree.setup(in_config);
-    parserHtml.setup(Object.assign({}, in_config, {
-        convert_line_endings: true
-    }));
+    parserHtml.setup(
+        Object.assign({}, in_config, {
+            convert_line_endings: true,
+        })
+    );
     require('./formatters/scss').setup(in_config);
 }
 
