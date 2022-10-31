@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-023-double-and-preformatted.scss",
+    "outputFile": "format-test-023-double-and-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "double-and"
+}

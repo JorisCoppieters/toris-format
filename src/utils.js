@@ -12,13 +12,15 @@
 // Functions:
 // ******************************
 
-function get_setup_property (in_config, in_field, in_default_value, in_base_value) {
+function get_setup_property(in_config, in_field, in_default_value, in_base_value) {
     if (!in_config) {
         return in_default_value;
     }
 
     if (Array.isArray(in_field)) {
-        var valid_fields = in_field.filter(function (field) {return typeof(in_config[field]) !== 'undefined';});
+        var valid_fields = in_field.filter(function (field) {
+            return typeof in_config[field] !== 'undefined';
+        });
         if (!valid_fields || !valid_fields.length) {
             return in_default_value;
         }
@@ -26,7 +28,7 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
         return in_config[field];
     }
 
-    if (typeof(in_config[in_field]) === 'undefined') {
+    if (typeof in_config[in_field] === 'undefined') {
         return in_default_value;
     }
     var val = in_config[in_field];
@@ -40,7 +42,7 @@ function get_setup_property (in_config, in_field, in_default_value, in_base_valu
 
 // ******************************
 
-function get_file_extension (file) {
+function get_file_extension(file) {
     try {
         var file_parts = file.match(/.*\.(.*)$/);
         var file_extension = file_parts[1].trim().toLowerCase();
@@ -61,13 +63,13 @@ function num_lines(in_content) {
 
 // ******************************
 
-function is_numeric (n) {
+function is_numeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 // ******************************
 
-function str_append (in_string, in_append, in_delim) {
+function str_append(in_string, in_append, in_delim) {
     var string = in_string || '';
     var append = in_append || '';
     if (in_delim) {
@@ -78,8 +80,8 @@ function str_append (in_string, in_append, in_delim) {
 
 // ******************************
 
-function str_repeat (s, n) {
-    return Array(n+1).join(s);
+function str_repeat(s, n) {
+    return Array(n + 1).join(s);
 }
 
 // ******************************

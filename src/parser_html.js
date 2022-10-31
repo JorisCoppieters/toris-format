@@ -62,32 +62,37 @@ var r_S = '[\\s]+'; // RegEx: Whitepsace
 
 // ******************************
 
-function r_w (in_re) { // RegEx: Whitespace around
+function r_w(in_re) {
+    // RegEx: Whitespace around
     return r_W + in_re + r_W;
 }
 
 // ******************************
 
-function r_g (in_re) { // RegEx: Group
+function r_g(in_re) {
+    // RegEx: Group
     return '(?:' + in_re + ')';
 }
 
 // ******************************
 
-function r_v (in_re) { // RegEx: Variable
+function r_v(in_re) {
+    // RegEx: Variable
     return '(' + in_re + ')';
 }
 
 // ******************************
 
-function r_dq (in_re) { // RegEx: Double Quote
+function r_dq(in_re) {
+    // RegEx: Double Quote
     return r_W + '"' + r_W + in_re + r_W + '"';
 }
 
 // ******************************
 
-function r_sq (in_re) { // RegEx: Single Quote
-    return r_W + '\'' + r_W + in_re + r_W + '\'';
+function r_sq(in_re) {
+    // RegEx: Single Quote
+    return r_W + "'" + r_W + in_re + r_W + "'";
 }
 
 // ******************************
@@ -109,8 +114,66 @@ var g_HTML_INVALID = '';
 var g_HTML_LINE_NUMBER = 1;
 
 // Config - Base:
-var g_BLOCK_ELEMENTS_BASE = ['address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes', 'noscript', 'ol', 'p', 'pre', 'table', 'ul'];
-var g_INLINE_ELEMENTS_BASE = ['a', 'abbr', 'acronym', 'b', 'basefont', 'bdo', 'big', 'br', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'img', 'input', 'kbd', 'label', 'q', 's', 'samp', 'select', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'textarea', 'tt', 'u', 'var'];
+var g_BLOCK_ELEMENTS_BASE = [
+    'address',
+    'blockquote',
+    'center',
+    'dir',
+    'div',
+    'dl',
+    'fieldset',
+    'form',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'hr',
+    'isindex',
+    'menu',
+    'noframes',
+    'noscript',
+    'ol',
+    'p',
+    'pre',
+    'table',
+    'ul',
+];
+var g_INLINE_ELEMENTS_BASE = [
+    'a',
+    'abbr',
+    'acronym',
+    'b',
+    'basefont',
+    'bdo',
+    'big',
+    'br',
+    'cite',
+    'code',
+    'dfn',
+    'em',
+    'font',
+    'i',
+    'img',
+    'input',
+    'kbd',
+    'label',
+    'q',
+    's',
+    'samp',
+    'select',
+    'small',
+    'span',
+    'strike',
+    'strong',
+    'sub',
+    'sup',
+    'textarea',
+    'tt',
+    'u',
+    'var',
+];
 var g_ONE_TIME_BOUND_ELEMENT_PREFIXES_BASE = ['ng-'];
 var g_SELF_CLOSING_HTML_TAGS_BASE = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
@@ -153,7 +216,7 @@ var g_REGEX_XML_HEADER = r_v('<\\?xml' + r_A + '\\?>');
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -183,7 +246,7 @@ function setup (in_config) {
 // HTML Functions:
 // ******************************
 
-function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) {
+function format_html_contents(in_contents, in_indent_count, in_wrap_with_divs) {
     var result = false;
 
     do {
@@ -207,20 +270,20 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
 
         if (!parse_html(html_content)) {
             if (in_wrap_with_divs) {
-                return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
+                return format_html_contents('<div>' + in_contents + '</div>', in_indent_count, true);
             }
 
             throw new Error('Unrecognised HTML #' + g_HTML_LINE_NUMBER + ': \n' + g_HTML_INVALID.substr(0, 100) + ' ... ');
         }
 
-        while(g_ELEMENT_STACK.length) {
+        while (g_ELEMENT_STACK.length) {
             var top_element = g_ELEMENT_STACK.pop();
             if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN, k_CONTENT_TOKEN].indexOf(top_element) >= 0) {
                 continue;
             }
 
             if (in_wrap_with_divs) {
-                return format_html_contents('<div>'+in_contents+'</div>', in_indent_count, true);
+                return format_html_contents('<div>' + in_contents + '</div>', in_indent_count, true);
             }
 
             throw new Error('HTML stack still contained element: ' + top_element);
@@ -239,33 +302,24 @@ function format_html_contents (in_contents, in_indent_count, in_wrap_with_divs) 
         }
 
         reset_html_variables();
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_html (in_html_content) {
+function parse_html(in_html_content) {
     var result = false;
 
     var html_content = in_html_content || '';
 
-    var functions = [
-        parse_xml_header,
-        parse_style,
-        parse_html_open_element,
-        parse_html_close_element,
-        parse_comment,
-        parse_content
-    ];
+    var functions = [parse_xml_header, parse_style, parse_html_open_element, parse_html_close_element, parse_comment, parse_content];
 
     var parse_run = 0;
     var max_parse_runs = 5000;
 
     try {
-
         var parsed = true;
         while (parsed) {
             parsed = false;
@@ -276,7 +330,7 @@ function parse_html (in_html_content) {
                 break;
             }
 
-            functions.forEach(function(fn) {
+            functions.forEach(function (fn) {
                 if (parsed) {
                     return;
                 }
@@ -293,7 +347,6 @@ function parse_html (in_html_content) {
                 throw new Error('Too many parse runs!');
             }
         }
-
     } catch (err) {
         g_HTML_INVALID = html_content.substr(0, 200);
         throw new Error('Invalid HTML #' + g_HTML_LINE_NUMBER + ': ' + err);
@@ -304,7 +357,7 @@ function parse_html (in_html_content) {
 
 // ******************************
 
-function parse_html_open_element (in_html_content) {
+function parse_html_open_element(in_html_content) {
     var result = false;
 
     do {
@@ -340,15 +393,14 @@ function parse_html_open_element (in_html_content) {
         } else {
             result = remaining;
         }
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_html_open_element_start (in_html_content) {
+function parse_html_open_element_start(in_html_content) {
     var result = false;
 
     do {
@@ -369,60 +421,123 @@ function parse_html_open_element_start (in_html_content) {
         g_CURRENT_ELEMENT_WHITESPACE_BEFORE = whitespace_before;
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_html_open_element_attributes (in_html_content) {
+function parse_html_open_element_attributes(in_html_content) {
     var result = false;
 
     var html_content = in_html_content || '';
 
     var functions = [
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN); },
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL); },
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY); },
-        function (in_html_content) { return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE); },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED);
+        },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED);
+        },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN);
+        },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL);
+        },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY);
+        },
+        function (in_html_content) {
+            return parse_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE);
+        },
     ];
 
     if (g_ANGULAR_VERSION >= 2.0 && g_ANGULAR_VERSION < 3.0) {
         functions = functions.concat([
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_REFERENCE); },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_REFERENCE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_REFERENCE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_REFERENCE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_REFERENCE);
+            },
 
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY); },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY);
+            },
 
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY); },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY);
+            },
 
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT); },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT);
+            },
 
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
-            function (in_html_content) { return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE); },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_NULL, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_VALUE_EMPTY, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE);
+            },
+            function (in_html_content) {
+                return parse_ng2_attribute(in_html_content, k_ATTRIBUTE_TYPE_NO_VALUE, k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE);
+            },
         ]);
     }
 
@@ -435,7 +550,7 @@ function parse_html_open_element_attributes (in_html_content) {
             break;
         }
 
-        functions.forEach(function(fn) {
+        functions.forEach(function (fn) {
             if (parsed) {
                 return;
             }
@@ -455,37 +570,35 @@ function parse_html_open_element_attributes (in_html_content) {
 
 // ******************************
 
-function parse_attribute (in_html_content, in_attribute_type) {
+function parse_attribute(in_html_content, in_attribute_type) {
     var result = false;
 
     do {
-
         var regExpString = '^' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_KEY);
 
-        switch (in_attribute_type)
-        {
-        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-            regExpString += r_W + '=' + r_dq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-            break;
+        switch (in_attribute_type) {
+            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+                regExpString += r_W + '=' + r_dq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-            regExpString += r_W + '=' + r_sq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+                regExpString += r_W + '=' + r_sq(r_v('\\:\\:') + '?' + r_W + r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-            regExpString += r_W + '=' + r_v('(?:true|false)');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                regExpString += r_W + '=' + r_v('(?:true|false)');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-            regExpString += r_W + '=' + r_dq('');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+                regExpString += r_W + '=' + r_dq('');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_NULL:
-            regExpString += r_W + '=null';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                regExpString += r_W + '=null';
+                break;
 
-        case k_ATTRIBUTE_TYPE_NO_VALUE:
-            break;
+            case k_ATTRIBUTE_TYPE_NO_VALUE:
+                break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -500,45 +613,44 @@ function parse_attribute (in_html_content, in_attribute_type) {
         var val;
         var already_one_time_bound;
 
-        switch (in_attribute_type)
-        {
-        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-            already_one_time_bound = matches.shift() === '::';
-            val = matches.shift() || '';
+        switch (in_attribute_type) {
+            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+                already_one_time_bound = matches.shift() === '::';
+                val = matches.shift() || '';
 
-            var should_be_one_time_bound = key.match(new RegExp('('+g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|')+').*?'));
-            var should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('('+g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|')+')'));
-            var binding = ((should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound) ? '::' : '';
+                var should_be_one_time_bound = key.match(new RegExp('(' + g_ONE_TIME_BOUND_ELEMENT_PREFIXES.join('|') + ').*?'));
+                var should_not_be_one_time_bound = g_CURRENT_ELEMENT.match(new RegExp('(' + g_NONE_ONE_TIME_BOUND_ELEMENTS.join('|') + ')'));
+                var binding = (should_be_one_time_bound && !should_not_be_one_time_bound) || already_one_time_bound ? '::' : '';
 
-            if (val === '"true"' || val === '\'true\'' || val === 'true') {
-                val = binding + 'true';
-            } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-                val = binding + 'false';
-            } else if (is_numeric(val)) {
-                val = binding + val;
-            } else if (already_one_time_bound) {
-                val = binding + val;
-            } else if (val === '\'\'' || val.match(/^'[^']+'$/)) {
-                val = binding + val;
-            }
-            break;
+                if (val === '"true"' || val === "'true'" || val === 'true') {
+                    val = binding + 'true';
+                } else if (val === '"false"' || val === "'false'" || val === 'false') {
+                    val = binding + 'false';
+                } else if (is_numeric(val)) {
+                    val = binding + val;
+                } else if (already_one_time_bound) {
+                    val = binding + val;
+                } else if (val === "''" || val.match(/^'[^']+'$/)) {
+                    val = binding + val;
+                }
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-            val = matches.shift() || '';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                val = matches.shift() || '';
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-            val = '';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+                val = '';
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_NULL:
-            val = k_NULL_VALUE_TOKEN;
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                val = k_NULL_VALUE_TOKEN;
+                break;
 
-        case k_ATTRIBUTE_TYPE_NO_VALUE:
-            val = k_NO_VALUE_TOKEN;
-            break;
+            case k_ATTRIBUTE_TYPE_NO_VALUE:
+                val = k_NO_VALUE_TOKEN;
+                break;
         }
 
         g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
@@ -546,69 +658,65 @@ function parse_attribute (in_html_content, in_attribute_type) {
 
         // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+regExpString+'~~~'+key+'~~~'+already_one_time_bound+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding_type) {
+function parse_ng2_attribute(in_html_content, in_attribute_type, in_ng2_binding_type) {
     var result = false;
 
     do {
         var regExpString = '^' + r_W;
 
-        switch (in_ng2_binding_type)
-        {
-        case k_NG2_ATTRIBUTE_TYPE_REFERENCE:
-            regExpString += r_v('#[@:a-z]+');
-            break;
+        switch (in_ng2_binding_type) {
+            case k_NG2_ATTRIBUTE_TYPE_REFERENCE:
+                regExpString += r_v('#[@:a-z]+');
+                break;
 
-        case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
-            regExpString += r_v('\\[' + '[$@:a-zA-Z0-9._-]+' + '\\]');
-            break;
+            case k_NG2_ATTRIBUTE_TYPE_BINDING_PROPERTY:
+                regExpString += r_v('\\[' + '[$@:a-zA-Z0-9._-]+' + '\\]');
+                break;
 
-        case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
-            regExpString += r_v('\\[\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)\\]');
-            break;
+            case k_NG2_ATTRIBUTE_TYPE_BINDING_TWO_WAY_PROPERTY:
+                regExpString += r_v('\\[\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)\\]');
+                break;
 
-        case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
-            regExpString += r_v('\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)');
-            break;
+            case k_NG2_ATTRIBUTE_TYPE_BINDING_EVENT:
+                regExpString += r_v('\\(' + '[$@:a-zA-Z0-9._-]+' + '\\)');
+                break;
 
-        case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
-            regExpString += r_v('\\*' + '[@:a-zA-Z0-9._-]+');
-            break;
+            case k_NG2_ATTRIBUTE_TYPE_BINDING_CUSTOM_DIRECTIVE:
+                regExpString += r_v('\\*' + '[@:a-zA-Z0-9._-]+');
+                break;
         }
 
-        switch (in_attribute_type)
-        {
-        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-            regExpString += r_W + '=' + r_dq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-            break;
+        switch (in_attribute_type) {
+            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+                regExpString += r_W + '=' + r_dq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-            regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+                regExpString += r_W + '=' + r_sq(r_v(g_REGEX_HTML_ATTRIBUTE_VALUE));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-            regExpString += r_W + '=' + r_v('(?:true|false)');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                regExpString += r_W + '=' + r_v('(?:true|false)');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-            regExpString += r_W + '=' + r_dq('');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+                regExpString += r_W + '=' + r_dq('');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_NULL:
-            regExpString += r_W + '=null';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                regExpString += r_W + '=null';
+                break;
 
-        case k_ATTRIBUTE_TYPE_NO_VALUE:
-            regExpString += ''; // Add nothing
-            break;
+            case k_ATTRIBUTE_TYPE_NO_VALUE:
+                regExpString += ''; // Add nothing
+                break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -622,35 +730,34 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
         var key = matches.shift() || '';
         var val;
 
-        switch (in_attribute_type)
-        {
-        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-            val = matches.shift() || '';
+        switch (in_attribute_type) {
+            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+                val = matches.shift() || '';
 
-            if (val === '"true"' || val === '\'true\'' || val === 'true') {
-                val = 'true';
-            } else if (val === '"false"' || val === '\'false\'' || val === 'false') {
-                val = 'false';
-            }
+                if (val === '"true"' || val === "'true'" || val === 'true') {
+                    val = 'true';
+                } else if (val === '"false"' || val === "'false'" || val === 'false') {
+                    val = 'false';
+                }
 
-            break;
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-            val = matches.shift() || '';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                val = matches.shift() || '';
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
-            val = '';
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_EMPTY:
+                val = '';
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_NULL:
-            val = k_NULL_VALUE_TOKEN;
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_NULL:
+                val = k_NULL_VALUE_TOKEN;
+                break;
 
-        case k_ATTRIBUTE_TYPE_NO_VALUE:
-            val = k_NO_VALUE_TOKEN;
-            break;
+            case k_ATTRIBUTE_TYPE_NO_VALUE:
+                val = k_NO_VALUE_TOKEN;
+                break;
         }
 
         g_CURRENT_ELEMENT_ATTRIBUTES[key] = val;
@@ -659,16 +766,14 @@ function parse_ng2_attribute (in_html_content, in_attribute_type, in_ng2_binding
         // console.log('"'+in_html_content.substr(0,100)+'" => ~~~'+key+'~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_html_open_element_end (in_html_content) {
+function parse_html_open_element_end(in_html_content) {
     var result = false;
 
     do {
@@ -697,11 +802,9 @@ function parse_html_open_element_end (in_html_content) {
             } else {
                 throw new Error('Not a self closing HTML tag: ' + g_CURRENT_ELEMENT);
             }
-
         } else if (g_SELF_CLOSING_HTML_TAGS.indexOf(g_CURRENT_ELEMENT) >= 0) {
             output = '<' + g_CURRENT_ELEMENT + sort_attributes(g_CURRENT_ELEMENT_ATTRIBUTES) + '>';
             indent = t_NL + get_indent();
-
         } else {
             var top_element_info = get_top_element_info();
 
@@ -709,13 +812,8 @@ function parse_html_open_element_end (in_html_content) {
 
             if (top_element_info.top_element_is_block_element && g_FORCE_BLOCK_WHITESPACE_FORMATTING) {
                 indent = t_NL + get_indent();
-
             } else if (space_content) {
-                if (top_element_info.had_content
-                    || top_element_info.had_comment
-                    || top_element_info.had_xml_header
-                    || !top_element_info.top_element_is_inline_element) {
-
+                if (top_element_info.had_content || top_element_info.had_comment || top_element_info.had_xml_header || !top_element_info.top_element_is_inline_element) {
                     if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                         indent = ' ';
                     } else {
@@ -745,15 +843,14 @@ function parse_html_open_element_end (in_html_content) {
         g_HTML_CONTENT += output;
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function add_attributes (in_attributes) {
+function add_attributes(in_attributes) {
     if (g_CURRENT_ELEMENT === 'a') {
         if (in_attributes['target'] === '_blank') {
             var rel = (in_attributes['rel'] || '').replace('noopener', '').replace('noreferrer', '').trim();
@@ -770,7 +867,7 @@ function add_attributes (in_attributes) {
 
 // ******************************
 
-function sort_attributes (in_attributes) {
+function sort_attributes(in_attributes) {
     var result = '';
 
     do {
@@ -848,7 +945,6 @@ function sort_attributes (in_attributes) {
         var indent = str_repeat(g_INDENT, g_INDENT_COUNT + 1);
 
         sorted_attribute_keys.forEach(function (key) {
-
             var val = attributes[key];
             val = val.replace(/[\s]+/, ' ');
 
@@ -864,7 +960,6 @@ function sort_attributes (in_attributes) {
 
             var inline_variable = val.match(new RegExp('^(\\:\\:)?\\{\\{' + r_v(r_A) + '\\}\\}$', 'i'));
             if (!inline_variable) {
-
                 var inline_block = val.match(new RegExp('^(\\:\\:)?\\{' + r_v(r_AG) + '\\}$', 'i'));
                 if (inline_block) {
                     var attribute_block_object_parse_result = parse_attribute_block_content(val);
@@ -882,24 +977,34 @@ function sort_attributes (in_attributes) {
                     classes = sort_classes(classes);
 
                     if (g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST >= 0 && classes.length > g_FORMAT_MULTI_CLASSES_WITH_AT_LEAST) {
-                        val = t_NL + val_indent + classes.filter(function (val) {return val.trim().length;}).join(t_NL + val_indent);
+                        val =
+                            t_NL +
+                            val_indent +
+                            classes
+                                .filter(function (val) {
+                                    return val.trim().length;
+                                })
+                                .join(t_NL + val_indent);
                     } else {
-                        val = classes.filter(function (val) {return val.trim().length;}).join(' ');
+                        val = classes
+                            .filter(function (val) {
+                                return val.trim().length;
+                            })
+                            .join(' ');
                     }
                 }
             }
 
             result += t_NL + indent + key + '="' + val + '"';
         });
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_classes_content (in_classes_content) {
+function parse_classes_content(in_classes_content) {
     var result = false;
 
     do {
@@ -930,15 +1035,14 @@ function parse_classes_content (in_classes_content) {
         result = g_CURRENT_ELEMENT_CLASSES;
         g_CURRENT_ELEMENT_CLASSES = [];
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_classes_content_space (in_classes_content) {
+function parse_classes_content_space(in_classes_content) {
     var result = false;
 
     do {
@@ -955,28 +1059,30 @@ function parse_classes_content_space (in_classes_content) {
         // console.log('[SPACE]"'+classes_content.substr(0,100)+'" => ~~~'+' '+'~~~'+remaining.substr(0,100)+'|------\n');
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_classes_content_class_name (in_classes_content) {
+function parse_classes_content_class_name(in_classes_content) {
     var result = false;
 
     do {
         var classes_content = in_classes_content || '';
 
         var functions = [
-            function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_BINDING); },
-            function (in_classes_content) { return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_NORMAL); },
+            function (in_classes_content) {
+                return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_BINDING);
+            },
+            function (in_classes_content) {
+                return parse_classes_content_class_name_type(in_classes_content, k_CLASS_TYPE_NORMAL);
+            },
         ];
 
         var matched_value = false;
-        functions.forEach(function(fn) {
+        functions.forEach(function (fn) {
             if (matched_value) {
                 return;
             }
@@ -994,29 +1100,27 @@ function parse_classes_content_class_name (in_classes_content) {
         g_CURRENT_ELEMENT_CLASSES.push(g_CURRENT_ELEMENT_CLASSES_CLASS_NAME);
 
         result = classes_content;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_classes_content_class_name_type (in_classes_content, in_class_name_type) {
+function parse_classes_content_class_name_type(in_classes_content, in_class_name_type) {
     var result = false;
 
     do {
         var regExpString = '^';
 
-        switch (in_class_name_type)
-        {
-        case k_CLASS_TYPE_BINDING:
-            regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
-            break;
+        switch (in_class_name_type) {
+            case k_CLASS_TYPE_BINDING:
+                regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
+                break;
 
-        case k_CLASS_TYPE_NORMAL:
-            regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
-            break;
+            case k_CLASS_TYPE_NORMAL:
+                regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
+                break;
         }
 
         regExpString += r_v(r_AG) + '$';
@@ -1035,20 +1139,17 @@ function parse_classes_content_class_name_type (in_classes_content, in_class_nam
         // console.log(in_class_name_type+'"'+in_classes_content.substr(0,100)+'" => ~~~'+class_name+'~~~'+remaining.substr(0,100)+'|------\n');
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function sort_classes (in_class_names) {
+function sort_classes(in_class_names) {
     var result = false;
 
     do {
-
         var class_names = in_class_names.sort();
         var sorted_class_names = [];
 
@@ -1084,15 +1185,14 @@ function sort_classes (in_class_names) {
         });
 
         result = sorted_class_names;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_attribute_block_content (in_attribute_block_content) {
+function parse_attribute_block_content(in_attribute_block_content) {
     var result = false;
 
     do {
@@ -1129,20 +1229,18 @@ function parse_attribute_block_content (in_attribute_block_content) {
 
         result = {
             binding,
-            object: g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT
+            object: g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT,
         };
         g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT = [];
         g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE = '';
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_attribute_block_content_comma (in_attribute_block_content) {
+function parse_attribute_block_content_comma(in_attribute_block_content) {
     var result = false;
 
     do {
@@ -1159,23 +1257,21 @@ function parse_attribute_block_content_comma (in_attribute_block_content) {
         // console.log('[COMMA]"'+attribute_block_content.substr(0,100)+'" => ~~~'+','+'~~~'+remaining.substr(0,100)+'|------\n');
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_attribute_block_content_entry (in_attribute_block_content) {
+function parse_attribute_block_content_entry(in_attribute_block_content) {
     var result = false;
 
     do {
         var attribute_block_content = in_attribute_block_content || '';
 
         var matches;
-        if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + r_v('\'?[$A-Za-z0-9 _-]+\'?') + r_W + ':' + r_W + r_v(r_AG) + '$', 'i')))) {
+        if (!(matches = attribute_block_content.match(new RegExp('^' + r_W + r_v("'?[$A-Za-z0-9 _-]+'?") + r_W + ':' + r_W + r_v(r_AG) + '$', 'i')))) {
             break;
         }
 
@@ -1188,15 +1284,14 @@ function parse_attribute_block_content_entry (in_attribute_block_content) {
         // console.log('[KEY]"'+attribute_block_content.substr(0,100)+'" => ~~~'+key+'|------\n');
 
         result = parse_attribute_block_content_entry_key_value_pair(key, val);
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_aggregate) {
+function parse_attribute_block_content_entry_key_value_pair(in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_aggregate) {
     var result = false;
 
     do {
@@ -1204,17 +1299,31 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
         var val = in_attribute_block_content_entry_value || '';
 
         var functions = [
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_NUMERIC); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR); },
-            function (in_key, in_val) { return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK); },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BOOLEAN);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_NUMERIC);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_ACCESSOR);
+            },
+            function (in_key, in_val) {
+                return parse_attribute_block_content_entry_key_value_pair_type(in_key, in_val, k_ATTRIBUTE_TYPE_VALUE_BLOCK);
+            },
         ];
 
         var matched_value = false;
-        functions.forEach(function(fn) {
+        functions.forEach(function (fn) {
             if (matched_value) {
                 return;
             }
@@ -1256,75 +1365,58 @@ function parse_attribute_block_content_entry_key_value_pair (in_attribute_block_
         remaining = parse_attribute_block_content_entry_key_value_pair(in_attribute_block_content_entry_key, remaining, true);
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_attribute_type) {
+function parse_attribute_block_content_entry_key_value_pair_type(in_attribute_block_content_entry_key, in_attribute_block_content_entry_value, in_attribute_type) {
     var result = false;
 
     do {
         var regExpString = '^';
 
-        switch (in_attribute_type)
-        {
-        case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
-            regExpString += r_W + r_v('(?:true|false)');
-            break;
+        switch (in_attribute_type) {
+            case k_ATTRIBUTE_TYPE_VALUE_BOOLEAN:
+                regExpString += r_W + r_v('(?:true|false)');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
-            regExpString += r_W + r_v('[0-9.-]+');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_NUMERIC:
+                regExpString += r_W + r_v('[0-9.-]+');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
-            regExpString += r_W + r_v(r_sq(r_A));
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_SINGLE_QUOTED:
+                regExpString += r_W + r_v(r_sq(r_A));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
-            regExpString += r_W + r_v(r_dq(r_A));
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_DOUBLE_QUOTED:
+                regExpString += r_W + r_v(r_dq(r_A));
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_BLOCK:
-            regExpString += r_W + r_v('\\{' + r_A + '\\}');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_BLOCK:
+                regExpString += r_W + r_v('\\{' + r_A + '\\}');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
-            regExpString += r_W + r_v('\\!*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR_FUNCTION:
+                regExpString += r_W + r_v('\\!*' + r_g('[$a-zA-Z0-9_]+\\??\\.') + '*' + '[$a-zA-Z0-9_-]+\\([a-zA-Z0-9. "\',_-]*\\)');
+                break;
 
-        case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
-            regExpString += r_W + r_v('\\!*' + r_g(
-                r_g(
-                    r_g(
-                        '\\(' +
-                            r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async')
-                            + '\\)'
-                    ) +
-                        '|' +
-                        r_g(
-                            r_g('[$a-zA-Z0-9_]+')
-                        )
-                ) +
-                    '\\??\\.'
-            ) + '*' + r_g(
-                r_g(
-                    '\\(' +
-                        r_g(
-                            r_g(r_w('[$a-zA-Z0-9._-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9._-]+') +
-                            '|' +
-                            r_g(r_w('[$a-zA-Z0-9._]+') + r_w('\\|') + r_w('async'))
-                        )
-                        + '\\)'
-                ) +
-                    '|' +
-                    r_g('[$a-zA-Z0-9_-]+')
-            ));
-            break;
+            case k_ATTRIBUTE_TYPE_VALUE_ACCESSOR:
+                regExpString +=
+                    r_W +
+                    r_v(
+                        '\\!*' +
+                            r_g(r_g(r_g('\\(' + r_w('[$a-zA-Z0-9_]+') + r_w('\\|') + r_w('async') + '\\)') + '|' + r_g(r_g('[$a-zA-Z0-9_]+'))) + '\\??\\.') +
+                            '*' +
+                            r_g(
+                                r_g('\\(' + r_g(r_g(r_w('[$a-zA-Z0-9._-]+') + r_w('\\|\\|')) + '*' + r_w('[$a-zA-Z0-9._-]+') + '|' + r_g(r_w('[$a-zA-Z0-9._]+') + r_w('\\|') + r_w('async'))) + '\\)') +
+                                    '|' +
+                                    r_g('[$a-zA-Z0-9_-]+')
+                            )
+                    );
+                break;
         }
 
         regExpString += r_W + r_v(r_AG) + '$';
@@ -1352,16 +1444,14 @@ function parse_attribute_block_content_entry_key_value_pair_type (in_attribute_b
         // console.log(in_attribute_type+'['+key+']"'+in_attribute_block_content_entry_value.substr(0,100)+'" => ~~~'+val+'~~~'+remaining.substr(0,100)+'|------\n');
 
         result = remaining;
-
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function attribute_block_object_to_string (in_binding, in_attribute_block_object) {
+function attribute_block_object_to_string(in_binding, in_attribute_block_object) {
     var result = false;
 
     do {
@@ -1375,8 +1465,8 @@ function attribute_block_object_to_string (in_binding, in_attribute_block_object
 
         attribute_block_object_entry_keys.forEach(function (attribute_block_object_entry_key) {
             var attribute_block_object_entry_value = in_attribute_block_object[attribute_block_object_entry_key];
-            if (typeof(attribute_block_object_entry_value) === 'object') {
-                attribute_block_object_entry_value = attribute_block_object_to_string( '', attribute_block_object_entry_value );
+            if (typeof attribute_block_object_entry_value === 'object') {
+                attribute_block_object_entry_value = attribute_block_object_to_string('', attribute_block_object_entry_value);
             }
             attribute_block_object_formatted += t_NL + indent + g_INDENT + attribute_block_object_entry_key + ': ' + attribute_block_object_entry_value + ',';
         });
@@ -1389,15 +1479,14 @@ function attribute_block_object_to_string (in_binding, in_attribute_block_object
         inc_indent(-1);
 
         result = in_binding + attribute_block_object_formatted;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_html_close_element (in_html_content) {
+function parse_html_close_element(in_html_content) {
     var result = false;
 
     do {
@@ -1429,11 +1518,7 @@ function parse_html_close_element (in_html_content) {
             throw new Error('expected "' + top_element_info.top_element + '" but got "' + element + '"');
         }
 
-        var top_element_is_empty = (
-            !top_element_info.had_content &&
-            !top_element_info.had_comment &&
-            !top_element_info.had_xml_header &&
-            top_element_info.top_element === g_CURRENT_ELEMENT);
+        var top_element_is_empty = !top_element_info.had_content && !top_element_info.had_comment && !top_element_info.had_xml_header && top_element_info.top_element === g_CURRENT_ELEMENT;
 
         output = '</' + element + '>';
 
@@ -1442,10 +1527,7 @@ function parse_html_close_element (in_html_content) {
         } else if (space_content) {
             if (top_element_is_empty && top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                 indent = '';
-            } else if (top_element_info.had_content
-                    || top_element_info.had_comment
-                    || top_element_info.had_xml_header
-                    || !top_element_info.top_element_is_inline_element) {
+            } else if (top_element_info.had_content || top_element_info.had_comment || top_element_info.had_xml_header || !top_element_info.top_element_is_inline_element) {
                 if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                     indent = ' ';
                 } else {
@@ -1471,15 +1553,14 @@ function parse_html_close_element (in_html_content) {
         g_HTML_CONTENT += output;
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_content (in_html_content) {
+function parse_content(in_html_content) {
     var result = false;
 
     do {
@@ -1512,10 +1593,7 @@ function parse_content (in_html_content) {
 
         var top_element_info = get_top_element_info();
         if (space_content) {
-            if (top_element_info.had_content
-                || top_element_info.had_comment
-                || top_element_info.had_xml_header
-                || !top_element_info.top_element_is_inline_element) {
+            if (top_element_info.had_content || top_element_info.had_comment || top_element_info.had_xml_header || !top_element_info.top_element_is_inline_element) {
                 if (top_element_info.top_element_is_inline_element && g_FORCE_INLINE_WHITESPACE_FORMATTING) {
                     indent = ' ';
                 } else {
@@ -1541,15 +1619,14 @@ function parse_content (in_html_content) {
         g_HTML_CONTENT += content;
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_temporary_content (in_html_content, in_indent_count) {
+function parse_temporary_content(in_html_content, in_indent_count) {
     var result = false;
 
     do {
@@ -1568,7 +1645,7 @@ function parse_temporary_content (in_html_content, in_indent_count) {
                 throw new Error('get out');
             }
 
-            while(g_ELEMENT_STACK.length) {
+            while (g_ELEMENT_STACK.length) {
                 var top_element = g_ELEMENT_STACK.pop();
                 if ([k_COMMENT_TOKEN, k_XML_HEADER_TOKEN].indexOf(top_element) >= 0) {
                     continue;
@@ -1589,15 +1666,14 @@ function parse_temporary_content (in_html_content, in_indent_count) {
         set_html_variables_state(state);
 
         result = contents;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_comment (in_html_content) {
+function parse_comment(in_html_content) {
     var result = false;
 
     do {
@@ -1661,15 +1737,14 @@ function parse_comment (in_html_content) {
         }
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_xml_header (in_html_content) {
+function parse_xml_header(in_html_content) {
     var result = false;
 
     do {
@@ -1686,15 +1761,14 @@ function parse_xml_header (in_html_content) {
         g_ELEMENT_STACK.push(k_XML_HEADER_TOKEN);
         g_HTML_CONTENT += xml_header;
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function parse_style (in_html_content) {
+function parse_style(in_html_content) {
     var result = false;
 
     do {
@@ -1737,7 +1811,7 @@ function parse_style (in_html_content) {
                 definition_type: parser.k_DEFINITION_TYPE_SCSS,
                 indent: g_INDENT,
                 indent_count: g_INDENT_COUNT,
-                line_ending: t_NL
+                line_ending: t_NL,
             });
 
             output += t_NL + get_indent() + css;
@@ -1754,15 +1828,14 @@ function parse_style (in_html_content) {
         }
 
         result = remaining;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function reset_html_variables () {
+function reset_html_variables() {
     do {
         g_HTML_CONTENT = '';
         g_HTML_INVALID = '';
@@ -1776,13 +1849,12 @@ function reset_html_variables () {
         g_CURRENT_ELEMENT_CLASSES = [];
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = '';
         g_CURRENT_ELEMENT_WHITESPACE_BEFORE = false;
-    }
-    while (FALSE);
+    } while (FALSE);
 }
 
 // ******************************
 
-function get_html_variables_state () {
+function get_html_variables_state() {
     do {
         return {
             HTML_CONTENT: g_HTML_CONTENT,
@@ -1796,15 +1868,14 @@ function get_html_variables_state () {
             CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE: g_CURRENT_ELEMENT_ATTRIBUTE_BLOCK_OBJECT_ENTRY_VALUE,
             CURRENT_ELEMENT_CLASSES: g_CURRENT_ELEMENT_CLASSES,
             CURRENT_ELEMENT_CLASSES_CLASS_NAME: g_CURRENT_ELEMENT_CLASSES_CLASS_NAME,
-            CURRENT_ELEMENT_WHITESPACE_BEFORE: g_CURRENT_ELEMENT_WHITESPACE_BEFORE
+            CURRENT_ELEMENT_WHITESPACE_BEFORE: g_CURRENT_ELEMENT_WHITESPACE_BEFORE,
         };
-    }
-    while (FALSE);
+    } while (FALSE);
 }
 
 // ******************************
 
-function set_html_variables_state (in_state) {
+function set_html_variables_state(in_state) {
     do {
         g_HTML_CONTENT = in_state.HTML_CONTENT || '';
         g_HTML_INVALID = in_state.HTML_INVALID || '';
@@ -1818,17 +1889,15 @@ function set_html_variables_state (in_state) {
         g_CURRENT_ELEMENT_CLASSES = in_state.CURRENT_ELEMENT_CLASSES || [];
         g_CURRENT_ELEMENT_CLASSES_CLASS_NAME = in_state.CURRENT_ELEMENT_CLASSES_CLASS_NAME || '';
         g_CURRENT_ELEMENT_WHITESPACE_BEFORE = in_state.CURRENT_ELEMENT_WHITESPACE_BEFORE || false;
-    }
-    while (FALSE);
+    } while (FALSE);
 }
 
 // ******************************
 
-function get_top_element_info (in_pop) {
+function get_top_element_info(in_pop) {
     var result = false;
 
-    do
-    {
+    do {
         var had_content = false;
         var had_comment = false;
         var had_xml_header = false;
@@ -1872,11 +1941,10 @@ function get_top_element_info (in_pop) {
             had_content,
             had_xml_header,
             top_element,
-            top_element_is_inline_element: (g_INLINE_ELEMENTS.indexOf(top_element) >= 0),
-            top_element_is_block_element: (g_BLOCK_ELEMENTS.indexOf(top_element) >= 0)
+            top_element_is_inline_element: g_INLINE_ELEMENTS.indexOf(top_element) >= 0,
+            top_element_is_block_element: g_BLOCK_ELEMENTS.indexOf(top_element) >= 0,
         };
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
@@ -1892,26 +1960,26 @@ function num_lines(in_content) {
 
 // ******************************
 
-function get_indent () {
+function get_indent() {
     return str_repeat(g_INDENT, g_INDENT_COUNT);
 }
 
 // ******************************
 
-function inc_indent (in_inc) {
+function inc_indent(in_inc) {
     g_INDENT_COUNT = Math.max(0, g_INDENT_COUNT + in_inc);
 }
 
 // ******************************
 
-function is_numeric (n) {
+function is_numeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 // ******************************
 
-function str_repeat (s, n) {
-    return Array(n+1).join(s);
+function str_repeat(s, n) {
+    return Array(n + 1).join(s);
 }
 
 // ******************************

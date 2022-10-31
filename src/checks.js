@@ -24,7 +24,7 @@ const FALSE = false;
 // Functions:
 // ******************************
 
-function check_grammar (in_definition) {
+function check_grammar(in_definition) {
     var result = false;
 
     do {
@@ -56,10 +56,12 @@ function check_grammar (in_definition) {
             if (definition_key === grammar.k_DEFINITION_KEY_START) {
                 return;
             }
-            if (used_definition_keys.indexOf(definition_key) < 0
-                    && used_definition_keys.indexOf(definition_key+'+') < 0
-                    && used_definition_keys.indexOf(definition_key+'*') < 0
-                    && used_definition_keys.indexOf(definition_key+'?') < 0) {
+            if (
+                used_definition_keys.indexOf(definition_key) < 0 &&
+                used_definition_keys.indexOf(definition_key + '+') < 0 &&
+                used_definition_keys.indexOf(definition_key + '*') < 0 &&
+                used_definition_keys.indexOf(definition_key + '?') < 0
+            ) {
                 throw new Error('Definition key "' + definition_key + '" is never used');
             }
         });
@@ -67,15 +69,14 @@ function check_grammar (in_definition) {
         or_definition_keys.forEach(function (definition_key) {
             check_left_factored(in_definition, definition_key);
         });
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function check_left_factored (in_definition, in_definition_key) {
+function check_left_factored(in_definition, in_definition_key) {
     var result = false;
 
     do {
@@ -93,7 +94,6 @@ function check_left_factored (in_definition, in_definition_key) {
         var left_most_definition_values = [];
 
         definition_value.SEGMENTS.forEach(function (sub_definition_key) {
-
             left_most_definition_values_for_key = get_left_most_definition_values(in_definition, [sub_definition_key]);
             left_most_definition_values_for_key.forEach(function (left_most_definition_value) {
                 if (left_most_definition_value === grammar.k_DEFINITION_KEY_EMPTY) {
@@ -103,35 +103,41 @@ function check_left_factored (in_definition, in_definition_key) {
                 left_most_definition_value_seen_key = left_most_definition_values[left_most_definition_value];
 
                 if (left_most_definition_value_seen_key && left_most_definition_value_seen_key !== sub_definition_key) {
-                    throw new Error('Definition keys "' + sub_definition_key + '" and "' + left_most_definition_value_seen_key + '" share left-most definition value "' + left_most_definition_value + '" in the context of "' + in_definition_key + '"');
+                    throw new Error(
+                        'Definition keys "' +
+                            sub_definition_key +
+                            '" and "' +
+                            left_most_definition_value_seen_key +
+                            '" share left-most definition value "' +
+                            left_most_definition_value +
+                            '" in the context of "' +
+                            in_definition_key +
+                            '"'
+                    );
                 }
 
                 left_most_definition_values[left_most_definition_value] = sub_definition_key;
-
             });
         });
 
         result = true;
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }
 
 // ******************************
 
-function get_left_most_definition_values (in_definition, in_definition_keys) {
+function get_left_most_definition_values(in_definition, in_definition_keys) {
     var result = [];
 
     do {
-
         var definition_value;
         var left_most_definition_key;
         var left_most_definition_keys;
         var idx;
 
         in_definition_keys.forEach(function (definition_key) {
-
             definition_value = in_definition[definition_key];
             if (!definition_value) {
                 throw new Error('Definition key "' + definition_key + '" isn\'t defined');
@@ -167,10 +173,8 @@ function get_left_most_definition_values (in_definition, in_definition_keys) {
             }
 
             result = result.concat(get_left_most_definition_values(in_definition, left_most_definition_keys));
-
         });
-    }
-    while (FALSE);
+    } while (FALSE);
 
     return result;
 }

@@ -49,7 +49,7 @@ var g_PRINT_TREE = false;
 // Setup Functions:
 // ******************************
 
-function setup (in_config) {
+function setup(in_config) {
     if (!in_config) {
         return;
     }
@@ -66,7 +66,7 @@ function setup (in_config) {
 // Printer Functions:
 // ******************************
 
-function print_file (in_file, in_config) {
+function print_file(in_file, in_config) {
     var definition_type = null;
     var config = in_config || {};
 
@@ -74,22 +74,22 @@ function print_file (in_file, in_config) {
     var file_extension = utils.get_file_extension(in_file);
 
     switch (file_extension) {
-    case 'htm':
-    case 'html':
-        definition_type = parser.k_DEFINITION_TYPE_HTML;
-        break;
+        case 'htm':
+        case 'html':
+            definition_type = parser.k_DEFINITION_TYPE_HTML;
+            break;
 
-    case 'css':
-    case 'scss':
-        definition_type = parser.k_DEFINITION_TYPE_SCSS;
-        break;
+        case 'css':
+        case 'scss':
+            definition_type = parser.k_DEFINITION_TYPE_SCSS;
+            break;
 
-    case 'ps1':
-        definition_type = parser.k_DEFINITION_TYPE_PS1;
-        break;
+        case 'ps1':
+            definition_type = parser.k_DEFINITION_TYPE_PS1;
+            break;
 
-    default:
-        throw new Error('Unhandled file extension: ' + file_extension);
+        default:
+            throw new Error('Unhandled file extension: ' + file_extension);
     }
 
     config.definition_type = definition_type;
@@ -99,7 +99,7 @@ function print_file (in_file, in_config) {
 
 // ******************************
 
-function print_contents (in_contents, in_config) {
+function print_contents(in_contents, in_config) {
     setup(in_config || {});
 
     var contents = in_contents || '';
@@ -149,33 +149,31 @@ function print_contents (in_contents, in_config) {
 
 // ******************************
 
-function print_tree (in_tree) {
+function print_tree(in_tree) {
     _print_node(in_tree, '');
 }
 
 // ******************************
 
-function _print_node (in_node, in_indent) {
-    if (!in_node.DEFINITION_KEY)
-        return;
+function _print_node(in_node, in_indent) {
+    if (!in_node.DEFINITION_KEY) return;
 
     in_indent = in_indent || '';
     var definitionKey = in_node.DEFINITION_KEY;
     var definitionVal = (in_node.VALUE || '').trim();
 
-    if (definitionVal && definitionVal.length > 50)
-        logger.warning(in_indent + definitionKey + '===>' + definitionVal.substr(0, 50) + '...');
-    else if (definitionVal)
-        logger.success(in_indent + definitionKey + '===>' + definitionVal);
-    else
-        logger.info(in_indent + definitionKey);
+    if (definitionVal && definitionVal.length > 50) logger.warning(in_indent + definitionKey + '===>' + definitionVal.substr(0, 50) + '...');
+    else if (definitionVal) logger.success(in_indent + definitionKey + '===>' + definitionVal);
+    else logger.info(in_indent + definitionKey);
 
-    (in_node.CHILDREN || []).forEach(function (child) { _print_node(child, in_indent + '  '); });
+    (in_node.CHILDREN || []).forEach(function (child) {
+        _print_node(child, in_indent + '  ');
+    });
 }
 
 // ******************************
 
-function print_recognized_chunk (in_tree) {
+function print_recognized_chunk(in_tree) {
     if (in_tree.FAILED) {
         process.stdout.write(treeFn.get_recognized_chunk(in_tree) + '\n');
         return;
@@ -185,7 +183,7 @@ function print_recognized_chunk (in_tree) {
 
 // ******************************
 
-function print_contents_diff (in_expected_contents, in_contents) {
+function print_contents_diff(in_expected_contents, in_contents) {
     var expected_contents = (in_expected_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
     var contents = (in_contents || '').replace(new RegExp(g_REGEX_NL, 'g'), t_NL);
 
@@ -236,8 +234,7 @@ function print_contents_diff (in_expected_contents, in_contents) {
         var incorrect_section = contents.substr(diff_idx1, 1);
         if (incorrect_section === ' ') {
             incorrect_section = '☐';
-        }
-        else if (correct_section === ' ') {
+        } else if (correct_section === ' ') {
             incorrect_section = '☒';
             diff_idx1--;
         }
@@ -249,7 +246,7 @@ function print_contents_diff (in_expected_contents, in_contents) {
 
 // ******************************
 
-function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
+function _get_diff_segment(in_contents1, in_contents2, in_segment_size) {
     var result = false;
 
     var segment_size = in_segment_size;
@@ -295,8 +292,7 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
 
         contents1_segment_bound_start += segment_size;
         contents2_segment_bound_start += segment_size;
-    }
-    while (TRUE);
+    } while (TRUE);
 
     return result;
 }
@@ -305,11 +301,11 @@ function _get_diff_segment (in_contents1, in_contents2, in_segment_size) {
 // TODO: DEPRECATE
 // ******************************
 
-function print_sass_contents (in_contents, in_indent_count, in_convert_Line_endings) {
+function print_sass_contents(in_contents, in_indent_count, in_convert_Line_endings) {
     return print_contents(in_contents, {
         convert_line_endings: in_convert_Line_endings,
         indent_count: in_indent_count,
-        definition_type: parser.k_DEFINITION_TYPE_SCSS
+        definition_type: parser.k_DEFINITION_TYPE_SCSS,
     });
 }
 
