@@ -3,7 +3,7 @@
 // ******************************
 //
 //
-// TORIS FORMAT v1.7.26
+// TORIS FORMAT v1.7.27
 //
 //
 // ******************************
@@ -24,7 +24,7 @@ var logger = require('./src/logger');
 // Constants:
 // ******************************
 
-const k_VERSION = '1.7.26';
+const k_VERSION = '1.7.27';
 
 // ******************************
 // TODO: DEPRECATE
