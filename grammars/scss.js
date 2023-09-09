@@ -128,7 +128,7 @@ module.exports = grammar.export_grammar({
     percIdentifier: { OPERATOR: '&&', SEGMENTS: ['PERC', 'identifier'] },
     pseudo: { OPERATOR: '||', SEGMENTS: ['pseudoValueInParens', 'pseudoIdentifier', 'pseudoFunctionCall'] },
     pseudoValueInParens: { OPERATOR: '&&', SEGMENTS: ['LPAREN', 'pseudoValue', 'RPAREN'] },
-    pseudoValue: { OPERATOR: '||', SEGMENTS: ['pseudo', 'attrib', 'Number', 'hashBlock', 'selector'] },
+    pseudoValue: { OPERATOR: '||', SEGMENTS: ['pseudo', 'attrib', 'Number', 'OddEven', 'hashBlock', 'selector'] },
     pseudoIdentifier: { OPERATOR: '&&', SEGMENTS: ['colonOrColonColon', 'Identifier'] },
     pseudoFunctionCall: { OPERATOR: '&&', SEGMENTS: ['colonOrColonColon', 'functionCall'] },
     colonOrColonColon: { OPERATOR: '||', SEGMENTS: ['COLONCOLON', 'COLON'] },
@@ -254,9 +254,12 @@ module.exports = grammar.export_grammar({
     STRING_SINGLE_QUOTED: { OPERATOR: '==', VALUE: '\'[^\'\\n\\r]*\'' },
     STRING_DOUBLE_QUOTED: { OPERATOR: '==', VALUE: '"[^"\\n\\r]*"' },
     StringLiteral: { OPERATOR: '&&', SEGMENTS: ['STRING'] },
-    True: { OPERATOR: '==', VALUE: '[T]rue' },
+    True: { OPERATOR: '==', VALUE: '[Tt]rue' },
     False: { OPERATOR: '==', VALUE: '[Ff]alse' },
     Number: { OPERATOR: '==', VALUE: '\\-?(?:[0-9]*\\.)?[0-9]+' },
+    OddEven: { OPERATOR: '||', SEGMENTS: ['Odd', 'Even'] },
+    Odd: { OPERATOR: '==', VALUE: '[Oo]dd' },
+    Even: { OPERATOR: '==', VALUE: '[Ee]ven' },
     Color: { OPERATOR: '==', VALUE: '#[0-9a-fA-F]+' },
     RGB_NUMERIC_VAL: { OPERATOR: '==', VALUE: '(?:[0-9]{0,3}\\.)?[0-9]+' },
     SL_COMMENT: { OPERATOR: '==', VALUE: '\\/\\/[^\\n\\r]*' },
@@ -265,9 +268,9 @@ module.exports = grammar.export_grammar({
     Url: { OPERATOR: '||', SEGMENTS: ['STRING', 'UrlVal'] },
     UrlVal: { OPERATOR: '==', VALUE: '[^\\)]+' }
 },
-// Dependent On:
-[
-    require('./base')
-]);
+    // Dependent On:
+    [
+        require('./base')
+    ]);
 
 // ******************************

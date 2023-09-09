@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-024-nth-child-preformatted.scss",
+    "outputFile": "format-test-024-nth-child-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "nth-child"
+}

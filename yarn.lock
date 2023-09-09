@@ -2,25 +2,25 @@
 # yarn lockfile v1
 
 
-bluebird@^3.4.7:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
-  integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
+"bluebird@^3.4.7":
+  "integrity" "sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw=="
+  "resolved" "https://registry.npmjs.org/bluebird/-/bluebird-3.5.3.tgz"
+  "version" "3.5.3"
 
-color-print@^1.0.1, color-print@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/color-print/-/color-print-1.0.2.tgz#4ee6772ff554a75292481bc975804ae6ed63f908"
-  integrity sha512-C4DcET18s9fQamWA9DzGrFo03dlJrFjouLs98pB2geH4gwPPYMfMEHUCrDaFbLNKbP4uwwYwh9gYanlp6d7Emw==
+"color-print@^1.0.1", "color-print@^1.0.2":
+  "integrity" "sha1-TuZ3L/VUp1KSSBvJdYBK5u1j+Qg="
+  "resolved" "https://registry.npmjs.org/color-print/-/color-print-1.0.2.tgz"
+  "version" "1.0.2"
 
-fs-process@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/fs-process/-/fs-process-1.0.1.tgz#399e01bc3d120b113516803d2248c644a9b3e8e9"
-  integrity sha512-oisxZVz7z+T4++Vd354GLfwa6kVepAGy+hGdpDgB/ven3mFMQMvW2USnDoA43rgnwqXhFob2520KGWyzDpEiZA==
+"fs-process@^1.0.1":
+  "integrity" "sha1-OZ4BvD0SCxE1FoA9IkjGRKmz6Ok="
+  "resolved" "https://registry.npmjs.org/fs-process/-/fs-process-1.0.1.tgz"
+  "version" "1.0.1"
   dependencies:
-    bluebird "^3.4.7"
-    color-print "^1.0.1"
+    "bluebird" "^3.4.7"
+    "color-print" "^1.0.1"
 
-minimist@^1.2.5:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
-  integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
+"minimist@^1.2.5":
+  "integrity" "sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q=="
+  "resolved" "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz"
+  "version" "1.2.6"

@@ -1,0 +1,17 @@
+div.panel {
+    &:nth-child( odd) {
+            color: #2e2e2e;
+            background-color: #e2e2e2;
+        }
+
+
+
+        &:nth-child( even   ) {
+            color: #cccccc;
+            background: #444444;
+        }
+
+                div.text {
+                padding: 0 80px;
+        }
+    }
