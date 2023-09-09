@@ -480,6 +480,8 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
         case 'Number':
         case 'True':
         case 'False':
+        case 'Odd':
+        case 'Even':
         case 'Color':
         case 'RGB_VAL':
         case 'STRING_SINGLE_QUOTED':
