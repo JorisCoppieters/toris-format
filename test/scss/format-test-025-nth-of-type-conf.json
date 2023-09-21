@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-025-nth-of-type-preformatted.scss",
+    "outputFile": "format-test-025-nth-of-type-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "nth-of-type"
+}

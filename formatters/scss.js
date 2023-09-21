@@ -482,6 +482,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
         case 'False':
         case 'Odd':
         case 'Even':
+        case 'Nth':
         case 'Color':
         case 'RGB_VAL':
         case 'STRING_SINGLE_QUOTED':
