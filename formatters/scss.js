@@ -317,13 +317,17 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
             break;
 
         case 'FROM':
+        case 'SCREEN':
         case 'THROUGH':
         case 'IN':
             color_func = cprint.toCyan;
             last_token = definition_value.toUpperCase();
+            if (['('].indexOf(state.LAST_TOKEN) >= 0) {
+                space_before = false;
+            }
             break;
 
-        case 'BlockStart':
+        case 'BLOCKSTART':
             last_token = '{';
             post_indent = 1;
             color_func = cprint.toWhite;
@@ -335,10 +339,10 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
             }
             break;
 
-        case 'BlockEndSemi':
-        case 'BlockEnd':
+        case 'BLOCKENDSEMI':
+        case 'BLOCKEND':
             last_token = '}';
-            if (definition_key === 'BlockEndSemi') {
+            if (definition_key === 'BLOCKENDSEMI') {
                 append = '}';
             }
             pre_indent = -1;
@@ -367,17 +371,19 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
             break;
 
         case 'LPAREN':
-            if (state.VALUE_TYPE !== 'MEDIA_AND') {
-                if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL', 'MEASUREMENT'].indexOf(state.LAST_TOKEN) >= 0) {
-                    space_before = false;
-                }
+            if (['FUNCTION_CALL', 'MULTI_LINE_FUNCTION_CALL', 'SELECTOR', 'MINUS', 'URL', 'MEASUREMENT'].indexOf(state.LAST_TOKEN) >= 0) {
+                space_before = false;
             }
 
             if (['INCLUDE', 'MIXIN', 'PAGE', 'FUNCTION', 'RETURN'].indexOf(state.DECLARATION_TYPE) >= 0) {
                 space_before = false;
             }
 
-            if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['IF'].indexOf(state.DECLARATION_TYPE) >= 0) {
+            if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['(', 'and', 'or'].indexOf(state.SECOND_TO_LAST_TOKEN) >= 0) {
+                space_before = false;
+            }
+
+            if (['('].indexOf(state.LAST_TOKEN) >= 0 && ['IF', 'MEDIA'].indexOf(state.DECLARATION_TYPE) >= 0) {
                 space_before = false;
             }
 
@@ -477,13 +483,13 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
             last_token = 'IMPORTANT';
             break;
 
-        case 'Number':
-        case 'True':
-        case 'False':
-        case 'Odd':
-        case 'Even':
-        case 'Nth':
-        case 'Color':
+        case 'NUMBER':
+        case 'TRUE':
+        case 'FALSE':
+        case 'ODD':
+        case 'EVEN':
+        case 'NTH':
+        case 'COLOR':
         case 'RGB_VAL':
         case 'STRING_SINGLE_QUOTED':
         case 'STRING_DOUBLE_QUOTED':
@@ -599,7 +605,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
         case 'mathCharacter':
             state.VALUE_TYPE = 'OPERATOR';
             break;
-        case 'StringLiteral':
+        case 'STRINGLITERAL':
             if (state.DECLARATION_TYPE === 'VARIABLE_VALUES_3PLUS') {
                 state.VALUE_TYPE = 'STRING_3PLUS';
             } else {
@@ -621,21 +627,12 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
         case 'TIMES':
         case 'GT':
         case 'PERC':
-        case 'AND':
         case 'DOLLAR':
-        case 'PathIdentifier':
-        case 'Identifier':
+        case 'PATHIDENTIFIER':
+        case 'IDENTIFIER':
             last_token = state.VALUE_TYPE;
 
-            if (definition_value === 'and') {
-                state.VALUE_TYPE = 'MEDIA_AND';
-            }
-
             switch (state.VALUE_TYPE) {
-                case 'MEDIA_AND':
-                    color_func = cprint.toCyan;
-                    break;
-
                 case 'TYPE_KEYFRAMES_IDENTIFIER':
                     color_func = cprint.toWhite;
                     break;
@@ -678,7 +675,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
                         last_token = 'MINUS';
                     }
 
-                    if (definition_key === 'Identifier' && state.SECOND_TO_LAST_TOKEN === ':') {
+                    if (definition_key === 'IDENTIFIER' && state.SECOND_TO_LAST_TOKEN === ':') {
                         space_before = false;
                     }
                     break;
@@ -835,7 +832,7 @@ function get_definition_output(in_definition_key, in_definition_value, in_state,
                             break;
 
                         case 'EXTEND':
-                            if (['Identifier'].indexOf(definition_key) >= 0) {
+                            if (['IDENTIFIER'].indexOf(definition_key) >= 0) {
                                 space_before = false;
                             }
                             color_func = cprint.toCyan;
