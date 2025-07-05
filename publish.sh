@@ -43,6 +43,19 @@ function update_version {
     echo $NEW_VERSION
 }
 
+function npm_login () {
+  NPM_WHOAMI=$(npm whoami 2>/dev/null)
+  if [[ -z "$NPM_WHOAMI" ]]; then
+    echo "You are not logged in to npm. Please log in first.";
+    npm login
+    NPM_WHOAMI=$(npm whoami 2>/dev/null)
+    if [[ -z "$NPM_WHOAMI" ]]; then
+      echo "Login failed. Please check your npm credentials.";
+      exit 1;
+    fi
+  fi
+}
+
 BRANCH=$(git branch --show-current)
 
 if [[ $BRANCH != "main" ]]; then
@@ -62,6 +75,7 @@ if [[ `ask "Do you want to publish $VERSION?" && echo true` == true ]]; then
   sed -i "s/const k_VERSION = '.*';/const k_VERSION = '$VERSION';/g" index.js
 
   echo "Running npm publish..."
+  npm_login
   $NPM publish
 
   echo "Tagging revision..."
