@@ -1115,11 +1115,11 @@ function parse_classes_content_class_name_type(in_classes_content, in_class_name
 
         switch (in_class_name_type) {
             case k_CLASS_TYPE_BINDING:
-                regExpString += r_W + r_v('[A-Z0-9a-z-_]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_]*)+');
+                regExpString += r_W + r_v('[A-Z0-9a-z-_:]*(?:\\{\\{.*?\\}\\}[A-Z0-9a-z-_:]*)+');
                 break;
 
             case k_CLASS_TYPE_NORMAL:
-                regExpString += r_W + r_v('[A-Z0-9a-z-_]+');
+                regExpString += r_W + r_v('[A-Z0-9a-z-_:]+');
                 break;
         }
 

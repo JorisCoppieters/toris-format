@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-026-@keyframes-preformatted.scss",
+    "outputFile": "format-test-026-@keyframes-formatted.scss",
+    "setup": {
+        "definition_type": "scss",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "@keyframes"
+}

@@ -1,0 +1,10 @@
+{
+    "inputFile": "format-test-021-class-with-colon-preformatted.html",
+    "outputFile": "format-test-021-class-with-colon-formatted.html",
+    "setup": {
+        "definition_type": "html",
+        "line_ending": "\n",
+        "convert_line_endings": true
+    },
+    "testName": "class-with-colon"
+}
